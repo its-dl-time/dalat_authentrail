@@ -1,5 +1,5 @@
-.env
 .env.*
+!.env
 !.env.example
 .venv/
 __pycache__/
@@ -18,9 +18,21 @@ data/raw/google_places/*
 
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/places_master_top50.csv
+!data/processed/cross_platform/
+!data/processed/cross_platform/*.csv
 
 data/outputs/*
 !data/outputs/.gitkeep
+!data/outputs/facebook/
+data/outputs/facebook/*
+!data/outputs/facebook/facebook_comments_output.csv
+!data/outputs/google_maps/
+data/outputs/google_maps/*
+!data/outputs/google_maps/google_maps_reviews_output.csv
+!data/outputs/tiktok/
+data/outputs/tiktok/*
+!data/outputs/tiktok/tiktok_comments_output.csv
 
 models/*
 !models/.gitkeep

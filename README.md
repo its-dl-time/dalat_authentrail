@@ -37,6 +37,12 @@ Run the full Facebook pipeline:
 python src\innostar\data_ingestion\00_facebook_pipeline.py --start-row 1 --limit 3 --append-output
 ```
 
+Build cross-platform normalized datasets and place risk scores:
+
+```powershell
+python src\innostar\data_processing\build_cross_platform_dataset.py
+```
+
 Vietnamese docs:
 
 ```text
