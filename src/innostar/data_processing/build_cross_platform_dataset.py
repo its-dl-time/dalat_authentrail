@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set
 
 import pandas as pd
-
+from .review_trust_score import (
+    aggregate_place_trust_summary,
+    compute_class1_trust_scores,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data"
@@ -24,6 +27,7 @@ TIKTOK_FEATURES_FILE = OUTPUT_DIR / "platform_tiktok_features.csv"
 FACEBOOK_FEATURES_FILE = OUTPUT_DIR / "platform_facebook_features.csv"
 SUMMARY_OUTPUT_FILE = OUTPUT_DIR / "place_platform_summary.csv"
 RISK_OUTPUT_FILE = OUTPUT_DIR / "place_cross_platform_risk.csv"
+TRUST_OUTPUT_FILE = OUTPUT_DIR / "place_review_trust_summary.csv"
 
 REQUIRED_PLATFORMS = ["google_maps", "tiktok", "facebook"]
 
@@ -41,6 +45,7 @@ COMMON_COLUMNS = [
     "normalized_id",
     "place_id",
     "place_name",
+    "place_category",
     "platform",
     "source_record_id",
     "content_text",
@@ -52,10 +57,21 @@ COMMON_COLUMNS = [
     "quality_score",
     "is_useful",
     "sentiment_score",
+    "content_latitude",
+    "content_longitude",
+    "media_latitude",
+    "media_longitude",
+    "photo_count",
+    "video_count",
+    "image_count",
+    "media_count",
     *TOPIC_COLUMNS,
     "risk_flags",
     "risk_flag_count",
     "has_risk_flag",
+    "trust_score_class1",
+    "trust_flags_class1",
+    "trust_flag_count_class1",
     "scraped_at",
 ]
 
@@ -374,10 +390,22 @@ def normalize_google_maps(df: pd.DataFrame, master: pd.DataFrame) -> tuple[pd.Da
             "quality_score": quality,
             "is_useful": quality >= 0.35,
             "sentiment_score": sentiment,
+            "place_category": safe_str(row.get("place_category")) or safe_str(master_lookup.get(place_id, {}).get("category")),
+            "content_latitude": safe_float(row.get("content_latitude")),
+            "content_longitude": safe_float(row.get("content_longitude")),
+            "media_latitude": safe_float(row.get("media_latitude")),
+            "media_longitude": safe_float(row.get("media_longitude")),
+            "photo_count": safe_int(row.get("photo_count"), 0),
+            "video_count": safe_int(row.get("video_count"), 0),
+            "image_count": safe_int(row.get("image_count"), 0),
+            "media_count": safe_int(row.get("media_count"), 0),
             **topics,
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
+            "trust_score_class1": 0.0,
+            "trust_flags_class1": "",
+            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -435,10 +463,22 @@ def normalize_tiktok(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             "quality_score": quality,
             "is_useful": safe_bool(row.get("is_useful_comment")),
             "sentiment_score": sentiment,
+            "place_category": safe_str(row.get("place_category")),
+            "content_latitude": safe_float(row.get("content_latitude")),
+            "content_longitude": safe_float(row.get("content_longitude")),
+            "media_latitude": safe_float(row.get("media_latitude")),
+            "media_longitude": safe_float(row.get("media_longitude")),
+            "photo_count": safe_int(row.get("photo_count"), 0),
+            "video_count": safe_int(row.get("video_count"), 0),
+            "image_count": safe_int(row.get("image_count"), 0),
+            "media_count": safe_int(row.get("media_count"), 0),
             **topics,
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
+            "trust_score_class1": 0.0,
+            "trust_flags_class1": "",
+            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -495,10 +535,22 @@ def normalize_facebook(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             "quality_score": quality,
             "is_useful": safe_bool(row.get("is_useful_comment")),
             "sentiment_score": sentiment,
+            "place_category": safe_str(row.get("place_category")),
+            "content_latitude": safe_float(row.get("content_latitude")),
+            "content_longitude": safe_float(row.get("content_longitude")),
+            "media_latitude": safe_float(row.get("media_latitude")),
+            "media_longitude": safe_float(row.get("media_longitude")),
+            "photo_count": safe_int(row.get("photo_count"), 0),
+            "video_count": safe_int(row.get("video_count"), 0),
+            "image_count": safe_int(row.get("image_count"), 0),
+            "media_count": safe_int(row.get("media_count"), 0),
             **topics,
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
+            "trust_score_class1": 0.0,
+            "trust_flags_class1": "",
+            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -721,7 +773,9 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
         ignore_index=True,
     )
     common = add_normalized_engagement(common)
+    common = compute_class1_trust_scores(common, master)
     summary = aggregate_platform_summary(common, google_features, master)
+    trust_summary = aggregate_place_trust_summary(common)
     risk = build_place_risk(summary, master, complete_place_ids)
 
     outputs = {
@@ -731,6 +785,7 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
         "platform_facebook_features": args.output_dir / FACEBOOK_FEATURES_FILE.name,
         "place_platform_summary": args.output_dir / SUMMARY_OUTPUT_FILE.name,
         "place_cross_platform_risk": args.output_dir / RISK_OUTPUT_FILE.name,
+        "place_review_trust_summary": args.output_dir / TRUST_OUTPUT_FILE.name,
     }
 
     write_csv(common, outputs["normalized_common_records"])
@@ -739,6 +794,7 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
     write_csv(facebook_features, outputs["platform_facebook_features"])
     write_csv(summary, outputs["place_platform_summary"])
     write_csv(risk, outputs["place_cross_platform_risk"])
+    write_csv(trust_summary, outputs["place_review_trust_summary"])
 
     print("Cross-platform dataset built.")
     print(f"Complete places: {', '.join(complete_place_ids)}")
