@@ -1,10 +1,4 @@
 ﻿place_id,place_name,platform,record_count,useful_record_count,avg_sentiment_score,negative_sentiment_ratio,avg_quality_score,useful_record_ratio,risk_flag_record_ratio,avg_normalized_engagement,avg_service_score,avg_price_score,avg_scenery_score,avg_crowded_score,avg_food_drink_score,avg_cleanliness_score,avg_location_score,google_maps_rating_avg_from_reviews,google_maps_rating_master,google_maps_rating_1_count,google_maps_rating_2_count,google_maps_rating_3_count,google_maps_rating_4_count,google_maps_rating_5_count
-dalat_002,Horizon Coffee Da Lat,facebook,136,43,0.0833,0.1838,0.5915,0.3162,0.6838,0.5269,0.0049,0.2573,0.0833,0.0049,0.1005,0.0049,0.0466,,,,,,,
-dalat_002,Horizon Coffee Da Lat,google_maps,20,18,0.5092,0.15,0.7235,0.9,0.2,0.4917,0.1833,0.25,0.2667,0.0,0.2,0.0,0.1,4.1,4.2,3,0,1,4,12
-dalat_002,Horizon Coffee Da Lat,tiktok,72,15,0.3056,0.0417,0.5028,0.2083,0.1111,0.5023,0.0093,0.1666,0.0417,0.0,0.0833,0.0,0.0093,,,,,,,
-dalat_003,Quán Của Thời Thanh Xuân,facebook,136,36,0.2206,0.0368,0.5147,0.2647,0.7353,0.5518,0.0098,0.1054,0.0931,0.0049,0.027,0.0,0.0245,,,,,,,
-dalat_003,Quán Của Thời Thanh Xuân,google_maps,20,14,0.73,0.05,0.501,0.7,0.4,0.4917,0.1,0.2,0.05,0.0,0.0833,0.0,0.0,5.0,4.9,0,0,0,0,20
-dalat_003,Quán Của Thời Thanh Xuân,tiktok,72,16,0.3056,0.0417,0.5028,0.2222,0.1111,0.5023,0.0093,0.1666,0.0417,0.0,0.0833,0.0,0.0093,,,,,,,
-dalat_004,Tiệm Cà Phê Trứng Cô Ba - Đà Lạt,facebook,271,12,0.155,0.0037,0.3395,0.0443,0.9557,0.4624,0.0,0.0652,0.0357,0.0012,0.0258,0.0,0.0098,,,,,,,
-dalat_004,Tiệm Cà Phê Trứng Cô Ba - Đà Lạt,google_maps,20,20,0.7183,0.0,0.736,1.0,0.25,0.5417,0.1167,0.3667,0.05,0.0167,0.4167,0.0,0.05,4.4,4.8,2,0,1,2,15
-dalat_004,Tiệm Cà Phê Trứng Cô Ba - Đà Lạt,tiktok,72,15,0.3056,0.0417,0.5028,0.2083,0.1111,0.5023,0.0093,0.1666,0.0417,0.0,0.0833,0.0,0.0093,,,,,,,
+dalat_002,Horizon Coffee Da Lat,facebook,136,43,0.0833,0.1838,0.5915,0.3162,0.6838,0.5037,0.0049,0.2573,0.0833,0.0049,0.1005,0.0049,0.0466,,,,,,,
+dalat_002,Horizon Coffee Da Lat,google_maps,200,170,0.6192,0.07,0.6462,0.85,0.375,0.5025,0.085,0.24,0.1933,0.0033,0.1567,0.0133,0.0283,4.485,4.2,12,2,8,33,145
+dalat_002,Horizon Coffee Da Lat,tiktok,72,15,0.3056,0.0417,0.5028,0.2083,0.1111,0.5069,0.0093,0.1666,0.0417,0.0,0.0833,0.0,0.0093,,,,,,,

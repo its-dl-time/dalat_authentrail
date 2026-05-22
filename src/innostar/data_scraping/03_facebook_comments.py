@@ -23,7 +23,8 @@ if not APIFY_TOKEN:
 
 FACEBOOK_COMMENTS_ACTOR_ID = "apify/facebook-comments-scraper"
 
-OUTPUT_DIR = r"D:\INNOSTAR\data\outputs\facebook"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+OUTPUT_DIR = str(PROJECT_ROOT / "data" / "outputs" / "facebook")
 
 POST_SEEDS_FILE = str(Path(OUTPUT_DIR) / "facebook_post_seeds.csv")
 SOURCES_FILE = str(Path(OUTPUT_DIR) / "facebook_sources.csv")
@@ -544,13 +545,22 @@ def classify_comment(text, place_name, comment_author="", post_author=""):
 # TARGETS
 # =====================
 
-def load_comment_targets(limit=None, include_direct=True):
+def parse_place_ids(value):
+    if not value:
+        return []
+    return [clean_text(x) for x in str(value).split(",") if clean_text(x)]
+
+
+def load_comment_targets(limit=None, include_direct=True, place_ids=None):
     targets = []
+    place_ids = set(place_ids or [])
 
     if os.path.exists(POST_SEEDS_FILE):
         posts = pd.read_csv(POST_SEEDS_FILE)
 
         for _, row in posts.iterrows():
+            if place_ids and clean_text(row.get("place_id", "")) not in place_ids:
+                continue
             post_url = canonical_facebook_url(row.get("post_url", ""))
 
             if not post_url:
@@ -578,6 +588,8 @@ def load_comment_targets(limit=None, include_direct=True):
         ].copy()
 
         for _, row in direct.iterrows():
+            if place_ids and clean_text(row.get("place_id", "")) not in place_ids:
+                continue
             post_url = canonical_facebook_url(row.get("source_url", ""))
 
             if not post_url:
@@ -757,18 +769,19 @@ def crawl_comments(targets, append=False):
 
 
 def main():
+    global BATCH_SIZE
+    global COMMENTS_LIMIT_PER_POST
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--limit-posts", type=int, default=None)
     parser.add_argument("--append", action="store_true")
     parser.add_argument("--no-direct-sources", action="store_true")
+    parser.add_argument("--place-ids", default="")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--comments-limit", type=int, default=COMMENTS_LIMIT_PER_POST)
 
     args = parser.parse_args()
-
-    global BATCH_SIZE
-    global COMMENTS_LIMIT_PER_POST
 
     BATCH_SIZE = args.batch_size
     COMMENTS_LIMIT_PER_POST = args.comments_limit
@@ -776,6 +789,7 @@ def main():
     targets = load_comment_targets(
         limit=args.limit_posts,
         include_direct=not args.no_direct_sources,
+        place_ids=parse_place_ids(args.place_ids),
     )
 
     print(f"Selected comment targets: {len(targets)}")

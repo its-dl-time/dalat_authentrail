@@ -4,6 +4,7 @@ import time
 import hashlib
 import json
 import argparse
+import sys
 from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
@@ -14,6 +15,11 @@ from apify_client import ApifyClient
 
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from urllib.request import urlopen, Request
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 
 # =====================
 # CONFIG
@@ -32,6 +38,12 @@ DATA_DIR = PROJECT_ROOT / "data"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 TIKTOK_OUTPUT_DIR = DATA_DIR / "outputs" / "tiktok"
 TIKTOK_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+TIKTOK_RAW_VIDEO_DIR = DATA_DIR / "raw" / "tiktok" / "videos"
+TIKTOK_RAW_COMMENT_DIR = DATA_DIR / "raw" / "tiktok" / "comments"
+TIKTOK_INTERIM_DIR = DATA_DIR / "interim"
+TIKTOK_RAW_VIDEO_DIR.mkdir(parents=True, exist_ok=True)
+TIKTOK_RAW_COMMENT_DIR.mkdir(parents=True, exist_ok=True)
+TIKTOK_INTERIM_DIR.mkdir(parents=True, exist_ok=True)
 
 PLACES_FILE = PROCESSED_DATA_DIR / "places_master_top50.csv"
 
@@ -39,15 +51,17 @@ VIDEO_SEEDS_FILE = TIKTOK_OUTPUT_DIR / "tiktok_video_seeds.csv"
 COMMENTS_OUTPUT_FILE = TIKTOK_OUTPUT_DIR / "tiktok_comments_output.csv"
 VIDEO_REJECTIONS_FILE = TIKTOK_OUTPUT_DIR / "tiktok_video_rejections.csv"
 COMMENT_REJECTIONS_FILE = TIKTOK_OUTPUT_DIR / "tiktok_comment_rejections.csv"
+VIDEO_CANDIDATES_FILE = TIKTOK_INTERIM_DIR / "tiktok_video_candidates.csv"
+COMMENT_CANDIDATES_FILE = TIKTOK_INTERIM_DIR / "tiktok_comment_candidates.csv"
 
 MAX_PLACES = 5
 QUERIES_PER_PLACE = 2
 DISCOVERY_VIDEOS_PER_QUERY = 20
-MAX_SEED_VIDEOS_PER_QUERY = 1
-MAX_SEED_VIDEOS_TOTAL_PER_PLACE = 10  # Cap total seed videos per place
-COMMENTS_PER_VIDEO = 10
+MAX_SEED_VIDEOS_PER_QUERY = 10
+MAX_SEED_VIDEOS_TOTAL_PER_PLACE = 20  # Cap total seed videos per place
+COMMENTS_PER_VIDEO = 50
 
-MIN_VIDEO_COMMENTS = 20
+MIN_VIDEO_COMMENTS = 10
 MIN_RELEVANCE_SCORE = 3.5  # Raised from 3.5 for stricter filtering
 MAX_REPLIES_PER_COMMENT = 1
 
@@ -1128,6 +1142,376 @@ def create_comments_output(seeds, append_output=False):
     return comments_df
 
 
+def make_run_id(prefix):
+    return f"{prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+
+def append_jsonl(rows, path):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    count = 0
+    with path.open("a", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
+            count += 1
+    return count
+
+
+def read_jsonl_file(path):
+    rows = []
+    path = Path(path)
+    if not path.exists():
+        return rows
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
+
+
+def latest_jsonl_file(directory):
+    directory = Path(directory)
+    files = sorted(directory.glob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)
+    return files[0] if files else None
+
+
+def read_jsonl_inputs(directory, raw_file=None, latest=False):
+    if raw_file:
+        path = Path(raw_file)
+        return read_jsonl_file(path), [path]
+
+    if latest:
+        path = latest_jsonl_file(directory)
+        if path is None:
+            return [], []
+        return read_jsonl_file(path), [path]
+
+    rows = []
+    directory = Path(directory)
+    if not directory.exists():
+        return rows, []
+    files = sorted(directory.glob("*.jsonl"))
+    for path in files:
+        rows.extend(read_jsonl_file(path))
+    return rows, files
+
+
+def read_jsonl_dir(directory):
+    rows, _files = read_jsonl_inputs(directory)
+    return rows
+
+
+def crawl_videos_raw(args):
+    all_places = pd.read_csv(args.places_file)
+    places = select_places_slice(
+        all_places,
+        start_row=args.start_row,
+        end_row=args.end_row,
+        limit=args.limit,
+    )
+    run_id = args.run_id or make_run_id("tiktok_videos")
+    raw_path = TIKTOK_RAW_VIDEO_DIR / f"{run_id}.jsonl"
+    rows = []
+
+    print(f"[TIKTOK VIDEOS] Selected places: {len(places)}")
+    print(f"[TIKTOK VIDEOS] Raw output: {raw_path}")
+
+    for _, place in places.iterrows():
+        place_meta = {
+            "place_id": clean_text(place.get("place_id", "")),
+            "place_name": clean_text(place.get("title", "")),
+            "place_category": clean_text(place.get("category", "")),
+            "place_address": clean_text(place.get("address", "")),
+        }
+        for query in build_queries(place_meta["place_name"], place_meta["place_category"]):
+            print(f"[TIKTOK VIDEOS] {place_meta['place_id']} | {query}")
+            if args.dry_run:
+                continue
+            try:
+                videos = search_videos(query)
+                for video in videos:
+                    rows.append({
+                        "run_id": run_id,
+                        "platform": "tiktok",
+                        "stage": "videos",
+                        "query": query,
+                        **place_meta,
+                        "raw_item": video,
+                        "scraped_at": datetime.now().isoformat(),
+                    })
+                time.sleep(args.sleep_seconds)
+            except Exception as exc:
+                print(f"[FAILED TIKTOK VIDEO SEARCH] {place_meta['place_id']} | {query} | {exc}")
+
+    if not args.dry_run:
+        print(f"[TIKTOK VIDEOS] Raw rows saved: {append_jsonl(rows, raw_path)}")
+        print(f"[TIKTOK VIDEOS] Next process command:")
+        print(f"python src\\innostar\\data_scraping\\tiktok.py process-videos --raw-file \"{raw_path}\"")
+    if args.process and not args.dry_run:
+        args.raw_file = raw_path
+        args.latest = False
+        process_videos_raw(args)
+
+
+def process_videos_raw(args):
+    raw_rows, input_files = read_jsonl_inputs(
+        args.raw_dir,
+        raw_file=args.raw_file,
+        latest=args.latest,
+    )
+    if not raw_rows:
+        if Path(VIDEO_SEEDS_FILE).exists():
+            print(f"[TIKTOK VIDEOS] No raw rows found. Existing output kept: {VIDEO_SEEDS_FILE}")
+            return
+        raise FileNotFoundError(f"No raw rows found in {args.raw_dir}")
+
+    print("[TIKTOK VIDEOS] Processing raw inputs:")
+    for path in input_files:
+        print(f"  - {path}")
+    print(f"[TIKTOK VIDEOS] Raw video rows: {len(raw_rows)}")
+
+    candidates_by_query = defaultdict(list)
+    rejections = []
+    for row in raw_rows:
+        video = row.get("raw_item") or {}
+        video_url = canonical_url(video.get("webVideoUrl", ""))
+        if not video_url:
+            continue
+
+        place_id = clean_text(row.get("place_id", ""))
+        place_name = clean_text(row.get("place_name", ""))
+        query = clean_text(row.get("query", ""))
+        comment_count = safe_int(video.get("commentCount", 0))
+        if comment_count < args.min_video_comments:
+            rejections.append({
+                "place_id": place_id,
+                "query": query,
+                "video_url": video_url,
+                "rejection_reason": f"too_few_comments_{comment_count}",
+                "relevance_score": "",
+                "scraped_at": row.get("scraped_at", ""),
+            })
+            continue
+
+        score = video_relevance_score(video, place_name, query)
+        if score < args.min_relevance_score:
+            rejections.append({
+                "place_id": place_id,
+                "query": query,
+                "video_url": video_url,
+                "rejection_reason": f"low_relevance_{score}",
+                "relevance_score": score,
+                "scraped_at": row.get("scraped_at", ""),
+            })
+            continue
+
+        candidates_by_query[(place_id, query)].append({
+            "platform": "tiktok",
+            "place_id": place_id,
+            "place_name": place_name,
+            "place_category": clean_text(row.get("place_category", "")),
+            "place_address": clean_text(row.get("place_address", "")),
+            "query": query,
+            "video_id": video.get("id", ""),
+            "video_url": video_url,
+            "caption": clean_text(video.get("text", "")),
+            "created_at": video.get("createTimeISO", ""),
+            "author": (video.get("authorMeta") or {}).get("name", ""),
+            "views": safe_int(video.get("playCount", 0)),
+            "likes": safe_int(video.get("diggCount", 0)),
+            "shares": safe_int(video.get("shareCount", 0)),
+            "comment_count": comment_count,
+            "relevance_score": score,
+            "scraped_at": row.get("scraped_at") or datetime.now().isoformat(),
+        })
+
+    selected = []
+    place_counts = defaultdict(int)
+    for (place_id, _query), candidates in candidates_by_query.items():
+        candidates = sorted(
+            candidates,
+            key=lambda x: (x["relevance_score"], x["comment_count"], x["views"]),
+            reverse=True,
+        )[:args.max_seed_videos_per_query]
+        remaining = args.max_seed_videos_total_per_place - place_counts[place_id]
+        selected.extend(candidates[:max(remaining, 0)])
+        place_counts[place_id] += len(candidates[:max(remaining, 0)])
+
+    seeds = pd.DataFrame(selected)
+    if len(seeds) > 0:
+        seeds["dedupe_key"] = seeds["video_url"].apply(lambda x: f"tiktok|{canonical_url(x)}")
+        seeds = seeds.sort_values(by=["relevance_score", "comment_count", "views"], ascending=[False, False, False])
+        seeds = seeds.drop_duplicates(subset=["dedupe_key"], keep="first").drop(columns=["dedupe_key"])
+
+    save_csv(seeds, VIDEO_CANDIDATES_FILE, append=False, dedupe_subset=["video_url"])
+    saved = save_csv(seeds, VIDEO_SEEDS_FILE, append=args.append_output, dedupe_subset=["video_url"])
+    if rejections:
+        save_csv(pd.DataFrame(rejections), VIDEO_REJECTIONS_FILE, append=args.append_output, dedupe_subset=["place_id", "query", "video_url", "rejection_reason"])
+
+    print(f"[TIKTOK VIDEOS] Seeds total: {len(saved)}")
+    print(f"[TIKTOK VIDEOS] Output: {VIDEO_SEEDS_FILE}")
+
+
+def crawl_comments_raw(args):
+    seeds = pd.read_csv(args.seeds_file)
+    if args.limit_videos:
+        seeds = seeds.head(args.limit_videos)
+    run_id = args.run_id or make_run_id("tiktok_comments")
+    raw_path = TIKTOK_RAW_COMMENT_DIR / f"{run_id}.jsonl"
+    rows = []
+
+    for start in range(0, len(seeds), args.batch_size):
+        batch = seeds.iloc[start:start + args.batch_size]
+        urls = [canonical_url(url) for url in batch["video_url"].tolist() if canonical_url(url)]
+        if not urls:
+            continue
+        print(f"[TIKTOK COMMENTS] Batch {start // args.batch_size + 1} | videos={len(urls)}")
+        if args.dry_run:
+            continue
+        try:
+            videos = crawl_comments(urls)
+            seed_records = batch.to_dict(orient="records")
+            for video in videos:
+                raw_comments = get_comments_from_video(video)
+                rows.append({
+                    "run_id": run_id,
+                    "platform": "tiktok",
+                    "stage": "comments",
+                    "seeds": seed_records,
+                    "raw_item": video,
+                    "raw_comments": raw_comments,
+                    "raw_comments_count": len(raw_comments),
+                    "scraped_at": datetime.now().isoformat(),
+                })
+            time.sleep(args.sleep_seconds)
+        except Exception as exc:
+            print(f"[FAILED TIKTOK COMMENTS] {urls} | {exc}")
+
+    if not args.dry_run:
+        print(f"[TIKTOK COMMENTS] Raw rows saved: {append_jsonl(rows, raw_path)}")
+        print(f"[TIKTOK COMMENTS] Next process command:")
+        print(f"python src\\innostar\\data_scraping\\tiktok.py process-comments --raw-file \"{raw_path}\"")
+    if args.process and not args.dry_run:
+        args.raw_file = raw_path
+        args.latest = False
+        process_comments_raw(args)
+
+
+def find_seed_for_raw_video(raw_row):
+    seeds = raw_row.get("seeds") or []
+    if not seeds:
+        return None, ""
+    video = raw_row.get("raw_item") or {}
+    video_url = canonical_url(video.get("webVideoUrl", ""))
+    for seed in seeds:
+        if canonical_url(seed.get("video_url", "")) == video_url:
+            return seed, video_url
+    if len(seeds) == 1:
+        return seeds[0], video_url
+    return None, video_url
+
+
+def process_comments_raw(args):
+    raw_rows, input_files = read_jsonl_inputs(
+        args.raw_dir,
+        raw_file=args.raw_file,
+        latest=args.latest,
+    )
+    if not raw_rows:
+        if Path(COMMENTS_OUTPUT_FILE).exists():
+            print(f"[TIKTOK COMMENTS] No raw rows found. Existing output kept: {COMMENTS_OUTPUT_FILE}")
+            return
+        raise FileNotFoundError(f"No raw rows found in {args.raw_dir}")
+
+    print("[TIKTOK COMMENTS] Processing raw inputs:")
+    for path in input_files:
+        print(f"  - {path}")
+    print(f"[TIKTOK COMMENTS] Raw comment video rows: {len(raw_rows)}")
+
+    rows = []
+    rejection_log = []
+    for raw_row in raw_rows:
+        seed, video_url_result = find_seed_for_raw_video(raw_row)
+        if seed is None:
+            continue
+        comments = raw_row.get("raw_comments")
+        if not isinstance(comments, list):
+            if args.fetch_missing_datasets:
+                comments = get_comments_from_video(raw_row.get("raw_item") or {})
+            else:
+                print(
+                    "[TIKTOK COMMENTS] Raw row has no raw_comments. "
+                    "Skip it, or rerun with --fetch-missing-datasets for old raw files."
+                )
+                comments = []
+        for comment in comments:
+            comment_text = get_comment_text(comment)
+            if not comment_text.strip():
+                rejection_log.append({"place_id": seed["place_id"], "video_url": video_url_result, "rejection_reason": "empty_text"})
+                continue
+
+            comment_author = get_author_username(comment)
+            video_author = seed.get("author", "")
+            if is_reply_from_owner(comment_author, video_author) or is_reply_greeting(comment_text):
+                rejection_log.append({"place_id": seed["place_id"], "video_url": video_url_result, "rejection_reason": "owner_reply"})
+                continue
+
+            text_quality_score = comment_quality_score(comment_text)
+            is_spam = is_likely_spam(comment_text)
+            if text_quality_score < args.min_quality_score:
+                rejection_log.append({"place_id": seed["place_id"], "video_url": video_url_result, "rejection_reason": f"low_quality_{text_quality_score}"})
+                continue
+            if is_spam:
+                rejection_log.append({"place_id": seed["place_id"], "video_url": video_url_result, "rejection_reason": "likely_spam"})
+                continue
+
+            comment_id = comment.get("id") or comment.get("commentId") or comment.get("cid") or comment.get("awemeId") or ""
+            rows.append({
+                "id": make_id(seed["place_id"], video_url_result, comment_id, comment_text),
+                "platform": "tiktok",
+                "place_id": seed["place_id"],
+                "place_name": seed["place_name"],
+                "place_category": seed.get("place_category", ""),
+                "place_address": seed.get("place_address", ""),
+                "query": seed["query"],
+                "video_url": video_url_result,
+                "video_caption": seed["caption"],
+                "video_views": seed["views"],
+                "video_likes": seed["likes"],
+                "video_comment_count": seed["comment_count"],
+                "comment_id": comment_id,
+                "comment_text": comment_text,
+                "comment_author": comment_author,
+                "comment_likes": comment.get("diggCount") or comment.get("likeCount") or 0,
+                "comment_created_at": comment.get("createTimeISO") or comment.get("createdAt") or comment.get("createTime") or "",
+                "is_useful_comment": is_useful_comment(comment_text, seed["place_name"]),
+                "comment_text_quality_score": text_quality_score,
+                "comment_is_likely_spam": is_spam,
+                "comment_is_reply": False,
+                "comment_language": detect_comment_language(comment_text),
+                "comment_emoji_ratio": round(emoji_ratio(comment_text), 3),
+                "scraped_at": raw_row.get("scraped_at") or datetime.now().isoformat(),
+            })
+
+    comments_df = pd.DataFrame(rows)
+    if len(comments_df) > 0:
+        comments_df = comments_df.drop_duplicates(subset=["id"])
+    elif Path(COMMENTS_OUTPUT_FILE).exists() and not args.append_output:
+        print(
+            f"[TIKTOK COMMENTS] No processable comments found. "
+            f"Existing output kept: {COMMENTS_OUTPUT_FILE}"
+        )
+        return
+
+    save_csv(comments_df, COMMENT_CANDIDATES_FILE, append=False, dedupe_subset=["id"])
+    saved = save_csv(comments_df, COMMENTS_OUTPUT_FILE, append=args.append_output, dedupe_subset=["id"])
+    if rejection_log:
+        save_csv(pd.DataFrame(rejection_log), COMMENT_REJECTIONS_FILE, append=args.append_output, dedupe_subset=["place_id", "video_url", "rejection_reason"])
+    print(f"[TIKTOK COMMENTS] Rows total: {len(saved)}")
+    print(f"[TIKTOK COMMENTS] Output: {COMMENTS_OUTPUT_FILE}")
+
+
 # =====================
 # MAIN
 # =====================
@@ -1139,6 +1523,66 @@ def parse_args():
             "using 1-based data row numbers."
         )
     )
+    sub = parser.add_subparsers(dest="command")
+
+    crawl_videos = sub.add_parser("crawl-videos", help="Crawl raw TikTok video discovery results.")
+    crawl_videos.add_argument("--places-file", default=PLACES_FILE)
+    crawl_videos.add_argument("--start-row", type=int, default=1)
+    crawl_videos.add_argument("--end-row", type=int, default=None)
+    crawl_videos.add_argument("--limit", type=int, default=50)
+    crawl_videos.add_argument("--run-id", default="")
+    crawl_videos.add_argument("--sleep-seconds", type=int, default=SLEEP_SECONDS)
+    crawl_videos.add_argument("--dry-run", action="store_true")
+    crawl_videos.add_argument("--process", action="store_true")
+    crawl_videos.add_argument("--append-output", action="store_true")
+    crawl_videos.set_defaults(
+        func=crawl_videos_raw,
+        raw_dir=TIKTOK_RAW_VIDEO_DIR,
+        min_video_comments=15,
+        min_relevance_score=MIN_RELEVANCE_SCORE,
+        max_seed_videos_per_query=2,
+        max_seed_videos_total_per_place=5,
+    )
+
+    process_videos = sub.add_parser("process-videos", help="Process raw TikTok videos into seed output.")
+    process_videos.add_argument("--raw-dir", default=TIKTOK_RAW_VIDEO_DIR)
+    process_videos.add_argument("--raw-file", default="", help="Process one specific raw video JSONL file.")
+    process_videos.add_argument("--latest", action="store_true", help="Process only the newest raw video JSONL file.")
+    process_videos.add_argument("--min-video-comments", type=int, default=15)
+    process_videos.add_argument("--min-relevance-score", type=float, default=MIN_RELEVANCE_SCORE)
+    process_videos.add_argument("--max-seed-videos-per-query", type=int, default=2)
+    process_videos.add_argument("--max-seed-videos-total-per-place", type=int, default=5)
+    process_videos.add_argument("--append-output", action="store_true")
+    process_videos.set_defaults(func=process_videos_raw)
+
+    crawl_comments_parser = sub.add_parser("crawl-comments", help="Crawl raw TikTok comments from seed videos.")
+    crawl_comments_parser.add_argument("--seeds-file", default=VIDEO_SEEDS_FILE)
+    crawl_comments_parser.add_argument("--limit-videos", type=int, default=None)
+    crawl_comments_parser.add_argument("--batch-size", type=int, default=BATCH_COMMENT_URLS)
+    crawl_comments_parser.add_argument("--sleep-seconds", type=int, default=SLEEP_SECONDS)
+    crawl_comments_parser.add_argument("--run-id", default="")
+    crawl_comments_parser.add_argument("--dry-run", action="store_true")
+    crawl_comments_parser.add_argument("--process", action="store_true")
+    crawl_comments_parser.add_argument("--append-output", action="store_true")
+    crawl_comments_parser.set_defaults(
+        func=crawl_comments_raw,
+        raw_dir=TIKTOK_RAW_COMMENT_DIR,
+        min_quality_score=0.2,
+    )
+
+    process_comments_parser = sub.add_parser("process-comments", help="Process raw TikTok comments into clean output.")
+    process_comments_parser.add_argument("--raw-dir", default=TIKTOK_RAW_COMMENT_DIR)
+    process_comments_parser.add_argument("--raw-file", default="", help="Process one specific raw comment JSONL file.")
+    process_comments_parser.add_argument("--latest", action="store_true", help="Process only the newest raw comment JSONL file.")
+    process_comments_parser.add_argument("--min-quality-score", type=float, default=0.2)
+    process_comments_parser.add_argument(
+        "--fetch-missing-datasets",
+        action="store_true",
+        help="For old raw files without raw_comments, fetch commentsDatasetUrl during process.",
+    )
+    process_comments_parser.add_argument("--append-output", action="store_true")
+    process_comments_parser.set_defaults(func=process_comments_raw)
+
     parser.add_argument(
         "--places-file",
         default=PLACES_FILE,
@@ -1181,6 +1625,10 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    if hasattr(args, "func"):
+        args.func(args)
+        return
 
     print("=" * 60)
     print("TikTok Pipeline - OPTIMIZED VERSION")
