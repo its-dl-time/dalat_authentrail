@@ -1,20 +1,19 @@
-# INNOSTAR
+﻿# INNOSTAR
 
 Project for data collection, NLP processing, and web application development.
 
 ## Structure
 
 ```text
-data/
-  raw/                   Original crawler exports
-  processed/             Cleaned datasets used by pipelines and models
-  outputs/               Generated pipeline outputs and crawl results
-docs/                    Notes, PDFs, and implementation references
-src/innostar/
-  data_ingestion/        Crawlers and external data collectors
-  data_processing/       Cleaning, normalization, and dataset builders
-  nlp/                   NLP preprocessing, training, and inference code
-  web/                   Shared web-facing Python modules
+data_pipeline/
+  data/                  Raw, interim, processed, and output datasets
+  src/
+    data_scraping/       Crawlers and external data collectors
+    data_processing/     Cleaning, normalization, and dataset builders
+backend/                 Backend application workspace
+frontend/                Frontend application workspace
+configs/                 Shared config files
+docs/                    Notes and implementation references
 ```
 
 ## Common Commands
@@ -22,30 +21,33 @@ src/innostar/
 Clean Google Places exports:
 
 ```powershell
-python src\innostar\data_processing\clean_places.py
+python data_pipeline\src\data_processing\clean_places.py
 ```
 
 Crawl TikTok in chunks:
 
 ```powershell
-python src\innostar\data_ingestion\tiktok.py --start-row 1 --limit 10 --append-output
+python data_pipeline\src\data_scraping\tiktok.py crawl-videos --start-row 1 --limit 10
 ```
 
 Run the full Facebook pipeline:
 
 ```powershell
-python src\innostar\data_ingestion\00_facebook_pipeline.py --start-row 1 --limit 3 --append-output
+python data_pipeline\src\data_scraping\facebook.py crawl --start-row 1 --limit 3 --append
 ```
 
 Build cross-platform normalized datasets and place risk scores:
 
 ```powershell
-python src\innostar\data_processing\build_cross_platform_dataset.py
+python data_pipeline\src\data_processing\build_cross_platform_dataset.py
 ```
 
 Vietnamese docs:
 
 ```text
-docs/HUONG_DAN_CRAWL_DU_LIEU.md
+docs/HUONG_DAN_CRAWL.md
 docs/BANG_THAM_SO_LOC.md
 ```
+
+
+

@@ -1,2 +1,0 @@
-"""Shared web application modules."""
-

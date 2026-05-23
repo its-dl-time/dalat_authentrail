@@ -1,44 +1,61 @@
+# Secrets and local environment
+.env
 .env.*
-!.env
 !.env.example
 .venv/
+
+# Python caches and tooling
 __pycache__/
 *.py[cod]
-
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
 .ipynb_checkpoints/
 
-data/raw/*
-!data/raw/.gitkeep
-!data/raw/google_places/
-data/raw/google_places/*
-!data/raw/google_places/.gitkeep
+# Data pipeline generated data
+data_pipeline/data/raw/*
+!data_pipeline/data/raw/.gitkeep
+!data_pipeline/data/raw/google_places/
+data_pipeline/data/raw/google_places/*
+!data_pipeline/data/raw/google_places/.gitkeep
 
-data/processed/*
-!data/processed/.gitkeep
-!data/processed/places_master_top50.csv
-!data/processed/cross_platform/
-!data/processed/cross_platform/*.csv
+data_pipeline/data/interim/*
+!data_pipeline/data/interim/.gitkeep
 
-data/outputs/*
-!data/outputs/.gitkeep
-!data/outputs/facebook/
-data/outputs/facebook/*
-!data/outputs/facebook/facebook_comments_output.csv
-!data/outputs/google_maps/
-data/outputs/google_maps/*
-!data/outputs/google_maps/google_maps_reviews_output.csv
-!data/outputs/tiktok/
-data/outputs/tiktok/*
-!data/outputs/tiktok/tiktok_comments_output.csv
+data_pipeline/data/processed/*
+!data_pipeline/data/processed/.gitkeep
+!data_pipeline/data/processed/places_master_top50.csv
+!data_pipeline/data/processed/cross_platform/
+!data_pipeline/data/processed/cross_platform/*.csv
 
+data_pipeline/data/outputs/*
+!data_pipeline/data/outputs/.gitkeep
+!data_pipeline/data/outputs/facebook/
+data_pipeline/data/outputs/facebook/*
+!data_pipeline/data/outputs/facebook/.gitkeep
+!data_pipeline/data/outputs/facebook/facebook_comments_output.csv
+!data_pipeline/data/outputs/google_maps/
+data_pipeline/data/outputs/google_maps/*
+!data_pipeline/data/outputs/google_maps/.gitkeep
+!data_pipeline/data/outputs/google_maps/google_maps_reviews_output.csv
+!data_pipeline/data/outputs/tiktok/
+data_pipeline/data/outputs/tiktok/*
+!data_pipeline/data/outputs/tiktok/.gitkeep
+!data_pipeline/data/outputs/tiktok/tiktok_comments_output.csv
+
+# Future app artifacts
+backend/**/node_modules/
+backend/**/dist/
+frontend/**/node_modules/
+frontend/**/dist/
+frontend/**/.next/
+
+# Models and temporary files
 models/*
 !models/.gitkeep
-
 *.log
 *.tmp
 *.bak
 
+# Large docs
 docs/*.pdf

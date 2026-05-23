@@ -1,0 +1,2 @@
+﻿place_id,place_name,google_maps_rating,google_maps_rating_avg_from_reviews,risk_score,risk_level,data_quality_risk,sentiment_gap,negative_social_vs_maps_gap,topic_gap,engagement_gap,coverage_risk,google_maps_avg_sentiment,social_avg_sentiment
+dalat_002,Horizon Coffee Da Lat,0.042,0.04485,0.3419,medium,0.39,0.5359,0.2028,0.1516,0.0044,0.5418,0.6192,0.1944
