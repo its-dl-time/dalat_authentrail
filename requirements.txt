@@ -18,3 +18,11 @@ six==1.17.0
 tqdm==4.67.3
 tzdata==2026.2
 urllib3==2.7.0
+
+# Optional Layer 2 NLP/AI features.
+# The pipeline falls back to rule-based scoring if these packages are absent.
+underthesea
+transformers
+torch
+sentence-transformers
+sentencepiece

@@ -1,0 +1,6 @@
+﻿dataset,record_count,google_maps_count,tiktok_count,facebook_count,avg_final_trust_score,avg_rating,total_engagement
+raw_all,285,200,57,28,0.4048,4.485,104
+clean_all_trusted_records,114,102,9,3,0.6418,4.3725,33
+clean_google_maps_reviews,102,102,0,0,0.6532,4.3725,4
+clean_social_review_signals,12,0,9,3,0.545,0.0,29
+clean_social_engagement_signals,77,0,56,21,0.3992,0.0,90
