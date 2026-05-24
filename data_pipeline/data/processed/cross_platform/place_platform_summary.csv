@@ -1,4 +1,4 @@
 ﻿place_id,place_name,platform,record_count,useful_record_count,avg_sentiment_score,negative_sentiment_ratio,avg_quality_score,useful_record_ratio,risk_flag_record_ratio,avg_normalized_engagement,avg_service_score,avg_price_score,avg_scenery_score,avg_crowded_score,avg_food_drink_score,avg_cleanliness_score,avg_location_score,google_maps_rating_avg_from_reviews,google_maps_rating_master,google_maps_rating_1_count,google_maps_rating_2_count,google_maps_rating_3_count,google_maps_rating_4_count,google_maps_rating_5_count
-dalat_002,Horizon Coffee Da Lat,facebook,136,43,0.0833,0.1838,0.5915,0.3162,0.6838,0.5037,0.0049,0.2573,0.0833,0.0049,0.1005,0.0049,0.0466,,,,,,,
-dalat_002,Horizon Coffee Da Lat,google_maps,200,170,0.6192,0.07,0.6462,0.85,0.375,0.5025,0.085,0.24,0.1933,0.0033,0.1567,0.0133,0.0283,0.04485,0.042,0.12,0.02,0.08,0.33,145
-dalat_002,Horizon Coffee Da Lat,tiktok,72,15,0.3056,0.0417,0.5028,0.2083,0.1111,0.5069,0.0093,0.1666,0.0417,0.0,0.0833,0.0,0.0093,,,,,,,
+dalat_002,Horizon Coffee Da Lat,facebook,28,4,0.25,0.0357,0.4946,0.1429,0.8571,0.5179,0.0,0.1905,0.119,0.0,0.0595,0.0119,0.1071,,,,,,,
+dalat_002,Horizon Coffee Da Lat,google_maps,200,170,0.6192,0.07,0.6462,0.85,0.375,0.5025,0.085,0.24,0.1933,0.0033,0.1567,0.0133,0.0283,4.485,4.2,12,2,8,33,145
+dalat_002,Horizon Coffee Da Lat,tiktok,57,13,0.1579,0.0526,0.5088,0.2281,0.0175,0.5088,0.0058,0.2515,0.0877,0.0,0.0877,0.0,0.0292,,,,,,,

@@ -8,15 +8,28 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Set
 import pandas as pd
 
 try:
-    from .review_trust_score import (
+    from dotenv import load_dotenv as _load_dotenv
+
+    _load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=False)
+except Exception:
+    pass
+
+try:
+    from .review_layer1_behavior import (
         aggregate_place_trust_summary,
-        compute_class1_trust_scores,
+        compute_layer1_behavior_scores,
     )
+    from .review_layer2_nlp import compute_layer2_nlp_scores
+    from .review_layer3_crosscheck import compute_layer3_crosscheck_scores
+    from .review_translation import add_translation_normalization
 except ImportError:
-    from review_trust_score import (
+    from review_layer1_behavior import (
         aggregate_place_trust_summary,
-        compute_class1_trust_scores,
+        compute_layer1_behavior_scores,
     )
+    from review_layer2_nlp import compute_layer2_nlp_scores
+    from review_layer3_crosscheck import compute_layer3_crosscheck_scores
+    from review_translation import add_translation_normalization
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PIPELINE_ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +49,13 @@ FACEBOOK_FEATURES_FILE = OUTPUT_DIR / "platform_facebook_features.csv"
 SUMMARY_OUTPUT_FILE = OUTPUT_DIR / "place_platform_summary.csv"
 RISK_OUTPUT_FILE = OUTPUT_DIR / "place_cross_platform_risk.csv"
 TRUST_OUTPUT_FILE = OUTPUT_DIR / "place_review_trust_summary.csv"
+WEIGHTED_RATING_FILE = OUTPUT_DIR / "place_weighted_rating.csv"
+CLEAN_ALL_FILE = OUTPUT_DIR / "clean_trusted_records.csv"
+CLEAN_GOOGLE_MAPS_FILE = OUTPUT_DIR / "clean_google_maps_reviews.csv"
+CLEAN_SOCIAL_REVIEWS_FILE = OUTPUT_DIR / "clean_social_review_signals.csv"
+CLEAN_SOCIAL_ENGAGEMENT_FILE = OUTPUT_DIR / "clean_social_engagement_signals.csv"
+FILTERING_SUMMARY_FILE = OUTPUT_DIR / "filtering_quality_summary.csv"
+TRANSLATION_CACHE_FILE = OUTPUT_DIR / "translation_cache.csv"
 
 REQUIRED_PLATFORMS = ["google_maps", "tiktok", "facebook"]
 
@@ -78,9 +98,6 @@ COMMON_COLUMNS = [
     "risk_flags",
     "risk_flag_count",
     "has_risk_flag",
-    "trust_score_class1",
-    "trust_flags_class1",
-    "trust_flag_count_class1",
     "scraped_at",
 ]
 
@@ -413,9 +430,6 @@ def normalize_google_maps(df: pd.DataFrame, master: pd.DataFrame) -> tuple[pd.Da
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
-            "trust_score_class1": 0.0,
-            "trust_flags_class1": "",
-            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -487,9 +501,6 @@ def normalize_tiktok(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
-            "trust_score_class1": 0.0,
-            "trust_flags_class1": "",
-            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -560,9 +571,6 @@ def normalize_facebook(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             "risk_flags": "|".join(flags),
             "risk_flag_count": len(flags),
             "has_risk_flag": bool(flags),
-            "trust_score_class1": 0.0,
-            "trust_flags_class1": "",
-            "trust_flag_count_class1": 0,
             "scraped_at": normalize_datetime(row.get("scraped_at")),
         })
 
@@ -751,6 +759,141 @@ def build_place_risk(summary: pd.DataFrame, master: pd.DataFrame, complete_place
     return pd.DataFrame(rows).sort_values("place_id").reset_index(drop=True)
 
 
+def compute_place_weighted_rating(common: pd.DataFrame) -> pd.DataFrame:
+    """Weighted average rating using final_trust_score as weight — Google Maps only."""
+    gm = common[
+        (common["platform"] == "google_maps")
+        & (pd.to_numeric(common["rating"], errors="coerce") > 0)
+    ].copy()
+    gm["rating_num"] = pd.to_numeric(gm["rating"], errors="coerce")
+    gm["trust_weight"] = pd.to_numeric(gm["final_trust_score"], errors="coerce").fillna(0).clip(lower=0)
+
+    rows: List[Dict[str, Any]] = []
+    for place_id, group in gm.groupby("place_id"):
+        total_weight = float(group["trust_weight"].sum())
+        if total_weight > 0:
+            weighted_rating = float((group["rating_num"] * group["trust_weight"]).sum() / total_weight)
+        else:
+            weighted_rating = float(group["rating_num"].mean())
+
+        all_place = common[common["place_id"] == place_id]
+        rows.append({
+            "place_id": place_id,
+            "place_name": safe_str(group["place_name"].iloc[0]),
+            "google_review_count": len(group),
+            "raw_avg_rating": round(float(group["rating_num"].mean()), 4),
+            "weighted_avg_rating": round(weighted_rating, 4),
+            "avg_trust_score_google": round(float(group["trust_weight"].mean()), 4),
+            "high_trust_count": int((group["trust_weight"] >= 0.65).sum()),
+            "medium_trust_count": int(((group["trust_weight"] >= 0.35) & (group["trust_weight"] < 0.65)).sum()),
+            "low_trust_count": int((group["trust_weight"] < 0.35).sum()),
+            "outlier_count_all_platforms": int((all_place["review_flag"] == "outlier").sum()),
+        })
+    return pd.DataFrame(rows).sort_values("place_id").reset_index(drop=True)
+
+
+def flag_contains(row: pd.Series, needle: str) -> bool:
+    values = [
+        safe_str(row.get("risk_flags")),
+        safe_str(row.get("trust_flags_layer1")),
+        safe_str(row.get("trust_flags_layer2")),
+        safe_str(row.get("trust_flags_layer3")),
+    ]
+    return any(needle in value for value in values if value)
+
+
+def is_trusted_level(row: pd.Series) -> bool:
+    return safe_str(row.get("trust_level")).lower() in {"medium", "high"}
+
+
+def is_supported_language(row: pd.Series) -> bool:
+    language = safe_str(row.get("language")).lower()
+    # Google Maps often has blank language in the current crawl output.
+    return language in {"", "vi", "en"}
+
+
+def is_not_spam_or_seed(row: pd.Series) -> bool:
+    if safe_bool(row.get("nlp_seeding_detected")):
+        return False
+    blocked_flags = [
+        "seeding_or_promo_language",
+        "seeding_language",
+        "likely_spam",
+        "empty_text",
+        "rating_without_text",
+    ]
+    return not any(flag_contains(row, flag) for flag in blocked_flags)
+
+
+def build_filtered_outputs(common: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    out = common.copy()
+    out["rating"] = pd.to_numeric(out["rating"], errors="coerce").fillna(0)
+
+    trusted = out.apply(is_trusted_level, axis=1)
+    supported_language = out.apply(is_supported_language, axis=1)
+    not_spam_or_seed = out.apply(is_not_spam_or_seed, axis=1)
+    useful = out["is_useful"].astype(bool)
+    google = out["platform"] == "google_maps"
+    social = out["platform"].isin(["tiktok", "facebook"])
+
+    google_clean = out[
+        google
+        & trusted
+        & supported_language
+        & not_spam_or_seed
+        & useful
+        & (out["rating"] > 0)
+        & ~out.apply(lambda row: flag_contains(row, "too_short_text"), axis=1)
+    ].copy()
+
+    social_review_clean = out[
+        social
+        & trusted
+        & supported_language
+        & not_spam_or_seed
+        & useful
+    ].copy()
+
+    # Keep short social comments here because they can still represent engagement,
+    # but remove clear spam/seeding/empty records.
+    social_engagement_clean = out[
+        social
+        & supported_language
+        & not_spam_or_seed
+    ].copy()
+
+    all_clean = pd.concat([google_clean, social_review_clean], ignore_index=True)
+
+    summary_rows: List[Dict[str, Any]] = []
+    for name, frame in [
+        ("raw_all", out),
+        ("clean_all_trusted_records", all_clean),
+        ("clean_google_maps_reviews", google_clean),
+        ("clean_social_review_signals", social_review_clean),
+        ("clean_social_engagement_signals", social_engagement_clean),
+    ]:
+        ratings = pd.to_numeric(frame.get("rating", pd.Series(dtype=float)), errors="coerce")
+        valid_ratings = ratings[ratings > 0]
+        summary_rows.append({
+            "dataset": name,
+            "record_count": len(frame),
+            "google_maps_count": int((frame["platform"] == "google_maps").sum()) if "platform" in frame else 0,
+            "tiktok_count": int((frame["platform"] == "tiktok").sum()) if "platform" in frame else 0,
+            "facebook_count": int((frame["platform"] == "facebook").sum()) if "platform" in frame else 0,
+            "avg_final_trust_score": round(float(pd.to_numeric(frame.get("final_trust_score", pd.Series(dtype=float)), errors="coerce").mean()), 4) if len(frame) else 0.0,
+            "avg_rating": round(float(valid_ratings.mean()), 4) if len(valid_ratings) else 0.0,
+            "total_engagement": int(pd.to_numeric(frame.get("engagement_count", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if len(frame) else 0,
+        })
+
+    return {
+        "clean_trusted_records": all_clean,
+        "clean_google_maps_reviews": google_clean,
+        "clean_social_review_signals": social_review_clean,
+        "clean_social_engagement_signals": social_engagement_clean,
+        "filtering_quality_summary": pd.DataFrame(summary_rows),
+    }
+
+
 def write_csv(df: pd.DataFrame, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(path, index=False, encoding="utf-8-sig")
@@ -785,10 +928,41 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
         ignore_index=True,
     )
     common = add_normalized_engagement(common)
-    common = compute_class1_trust_scores(common, master)
+
+    common = compute_layer1_behavior_scores(common, master)
+    common = add_translation_normalization(common, args.output_dir / TRANSLATION_CACHE_FILE.name)
+    common = compute_layer2_nlp_scores(common)
+
+    common["intermediate_trust_score"] = (
+        0.50
+        + pd.to_numeric(common["trust_score_layer1"], errors="coerce").fillna(0)
+        + pd.to_numeric(common["trust_score_layer2"], errors="coerce").fillna(0)
+    ).clip(0.0, 1.0).round(4)
+
+    common = compute_layer3_crosscheck_scores(common)
+
+    # final_trust_score = layer1 + layer2 only (independent review quality)
+    common["final_trust_score"] = common["intermediate_trust_score"]
+
+    # consistency_score = layer3 signal (how consistent vs place baseline)
+    common["consistency_score"] = pd.to_numeric(
+        common["trust_score_layer3"], errors="coerce"
+    ).fillna(0.0).round(4)
+
+    # review_flag: outlier when consistency is significantly low
+    common["review_flag"] = common["consistency_score"].apply(
+        lambda s: "outlier" if s < -0.20 else "normal"
+    )
+
+    common["trust_level"] = common["final_trust_score"].apply(
+        lambda s: "high" if s >= 0.65 else ("low" if s < 0.35 else "medium")
+    )
+
     summary = aggregate_platform_summary(common, google_features, master)
     trust_summary = aggregate_place_trust_summary(common)
     risk = build_place_risk(summary, master, complete_place_ids)
+    weighted_rating = compute_place_weighted_rating(common)
+    filtered_outputs = build_filtered_outputs(common)
 
     outputs = {
         "normalized_common_records": args.output_dir / COMMON_OUTPUT_FILE.name,
@@ -798,6 +972,12 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
         "place_platform_summary": args.output_dir / SUMMARY_OUTPUT_FILE.name,
         "place_cross_platform_risk": args.output_dir / RISK_OUTPUT_FILE.name,
         "place_review_trust_summary": args.output_dir / TRUST_OUTPUT_FILE.name,
+        "place_weighted_rating": args.output_dir / WEIGHTED_RATING_FILE.name,
+        "clean_trusted_records": args.output_dir / CLEAN_ALL_FILE.name,
+        "clean_google_maps_reviews": args.output_dir / CLEAN_GOOGLE_MAPS_FILE.name,
+        "clean_social_review_signals": args.output_dir / CLEAN_SOCIAL_REVIEWS_FILE.name,
+        "clean_social_engagement_signals": args.output_dir / CLEAN_SOCIAL_ENGAGEMENT_FILE.name,
+        "filtering_quality_summary": args.output_dir / FILTERING_SUMMARY_FILE.name,
     }
 
     write_csv(common, outputs["normalized_common_records"])
@@ -807,6 +987,12 @@ def build_cross_platform_dataset(args: argparse.Namespace) -> Dict[str, Path]:
     write_csv(summary, outputs["place_platform_summary"])
     write_csv(risk, outputs["place_cross_platform_risk"])
     write_csv(trust_summary, outputs["place_review_trust_summary"])
+    write_csv(weighted_rating, outputs["place_weighted_rating"])
+    write_csv(filtered_outputs["clean_trusted_records"], outputs["clean_trusted_records"])
+    write_csv(filtered_outputs["clean_google_maps_reviews"], outputs["clean_google_maps_reviews"])
+    write_csv(filtered_outputs["clean_social_review_signals"], outputs["clean_social_review_signals"])
+    write_csv(filtered_outputs["clean_social_engagement_signals"], outputs["clean_social_engagement_signals"])
+    write_csv(filtered_outputs["filtering_quality_summary"], outputs["filtering_quality_summary"])
 
     print("Cross-platform dataset built.")
     print(f"Complete places: {', '.join(complete_place_ids)}")
