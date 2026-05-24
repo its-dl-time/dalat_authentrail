@@ -33,7 +33,7 @@ APIFY_TOKEN=apify_api_xxxxxxxxxxxxxxxxx
 File địa điểm chuẩn:
 
 ```text
-data/processed/places_master_top50.csv
+data_pipeline/data/processed/places_master_top50.csv
 ```
 
 Có 2 cách chọn địa điểm:
@@ -48,8 +48,8 @@ Có 2 cách chọn địa điểm:
 Mỗi nền tảng đều theo tư duy raw-first:
 
 ```text
-crawl   = gọi Apify/API, tốn credit, lưu dữ liệu thô vào data/raw
-process = lọc và chuẩn hóa dữ liệu thô, không tốn Apify credit, ghi ra data/outputs
+crawl   = gọi Apify/API, tốn credit, lưu dữ liệu thô vào data_pipeline/data/raw
+process = lọc và chuẩn hóa dữ liệu thô, không tốn Apify credit, ghi ra data_pipeline/data/outputs
 ```
 
 Nên chạy `--dry-run` trước khi crawl thật. `--dry-run` chỉ xem kế hoạch, không gọi API và không tốn credit.
@@ -71,7 +71,7 @@ Google Maps dùng để lấy review trực tiếp của từng địa điểm. 
 Script:
 
 ```text
-src/data/data_scraping/google_maps_reviews.py
+data_pipeline/src/data_scraping/google_maps_reviews.py
 ```
 
 ### Tham Số Cần Dùng
@@ -91,26 +91,26 @@ Không cần quan tâm các tham số khác, hệ thống đã để mặc đị
 Bước 1: kiểm tra trước.
 
 ```powershell
-python src\data\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 5 --reviews-per-place 200 --dry-run
+python data_pipeline\src\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 5 --reviews-per-place 200 --dry-run
 ```
 
 Bước 2: crawl thật.
 
 ```powershell
-python src\data\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 5 --reviews-per-place 200
+python data_pipeline\src\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 5 --reviews-per-place 200
 ```
 
 Bước 3: process raw thành output sạch.
 
 ```powershell
-python src\data\data_scraping\google_maps_reviews.py process --append
+python data_pipeline\src\data_scraping\google_maps_reviews.py process --append
 ```
 
 Ví dụ crawl đủ 50 địa điểm:
 
 ```powershell
-python src\data\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 50 --reviews-per-place 200
-python src\data\data_scraping\google_maps_reviews.py process --append
+python data_pipeline\src\data_scraping\google_maps_reviews.py crawl --start-row 1 --limit 50 --reviews-per-place 200
+python data_pipeline\src\data_scraping\google_maps_reviews.py process --append
 ```
 
 ### Output Và Cách Kiểm Tra
@@ -118,26 +118,26 @@ python src\data\data_scraping\google_maps_reviews.py process --append
 Raw data:
 
 ```text
-data/raw/google_maps/reviews/
+data_pipeline/data/raw/google_maps/reviews/
 ```
 
 Output sạch:
 
 ```text
-data/outputs/google_maps/google_maps_reviews_output.csv
+data_pipeline/data/outputs/google_maps/google_maps_reviews_output.csv
 ```
 
 Kiểm tra nhanh số dòng:
 
 ```powershell
-(Import-Csv data\outputs\google_maps\google_maps_reviews_output.csv).Count
+(Import-Csv data_pipeline\data\outputs\google_maps\google_maps_reviews_output.csv).Count
 ```
 
 Kiểm tra bằng Excel/VS Code: mở file `google_maps_reviews_output.csv`, xem có cột `place_id`, `review_text`, `rating` hay không.
 
 ### Lưu Ý Append Và Process
 
-- Crawl Google Maps tạo raw trong `data/raw/google_maps/reviews/`.
+- Crawl Google Maps tạo raw trong `data_pipeline/data/raw/google_maps/reviews/`.
 - Process có thể chạy lại nhiều lần, không tốn credit.
 - Khi đã có output cũ và muốn cộng thêm batch mới, dùng `process --append`.
 
@@ -148,7 +148,7 @@ Facebook đã được đơn giản hóa thành một lệnh chính. Người cr
 Script:
 
 ```text
-src/data/data_scraping/facebook.py
+data_pipeline/src/data_scraping/facebook.py
 ```
 
 Lệnh Facebook tự động chạy 3 tầng:
@@ -185,19 +185,19 @@ Không cần nhắc tới các tham số nâng cao khác trong lúc crawl bình 
 Bước 1: test trước cho 2 địa điểm.
 
 ```powershell
-python src\data\data_scraping\facebook.py crawl --place-ids dalat_001,dalat_002 --dry-run
+python data_pipeline\src\data_scraping\facebook.py crawl --place-ids dalat_001,dalat_002 --dry-run
 ```
 
 Bước 2: crawl thật theo list địa điểm.
 
 ```powershell
-python src\data\data_scraping\facebook.py crawl --place-ids dalat_001,dalat_002,dalat_003 --append --limit-sources-per-place 2 --limit-posts-per-place 3 --comments-limit 100
+python data_pipeline\src\data_scraping\facebook.py crawl --place-ids dalat_001,dalat_002,dalat_003 --append --limit-sources-per-place 2 --limit-posts-per-place 3 --comments-limit 100
 ```
 
 Bước 3: hoặc crawl theo dòng trong master file.
 
 ```powershell
-python src\data\data_scraping\facebook.py crawl --start-row 1 --limit 5 --append --limit-sources-per-place 2 --limit-posts-per-place 3 --comments-limit 100
+python data_pipeline\src\data_scraping\facebook.py crawl --start-row 1 --limit 5 --append --limit-sources-per-place 2 --limit-posts-per-place 3 --comments-limit 100
 ```
 
 Khi chạy, terminal sẽ hiện log dạng này:
@@ -214,42 +214,42 @@ Nghĩa là mỗi địa điểm đã có dữ liệu ở từng tầng. Nếu th
 Raw data:
 
 ```text
-data/raw/facebook/sources/
-data/raw/facebook/posts/
-data/raw/facebook/comments/
+data_pipeline/data/raw/facebook/sources/
+data_pipeline/data/raw/facebook/posts/
+data_pipeline/data/raw/facebook/comments/
 ```
 
 Output sạch:
 
 ```text
-data/outputs/facebook/facebook_sources.csv
-data/outputs/facebook/facebook_post_seeds.csv
-data/outputs/facebook/facebook_post_rejections.csv
-data/outputs/facebook/facebook_comments_output.csv
+data_pipeline/data/outputs/facebook/facebook_sources.csv
+data_pipeline/data/outputs/facebook/facebook_post_seeds.csv
+data_pipeline/data/outputs/facebook/facebook_post_rejections.csv
+data_pipeline/data/outputs/facebook/facebook_comments_output.csv
 ```
 
 File quan trọng nhất:
 
 ```text
-data/outputs/facebook/facebook_comments_output.csv
+data_pipeline/data/outputs/facebook/facebook_comments_output.csv
 ```
 
 Kiểm tra nhanh số dòng:
 
 ```powershell
-(Import-Csv data\outputs\facebook\facebook_comments_output.csv).Count
+(Import-Csv data_pipeline\data\outputs\facebook\facebook_comments_output.csv).Count
 ```
 
 Kiểm tra mỗi địa điểm có bao nhiêu comment:
 
 ```powershell
-Import-Csv data\outputs\facebook\facebook_comments_output.csv | Group-Object place_id | Select-Object Name,Count
+Import-Csv data_pipeline\data\outputs\facebook\facebook_comments_output.csv | Group-Object place_id | Select-Object Name,Count
 ```
 
 Nếu comment ít, kiểm tra source trước:
 
 ```powershell
-Import-Csv data\outputs\facebook\facebook_sources.csv | Group-Object place_id | Select-Object Name,Count
+Import-Csv data_pipeline\data\outputs\facebook\facebook_sources.csv | Group-Object place_id | Select-Object Name,Count
 ```
 
 ### Lưu Ý Append Và Process
@@ -273,7 +273,7 @@ Seed video là video được chọn làm nguồn để crawl comment. Không ph
 Script:
 
 ```text
-src/data/data_scraping/tiktok.py
+data_pipeline/src/data_scraping/tiktok.py
 ```
 
 ### Tham Số Cần Dùng
@@ -298,39 +298,39 @@ Không cần nhắc tới các tham số khác trong lúc crawl bình thường.
 Bước 1: test crawl video.
 
 ```powershell
-python src\data\data_scraping\tiktok.py crawl-videos --start-row 1 --limit 5 --dry-run
+python data_pipeline\src\data_scraping\tiktok.py crawl-videos --start-row 1 --limit 5 --dry-run
 ```
 
 Bước 2: crawl video raw.
 
 ```powershell
-python src\data\data_scraping\tiktok.py crawl-videos --start-row 1 --limit 5
+python data_pipeline\src\data_scraping\tiktok.py crawl-videos --start-row 1 --limit 5
 ```
 
 Bước 3: process video thành seed.
 
 ```powershell
-python src\data\data_scraping\tiktok.py process-videos --latest --append-output --min-video-comments 10 --min-relevance-score 3.0 --max-seed-videos-per-query 3
+python data_pipeline\src\data_scraping\tiktok.py process-videos --latest --append-output --min-video-comments 10 --min-relevance-score 3.0 --max-seed-videos-per-query 3
 ```
 
 Bước 4: crawl comment từ seed video. Nên truyền đúng `place_id` của batch vừa crawl.
 
 ```powershell
-python src\data\data_scraping\tiktok.py crawl-comments --place-ids dalat_001,dalat_002,dalat_003,dalat_004,dalat_005
+python data_pipeline\src\data_scraping\tiktok.py crawl-comments --place-ids dalat_001,dalat_002,dalat_003,dalat_004,dalat_005
 ```
 
 Bước 5: process comment.
 
 ```powershell
-python src\data\data_scraping\tiktok.py process-comments --latest --append-output
+python data_pipeline\src\data_scraping\tiktok.py process-comments --latest --append-output
 ```
 
 Test nhỏ cho 1 địa điểm và 1 video:
 
 ```powershell
-python src\data\data_scraping\tiktok.py crawl-comments --place-ids dalat_001 --limit-videos 1 --dry-run
-python src\data\data_scraping\tiktok.py crawl-comments --place-ids dalat_001 --limit-videos 1
-python src\data\data_scraping\tiktok.py process-comments --latest --append-output
+python data_pipeline\src\data_scraping\tiktok.py crawl-comments --place-ids dalat_001 --limit-videos 1 --dry-run
+python data_pipeline\src\data_scraping\tiktok.py crawl-comments --place-ids dalat_001 --limit-videos 1
+python data_pipeline\src\data_scraping\tiktok.py process-comments --latest --append-output
 ```
 
 ### Output Và Cách Kiểm Tra
@@ -338,41 +338,41 @@ python src\data\data_scraping\tiktok.py process-comments --latest --append-outpu
 Raw data:
 
 ```text
-data/raw/tiktok/videos/
-data/raw/tiktok/comments/
+data_pipeline/data/raw/tiktok/videos/
+data_pipeline/data/raw/tiktok/comments/
 ```
 
 Output sạch:
 
 ```text
-data/outputs/tiktok/tiktok_video_seeds.csv
-data/outputs/tiktok/tiktok_video_rejections.csv
-data/outputs/tiktok/tiktok_comments_output.csv
-data/outputs/tiktok/tiktok_comment_rejections.csv
+data_pipeline/data/outputs/tiktok/tiktok_video_seeds.csv
+data_pipeline/data/outputs/tiktok/tiktok_video_rejections.csv
+data_pipeline/data/outputs/tiktok/tiktok_comments_output.csv
+data_pipeline/data/outputs/tiktok/tiktok_comment_rejections.csv
 ```
 
 File quan trọng nhất:
 
 ```text
-data/outputs/tiktok/tiktok_comments_output.csv
+data_pipeline/data/outputs/tiktok/tiktok_comments_output.csv
 ```
 
 Kiểm tra số seed video:
 
 ```powershell
-(Import-Csv data\outputs\tiktok\tiktok_video_seeds.csv).Count
+(Import-Csv data_pipeline\data\outputs\tiktok\tiktok_video_seeds.csv).Count
 ```
 
 Kiểm tra comment theo địa điểm:
 
 ```powershell
-Import-Csv data\outputs\tiktok\tiktok_comments_output.csv | Group-Object place_id | Select-Object Name,Count
+Import-Csv data_pipeline\data\outputs\tiktok\tiktok_comments_output.csv | Group-Object place_id | Select-Object Name,Count
 ```
 
 Kiểm tra video bị loại:
 
 ```text
-data/outputs/tiktok/tiktok_video_rejections.csv
+data_pipeline/data/outputs/tiktok/tiktok_video_rejections.csv
 ```
 
 ### Lưu Ý Append Và Process
@@ -388,21 +388,22 @@ data/outputs/tiktok/tiktok_video_rejections.csv
 Kiểm tra nhanh các output chính:
 
 ```powershell
-(Import-Csv data\outputs\google_maps\google_maps_reviews_output.csv).Count
-(Import-Csv data\outputs\facebook\facebook_comments_output.csv).Count
-(Import-Csv data\outputs\tiktok\tiktok_comments_output.csv).Count
+(Import-Csv data_pipeline\data\outputs\google_maps\google_maps_reviews_output.csv).Count
+(Import-Csv data_pipeline\data\outputs\facebook\facebook_comments_output.csv).Count
+(Import-Csv data_pipeline\data\outputs\tiktok\tiktok_comments_output.csv).Count
 ```
 
 Kiểm tra mỗi địa điểm có bao nhiêu dòng:
 
 ```powershell
-Import-Csv data\outputs\facebook\facebook_comments_output.csv | Group-Object place_id | Select-Object Name,Count
-Import-Csv data\outputs\tiktok\tiktok_comments_output.csv | Group-Object place_id | Select-Object Name,Count
+Import-Csv data_pipeline\data\outputs\facebook\facebook_comments_output.csv | Group-Object place_id | Select-Object Name,Count
+Import-Csv data_pipeline\data\outputs\tiktok\tiktok_comments_output.csv | Group-Object place_id | Select-Object Name,Count
 ```
 
 Sau khi crawl xong 3 nền tảng, chạy pipeline xử lý tổng hợp:
 
 ```powershell
-python src\data\data_processing\build_cross_platform_dataset.py
-python src\data\data_processing\normalize_percent_outputs.py
+python data_pipeline\src\data_processing\build_cross_platform_dataset.py
+python data_pipeline\src\data_processing\normalize_percent_outputs.py
 ```
+
