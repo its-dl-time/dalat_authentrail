@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DaLat Authentrail</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#0B592F;--o:#DF6F3B;--y:#EEB627;--c:#F0E7D7;--l:#8CA70A;--br:#936440;--gd:#083d20;--cd:#e0d4c0;--tx:#1a1a1a;--tm:#6b6b6b}
+html{scroll-behavior:smooth}
+body{font-family:'Geist',sans-serif;background:var(--c);color:var(--tx);overflow-x:hidden}
+h1,h2,h3,.brand{font-family:'Unbounded',sans-serif}
+button{cursor:pointer;font-family:'Geist',sans-serif}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(240,231,215,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(11,89,47,.1);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.n-logo{display:flex;align-items:center;gap:9px;cursor:pointer}
+.n-icon{width:34px;height:34px;background:var(--g);border-radius:50%;display:grid;place-items:center}
+.n-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}
+.brand{font-size:12px;font-weight:700;color:var(--g);line-height:1.2}
+.brand span{display:block;font-size:9px;font-weight:400;color:var(--o);letter-spacing:2px;text-transform:uppercase}
+.n-links{display:flex;gap:3px;align-items:center}
+.nb{background:none;border:none;padding:7px 13px;border-radius:18px;font-size:12.5px;font-weight:500;color:var(--tm);transition:.2s}
+.nb:hover,.nb.act{background:var(--g);color:#fff}
+.n-cta{background:var(--g);color:#fff;border:none;padding:7px 16px;border-radius:18px;font-size:12.5px;font-weight:600;transition:.2s}
+.n-cta:hover{background:var(--gd)}
+.nav-user{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 8px;border-radius:20px;transition:.2s}
+.nav-user:hover{background:rgba(11,89,47,.06)}
+.nav-av{width:32px;height:32px;background:var(--g);border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700;border:2px solid var(--l)}
+.nav-info{display:flex;flex-direction:column}
+.nav-name{font-size:12px;font-weight:600;color:var(--tx)}
+.nav-rank{font-size:10px;color:var(--g);font-weight:600}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* VIEWS */
+.view{display:none;min-height:100vh;padding-top:60px}
+.view.act{display:block}
+
+/* ===== HERO ===== */
+#vh{background:var(--c)}
+.h-wrap{max-width:1160px;margin:0 auto;padding:70px 28px 50px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(11,89,47,.08);border:1px solid rgba(11,89,47,.2);border-radius:18px;padding:5px 13px;font-size:10.5px;font-weight:600;color:var(--g);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.h-badge::before{content:'';width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+.h-title{font-size:clamp(32px,4.5vw,58px);font-weight:900;line-height:1.05;color:var(--g);margin-bottom:14px}
+.h-title em{font-style:italic;color:var(--o)}
+.h-sub{font-size:14px;color:var(--tm);line-height:1.75;margin-bottom:28px;max-width:420px}
+.h-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn1{background:var(--g);color:#fff;border:none;padding:13px 26px;border-radius:22px;font-size:13.5px;font-weight:600;transition:.2s}
+.btn1:hover{background:var(--gd);transform:translateY(-1px)}
+.btn2{background:transparent;color:var(--g);border:2px solid var(--g);padding:13px 26px;border-radius:22px;font-size:13.5px;font-weight:600;transition:.2s}
+.btn2:hover{background:var(--g);color:#fff}
+.h-stats{display:flex;gap:28px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(11,89,47,.1)}
+.stat-n{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--g)}
+.stat-l{font-size:11px;color:var(--tm);margin-top:2px}
+.hc-main{background:var(--g);border-radius:18px;padding:22px;color:#fff;position:relative;overflow:hidden}
+.hcm-score{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;margin-bottom:14px}
+.s-ring{width:40px;height:40px;border-radius:50%;border:3px solid var(--l);display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;flex-shrink:0}
+.s-val{font-size:15px;font-weight:700;color:var(--l)}
+.s-lbl{font-size:9.5px;opacity:.6;text-transform:uppercase;letter-spacing:.8px}
+.feats{max-width:1160px;margin:0 auto;padding:50px 28px}
+.sec-lbl{font-size:10.5px;font-weight:600;letter-spacing:2px;color:var(--o);text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:700;color:var(--g);margin-bottom:32px}
+.fc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fc{background:#fff;border-radius:18px;padding:24px;border:1px solid rgba(11,89,47,.07);transition:.3s;cursor:pointer}
+.fc:hover{transform:translateY(-3px);box-shadow:0 10px 34px rgba(11,89,47,.1)}
+.fc-ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;margin-bottom:14px}
+.fc-ico.g{background:rgba(11,89,47,.09)}.fc-ico.o{background:rgba(223,111,59,.09)}.fc-ico.y{background:rgba(238,182,39,.12)}
+.fc-t{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--g);margin-bottom:7px}
+.fc-d{font-size:12.5px;color:var(--tm);line-height:1.65}
+
+/* ===== EXPLORE ===== */
+.e-wrap{max-width:1160px;margin:0 auto;padding:36px 28px}
+.e-title{font-size:24px;font-weight:700;color:var(--g);margin-bottom:5px}
+.e-sub{font-size:13px;color:var(--tm);margin-bottom:20px}
+.s-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.s-inp{flex:1;min-width:220px;background:#fff;border:2px solid rgba(11,89,47,.1);border-radius:12px;padding:11px 16px;font-size:13.5px;color:var(--tx);outline:none;transition:.2s;font-family:'Geist',sans-serif}
+.s-inp:focus{border-color:var(--g)}
+.s-sel{background:#fff;border:2px solid rgba(11,89,47,.1);border-radius:12px;padding:11px 14px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none}
+.r-chips{display:flex;gap:7px;margin-bottom:22px;flex-wrap:wrap}
+.rc{padding:6px 13px;border-radius:18px;font-size:11.5px;font-weight:600;border:2px solid transparent;transition:.2s;cursor:pointer}
+.rc.all{background:var(--g);color:#fff}.rc.low{background:rgba(140,167,10,.1);color:var(--l);border-color:var(--l)}.rc.med{background:rgba(238,182,39,.12);color:#a07800;border-color:var(--y)}.rc.high{background:rgba(223,111,59,.1);color:var(--o);border-color:var(--o)}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.pc{background:#fff;border-radius:16px;overflow:hidden;cursor:pointer;transition:.3s;border:1px solid rgba(11,89,47,.05)}
+.pc:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(11,89,47,.13)}
+.pc-thumb{height:148px;position:relative;display:flex;align-items:flex-end;padding:10px}
+.pc-risk{position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:18px;font-size:9.5px;font-weight:700;text-transform:uppercase}
+.rl{background:var(--l);color:#fff}.rm{background:var(--y);color:#fff}.rh{background:var(--o);color:#fff}
+.pc-type{background:rgba(255,255,255,.18);backdrop-filter:blur(5px);color:#fff;padding:3px 9px;border-radius:8px;font-size:9.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;position:relative}
+.pc-b{padding:14px}
+.pc-n{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--g);margin-bottom:3px}
+.pc-l{font-size:11.5px;color:var(--tm);margin-bottom:10px}
+.pc-score-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pc-score-big{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:900;color:var(--g)}
+.pc-score-bar{flex:1;height:5px;background:var(--cd);border-radius:3px;overflow:hidden}
+.pc-score-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--l),var(--g))}
+.pc-ft{display:flex;justify-content:space-between;align-items:center}
+.pc-rev{font-size:11px;color:var(--tm)}
+.pc-community{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--l);font-weight:600}
+.pc-live-dot{width:5px;height:5px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+
+/* ===== DETAIL ===== */
+.d-wrap{max-width:1100px;margin:0 auto;padding:36px 28px}
+.bk{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--g);padding:7px 14px;background:rgba(11,89,47,.07);border-radius:18px;border:none;margin-bottom:24px;transition:.2s}
+.bk:hover{background:var(--g);color:#fff}
+.d-layout{display:grid;grid-template-columns:1fr 340px;gap:20px}
+.d-img-wrap{border-radius:18px;overflow:hidden;height:260px;position:relative;margin-bottom:16px}
+.d-img-bg{position:absolute;inset:0}
+.d-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent)}
+.d-img-info{position:absolute;bottom:16px;left:16px;color:#fff}
+.d-img-name{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:900;margin-bottom:3px}
+.d-img-loc{font-size:12.5px;opacity:.8}
+.d-img-type{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);color:#fff;padding:4px 10px;border-radius:9px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+/* Score banner — no star ratings */
+.d-score-banner{background:var(--g);color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px}
+.dsb-ring{width:64px;height:64px;border-radius:50%;border:3px solid var(--l);display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-size:22px;font-weight:900;flex-shrink:0}
+.dsb-info{flex:1}
+.dsb-status{font-size:14px;font-weight:700;color:var(--l);margin-bottom:4px}
+.dsb-desc{font-size:11.5px;opacity:.7;line-height:1.5}
+/* Platform scores — numbers only, no stars */
+.dsb-platforms{display:flex;gap:8px;margin-left:auto}
+.dsb-plat{background:rgba(255,255,255,.12);border-radius:9px;padding:8px 12px;text-align:center;min-width:68px}
+.dsb-plat-name{font-size:9px;opacity:.6;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px}
+.dsb-plat-score{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--l)}
+.dsb-plat-lbl{font-size:8.5px;opacity:.5;margin-top:1px}
+.d-card{background:#fff;border-radius:16px;padding:20px;border:1px solid rgba(11,89,47,.06);margin-bottom:14px}
+.d-ct{font-family:'Unbounded',sans-serif;font-size:12.5px;font-weight:700;color:var(--g);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ai-sum{font-size:13.5px;line-height:1.8;background:rgba(140,167,10,.06);border-left:3px solid var(--l);padding:14px 16px;border-radius:0 10px 10px 0;margin-bottom:14px}
+/* Complaints with source links */
+.comp-list{display:flex;flex-direction:column;gap:8px}
+.ci{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:rgba(223,111,59,.05);border-radius:10px;border:1px solid rgba(223,111,59,.12)}
+.ci-ico{font-size:13px;flex-shrink:0;margin-top:1px}
+.ci-body{flex:1}
+.ci-txt{font-size:12.5px;color:var(--tx);line-height:1.55;margin-bottom:6px}
+.ci-src{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ci-src-label{font-size:10px;color:var(--tm)}
+.ci-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;text-decoration:none;transition:.2s}
+.ci-link.fb{background:rgba(66,103,178,.12);color:#4267B2}.ci-link.gm{background:rgba(234,67,53,.12);color:#EA4335}.ci-link.tt{background:rgba(0,0,0,.07);color:#333}
+.ci-link:hover{opacity:.75;transform:translateY(-1px)}
+.rv-platform-link{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:11px;background:var(--c);margin-bottom:9px;text-decoration:none;transition:.2s;border:1.5px solid transparent}
+.rv-platform-link:hover{border-color:var(--g);background:rgba(11,89,47,.04)}
+.rpl-left{display:flex;align-items:center;gap:10px}
+.rpl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rpl-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.rpl-sub{font-size:11px;color:var(--tm)}
+.rpl-arrow{font-size:14px;color:var(--g);font-weight:700}
+.d-comm-preview{background:#fff;border-radius:16px;border:2px dashed rgba(11,89,47,.2);padding:18px;cursor:pointer;transition:.3s}
+.d-comm-preview:hover{border-color:var(--g)}
+.dcp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.dcp-title{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--g);display:flex;align-items:center;gap:6px}
+.dcp-more{font-size:11px;font-weight:600;color:var(--o)}
+.dcp-item{background:var(--c);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12.5px}
+.dcp-meta{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.dcp-place{font-size:10px;font-weight:600;color:var(--g);background:rgba(11,89,47,.08);padding:2px 7px;border-radius:6px}
+.dcp-time{font-size:10px;color:var(--tm)}
+.dcp-gps{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--l);font-weight:600}
+.dcp-gps::before{content:'';width:5px;height:5px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+/* verifier vote display */
+.vote-result-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(11,89,47,.04);margin-bottom:5px;font-size:11.5px}
+.vr-opt{font-weight:600;color:var(--tx);flex:1}
+.vr-pct{font-weight:700;color:var(--g);min-width:36px;text-align:right}
+.vr-verifiers{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;padding:5px 8px;background:rgba(140,167,10,.06);border-radius:7px}
+.vtag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;background:rgba(140,167,10,.12);color:var(--l)}
+.vtag::before{content:'';width:4px;height:4px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+.d-meta-card{background:var(--g);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.dmc-lbl{font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;opacity:.6;margin-bottom:12px}
+.dmc-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.dmc-item:last-child{border-bottom:none}
+.dmc-k{font-size:11.5px;opacity:.7}.dmc-v{font-size:13px;font-weight:600}
+.d-sim{background:#fff;border-radius:16px;padding:18px;border:1px solid rgba(11,89,47,.06)}
+.sim-item{display:flex;align-items:center;gap:10px;padding:9px;border-radius:10px;background:var(--c);cursor:pointer;margin-bottom:8px;transition:.2s}
+.sim-item:hover{background:rgba(11,89,47,.07)}
+.si-thumb{width:40px;height:40px;border-radius:9px;flex-shrink:0}
+.si-name{font-size:12px;font-weight:600;color:var(--g)}.si-loc{font-size:11px;color:var(--tm)}
+.si-score{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--l);margin-left:auto}
+
+/* ===== COMMUNITY — new layout ===== */
+#vc{background:var(--c)}
+.c-page{max-width:1160px;margin:0 auto;padding:32px 28px}
+/* Top search bar */
+.c-search-bar{background:#fff;border-radius:18px;padding:20px 24px;margin-bottom:20px;border:1px solid rgba(11,89,47,.07)}
+.csb-title{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;color:var(--g);margin-bottom:14px}
+.csb-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.csb-inp{flex:1;min-width:220px;background:var(--c);border:2px solid transparent;border-radius:12px;padding:11px 16px;font-size:13.5px;color:var(--tx);outline:none;transition:.2s;font-family:'Geist',sans-serif}
+.csb-inp:focus{border-color:var(--g);background:#fff}
+.csb-btn{background:var(--g);color:#fff;border:none;padding:11px 22px;border-radius:12px;font-size:13px;font-weight:600;transition:.2s}
+.csb-btn:hover{background:var(--gd)}
+.c-filter-chips{display:flex;gap:7px;flex-wrap:wrap}
+.cfc{padding:6px 14px;border-radius:18px;font-size:12px;font-weight:600;border:2px solid transparent;background:var(--c);color:var(--tm);transition:.2s;cursor:pointer}
+.cfc.act,.cfc:hover{background:var(--g);color:#fff;border-color:var(--g)}
+/* place search results dropdown */
+#c-place-results{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;border:1px solid rgba(11,89,47,.1);display:none}
+/* suggested questions */
+.c-sugg-wrap{display:none}
+.c-sugg-box{background:rgba(11,89,47,.04);border:1.5px dashed rgba(11,89,47,.2);border-radius:14px;padding:16px;margin-bottom:16px}
+.csug-title{font-size:11.5px;font-weight:700;color:var(--g);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.csug-item{background:#fff;border-radius:9px;padding:10px 13px;margin-bottom:7px;cursor:pointer;transition:.2s;border:1.5px solid transparent}
+.csug-item:hover{border-color:var(--g)}
+.csug-q{font-size:12.5px;font-weight:500;color:var(--tx);margin-bottom:4px}
+.csug-meta{display:flex;gap:8px;font-size:10.5px;color:var(--tm)}
+/* Composer */
+.c-composer{background:#fff;border-radius:16px;padding:18px;margin-bottom:20px;border:1px solid rgba(11,89,47,.07)}
+.cc-hdr{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.cc-av{width:36px;height:36px;background:var(--g);border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
+.cc-inp{flex:1;background:var(--c);border:none;border-radius:9px;padding:10px 14px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none}
+.cc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.cc-quota{font-size:11px;color:var(--o);font-weight:600;background:rgba(223,111,59,.08);padding:4px 10px;border-radius:7px}
+.cc-types{display:flex;gap:6px}
+.cct{padding:6px 13px;border-radius:18px;font-size:11.5px;font-weight:600;border:2px solid var(--cd);background:#fff;transition:.2s}
+.cct.act{background:var(--g);color:#fff;border-color:var(--g)}
+/* Two-col layout */
+.c-layout{display:grid;grid-template-columns:1fr 300px;gap:20px}
+.c-feed-label{font-size:10.5px;font-weight:600;color:var(--tm);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.c-feed-label::before{content:'';width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+/* Nearby alert banner */
+.nearby-alert{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.na-ico{font-size:22px;flex-shrink:0}
+.na-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.na-sub{font-size:11.5px;opacity:.75}
+.na-badge{background:rgba(255,255,255,.2);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;margin-left:auto;white-space:nowrap}
+/* Feed cards */
+.q-feed{display:flex;flex-direction:column;gap:14px}
+.qc{background:#fff;border-radius:16px;padding:17px;border:1px solid rgba(11,89,47,.05)}
+.qc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px}
+.qc-pl{display:inline-flex;align-items:center;gap:5px;background:rgba(11,89,47,.07);border-radius:7px;padding:3px 9px;font-size:10.5px;font-weight:600;color:var(--g)}
+.qc-tm{font-size:10.5px;color:var(--tm)}
+.qc-q{font-size:13.5px;font-weight:600;margin-bottom:12px;line-height:1.5}
+.v-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.vo{padding:7px 15px;border-radius:20px;font-size:12px;font-weight:600;border:2px solid var(--cd);background:#fff;transition:.2s}
+.vo:hover{border-color:var(--g);color:var(--g)}
+.vo.voted{background:var(--g);color:#fff;border-color:var(--g)}
+/* Vote result with verifier names */
+.vote-result-block{margin-top:10px}
+.vrb-row{margin-bottom:8px}
+.vrb-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.vrb-label{width:120px;font-size:11.5px;font-weight:600;color:var(--tx);flex-shrink:0}
+.vrb-bar{flex:1;height:6px;background:var(--cd);border-radius:3px;overflow:hidden}
+.vrb-fill{height:100%;background:var(--g);border-radius:3px}
+.vrb-pct{font-size:11.5px;font-weight:700;color:var(--g);width:32px;text-align:right}
+.vrb-verifiers{display:flex;gap:5px;flex-wrap:wrap;padding-left:4px}
+.vtag-v{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600}
+.vtag-v.gps{background:rgba(140,167,10,.12);color:var(--l)}
+.vtag-v.gps::before{content:'📍';font-size:9px}
+.rvc-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
+.rvc-name{font-size:12.5px;font-weight:600}
+.rvc-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.rvc-stat{font-size:10px;color:var(--tm)}
+.rvc-stat strong{color:var(--g);font-weight:700}
+.rnk{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px}
+.rnk1{background:rgba(238,182,39,.2);color:#a07800}.rnk2{background:rgba(147,100,64,.15);color:var(--br)}.rnk3{background:rgba(140,167,10,.15);color:var(--l)}.rnkn{background:rgba(11,89,47,.08);color:var(--g)}
+.rvc-txt{font-size:13px;line-height:1.7;margin:9px 0}
+.rvc-acts{display:flex;gap:8px}
+.rva{display:flex;align-items:center;gap:3px;font-size:11.5px;color:var(--tm);padding:4px 9px;border-radius:7px;background:var(--c);border:none;transition:.2s}
+.rva:hover{background:rgba(11,89,47,.08);color:var(--g)}
+.gps-tag{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--tm);margin-top:9px;padding-top:9px;border-top:1px solid var(--c)}
+.gps-d{width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+/* Sidebar */
+.c-sidebar{}
+.trust-card{background:var(--g);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.tc-t{font-family:'Unbounded',sans-serif;font-size:12.5px;font-weight:700;margin-bottom:14px}
+.tc-user{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tc-av{width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:700}
+.tc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tc-stat{background:rgba(255,255,255,.1);border-radius:9px;padding:9px;text-align:center}
+.tc-stat-n{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--l)}
+.tc-stat-l{font-size:9.5px;opacity:.6;margin-top:2px;line-height:1.3}
+.tc-rank-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(238,182,39,.2);border-radius:9px;padding:7px 11px;margin-bottom:10px}
+.tc-rank-n{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;color:var(--y)}
+.tc-rank-l{font-size:10.5px;opacity:.75}
+.tc-prog{height:5px;background:rgba(255,255,255,.18);border-radius:3px;margin-bottom:6px}
+.tc-pf{height:100%;background:var(--l);border-radius:3px;width:68%}
+.tc-hint{font-size:10.5px;opacity:.6;line-height:1.5}
+.rank-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;border:1px solid rgba(11,89,47,.07)}
+.rk-t{font-family:'Unbounded',sans-serif;font-size:11.5px;font-weight:700;color:var(--g);margin-bottom:6px}
+.rk-sub{font-size:10.5px;color:var(--tm);margin-bottom:12px}
+.rk-item{display:flex;align-items:center;gap:9px;padding:8px;border-radius:9px;transition:.2s;margin-bottom:5px}
+.rk-item:hover{background:var(--c)}
+.rk-num{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;width:22px;flex-shrink:0}
+.rk1{color:var(--y)}.rk2{color:#aaa}.rk3{color:var(--br)}
+.rk-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.rk-info{flex:1}
+.rk-name{font-size:12.5px;font-weight:600}
+.rk-detail{font-size:10.5px;color:var(--tm)}
+.rk-pts{font-size:11.5px;font-weight:700;color:var(--g);margin-left:auto}
+.rk-reward{background:rgba(140,167,10,.08);border:1.5px solid rgba(140,167,10,.25);border-radius:9px;padding:10px;font-size:11.5px;margin-top:8px;line-height:1.6}
+.rk-reward strong{color:var(--g)}
+.rewards-card{background:#fff;border-radius:16px;padding:18px;border:1px solid rgba(11,89,47,.07)}
+.rw-t{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px}
+.ri-rew{display:flex;align-items:center;gap:9px;padding:9px;border-radius:9px;background:var(--c);margin-bottom:7px;cursor:pointer;transition:.2s}
+.ri-rew:hover{background:rgba(11,89,47,.06)}
+.ri-ico{font-size:20px}.ri-n{font-size:11.5px;font-weight:600}.ri-s{font-size:10.5px;color:var(--tm)}.ri-r{font-size:10px;font-weight:700;color:var(--o);margin-left:auto}
+
+/* ===== AI AGENT ===== */
+#va{background:var(--c)}
+.a-page{max-width:1160px;margin:0 auto;padding:32px 28px}
+/* Steps */
+.a-steps-bar{background:#fff;border-radius:16px;padding:20px 32px;margin-bottom:24px;border:1px solid rgba(11,89,47,.07)}
+.a-steps-inner{display:flex;align-items:flex-start;justify-content:space-between;position:relative}
+.a-steps-inner::before{content:'';position:absolute;top:19px;left:40px;right:40px;height:2px;background:var(--cd);z-index:0}
+.a-steps-inner::after{content:'';position:absolute;top:19px;left:40px;height:2px;background:var(--g);z-index:1;transition:width .4s;width:var(--progress,0%)}
+.a-step{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:2;flex:1}
+.a-step-circle{width:40px;height:40px;border-radius:50%;border:3px solid var(--cd);background:#fff;display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--tm);transition:.3s}
+.a-step-label{font-size:11px;font-weight:600;color:var(--tm);text-align:center}
+.a-step.done .a-step-circle{background:var(--g);border-color:var(--g);color:#fff}
+.a-step.done .a-step-label{color:var(--g)}
+.a-step.cur .a-step-circle{background:var(--g);border-color:var(--g);color:#fff;box-shadow:0 0 0 5px rgba(11,89,47,.15)}
+.a-step.cur .a-step-label{color:var(--g);font-weight:700}
+/* Layout */
+.a-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.a-main-col{display:flex;flex-direction:column;gap:0}
+.a-sidebar-col{display:flex;flex-direction:column;gap:14px}
+.ap{background:#fff;border-radius:18px;padding:24px;border:1px solid rgba(11,89,47,.07);display:none}
+.ap.act{display:block}
+.ap-title{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--g);margin-bottom:4px}
+.ap-sub{font-size:13px;color:var(--tm);margin-bottom:20px;line-height:1.55}
+/* Step 1 */
+.nf-group{margin-bottom:16px}
+.nf-label{font-size:12.5px;font-weight:600;color:var(--tx);margin-bottom:8px}
+.nf-opts{display:flex;gap:7px;flex-wrap:wrap}
+.nfo{padding:8px 15px;border-radius:20px;font-size:12.5px;font-weight:500;border:2px solid var(--cd);background:#fff;transition:.2s}
+.nfo:hover,.nfo.sel{background:var(--g);color:#fff;border-color:var(--g)}
+.nf-inp{width:100%;background:var(--c);border:2px solid transparent;border-radius:10px;padding:10px 14px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:.2s}
+.nf-inp:focus{border-color:var(--g)}
+.nf-submit{width:100%;background:var(--g);color:#fff;border:none;padding:14px;border-radius:13px;font-size:14px;font-weight:600;transition:.2s}
+.nf-submit:hover{background:var(--gd)}
+/* Step 2 */
+.reco-item{border-radius:14px;padding:16px;margin-bottom:10px;border:2px solid transparent;background:var(--c)}
+.reco-item.go{border-color:rgba(140,167,10,.3);background:rgba(140,167,10,.04)}
+.reco-item.warn{border-color:rgba(238,182,39,.35);background:rgba(238,182,39,.04)}
+.reco-item.avoid{border-color:rgba(223,111,59,.3);background:rgba(223,111,59,.04)}
+.ri-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
+.ri-tag.go{color:var(--l)}.ri-tag.warn{color:#a07800}.ri-tag.avoid{color:var(--o)}
+.ri-name{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--g);margin-bottom:4px}
+.ri-why{font-size:12.5px;color:var(--tm);line-height:1.55;margin-bottom:10px}
+.ri-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)}
+.ri-tick{display:flex;align-items:center;gap:8px;cursor:pointer}
+.ri-tick-box{width:22px;height:22px;border:2px solid var(--cd);border-radius:6px;display:grid;place-items:center;font-size:12px;flex-shrink:0;background:#fff;transition:.2s}
+.ri-tick-box.on{background:var(--g);border-color:var(--g);color:#fff}
+.ri-tick-lbl{font-size:12.5px;color:var(--tm)}
+.ri-score-badge{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--l);background:rgba(140,167,10,.1);padding:4px 10px;border-radius:8px}
+.ai-refine-box{background:rgba(11,89,47,.04);border:1.5px dashed rgba(11,89,47,.2);border-radius:14px;padding:16px;margin-top:4px;margin-bottom:16px}
+.arb-title{font-size:12px;font-weight:700;color:var(--g);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.arb-row{display:flex;gap:9px}
+.arb-inp{flex:1;background:#fff;border:2px solid var(--cd);border-radius:10px;padding:10px 14px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:.2s}
+.arb-inp:focus{border-color:var(--g)}
+.arb-btn{background:var(--g);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;transition:.2s}
+.arb-btn:hover{background:var(--gd)}
+.reco-confirm{width:100%;background:var(--g);color:#fff;border:none;padding:13px;border-radius:13px;font-size:14px;font-weight:600;transition:.2s}
+.reco-confirm:hover{background:var(--gd)}
+/* Step 3 */
+.tl-ai-box{background:rgba(140,167,10,.05);border:1.5px dashed rgba(140,167,10,.3);border-radius:13px;padding:14px;margin-bottom:14px}
+.tab-title{font-size:12px;font-weight:700;color:var(--l);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.tab-row{display:flex;gap:8px}
+.tab-inp{flex:1;background:#fff;border:2px solid var(--cd);border-radius:9px;padding:9px 12px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:.2s}
+.tab-inp:focus{border-color:var(--l)}
+.tab-btn{background:var(--l);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.tl-items{margin-bottom:14px}
+.tl-item{display:flex;gap:12px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:17px;top:38px;width:2px;height:calc(100% - 14px);background:var(--cd);z-index:0}
+.tl-dot-col{display:flex;flex-direction:column;align-items:center;min-width:36px;padding-bottom:14px}
+.tl-dot{width:36px;height:36px;border-radius:50%;background:var(--g);color:#fff;font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;display:grid;place-items:center;flex-shrink:0;z-index:1;border:3px solid var(--c)}
+.tl-dot.warn{background:var(--o)}.tl-dot.done{background:var(--l)}
+.tl-time-lbl{font-size:9.5px;font-weight:700;color:var(--tm);margin-top:4px;white-space:nowrap;text-align:center}
+.tl-cnt{flex:1;background:var(--c);border-radius:13px;padding:13px 15px;margin-bottom:14px}
+.tl-cnt.editing{background:#fff;border:2px solid var(--g)}
+.tl-pl{font-size:14px;font-weight:700;color:var(--tx)}.tl-det{font-size:12.5px;color:var(--tm);margin-top:3px;line-height:1.5}
+.tl-alert{display:flex;align-items:flex-start;gap:5px;background:rgba(223,111,59,.1);border-radius:8px;padding:6px 10px;margin-top:7px;font-size:11.5px;color:var(--o)}
+.tl-live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--l);margin-top:6px;font-weight:600}
+.tl-live::before{content:'';width:5px;height:5px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+.tl-actions{display:flex;gap:6px;margin-top:10px}
+.tl-act-btn{padding:5px 12px;border-radius:8px;font-size:11.5px;font-weight:600;border:none;cursor:pointer;transition:.2s}
+.tl-act-edit{background:rgba(11,89,47,.08);color:var(--g)}.tl-act-edit:hover{background:rgba(11,89,47,.16)}
+.tl-act-del{background:rgba(223,111,59,.08);color:var(--o)}.tl-act-del:hover{background:rgba(223,111,59,.16)}
+.tl-edit-form{margin-top:10px;display:none;flex-direction:column;gap:7px}
+.tl-edit-inp{width:100%;background:#fff;border:2px solid var(--cd);border-radius:9px;padding:9px 12px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:.2s}
+.tl-edit-inp:focus{border-color:var(--g)}
+.tl-edit-btns{display:flex;gap:7px}
+.tl-edit-save{background:var(--g);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:12.5px;font-weight:600;cursor:pointer}
+.tl-edit-cancel{background:var(--cd);color:var(--tm);border:none;border-radius:9px;padding:8px 14px;font-size:12.5px;font-weight:600;cursor:pointer}
+.tl-add-form{background:rgba(11,89,47,.04);border:2px dashed rgba(11,89,47,.2);border-radius:13px;padding:16px;margin-bottom:12px;display:none;flex-direction:column;gap:9px}
+.tl-add-form.open{display:flex}
+.tl-add-form input{background:#fff;border:2px solid var(--cd);border-radius:9px;padding:9px 12px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;transition:.2s}
+.tl-add-form input:focus{border-color:var(--g)}
+.tl-add-form-btns{display:flex;gap:8px}
+.tl-add-btn{width:100%;border:2px dashed rgba(11,89,47,.25);border-radius:13px;padding:11px;background:transparent;color:var(--g);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-bottom:12px}
+.tl-add-btn:hover{background:rgba(11,89,47,.04);border-color:var(--g)}
+.tl-save{width:100%;background:var(--g);color:#fff;border:none;padding:14px;border-radius:13px;font-size:14px;font-weight:600;transition:.2s}
+.tl-save:hover{background:var(--gd)}
+/* Step 4 */
+.track-header{background:var(--g);color:#fff;border-radius:14px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.thl-label{font-size:9.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;opacity:.6;margin-bottom:5px}
+.thl-place{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:3px}
+.thl-dist{font-size:12px;opacity:.7}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.live-badge::before{content:'';width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+.track-items{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.track-item{border-radius:13px;padding:14px 16px;border:1.5px solid transparent;display:flex;align-items:center;gap:14px}
+.track-item.ok{background:rgba(140,167,10,.06);border-color:rgba(140,167,10,.2)}
+.track-item.warn{background:rgba(223,111,59,.06);border-color:rgba(223,111,59,.2)}
+.track-item.upcoming{background:#fff;border-color:var(--cd)}
+.ti-time{font-size:11px;font-weight:700;color:var(--tm);width:54px;flex-shrink:0}
+.ti-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ti-dot.g{background:var(--g)}.ti-dot.o{background:var(--o);animation:pulse 2s infinite}.ti-dot.c{background:var(--cd)}
+.ti-info{flex:1}
+.ti-place{font-size:13.5px;font-weight:600;color:var(--tx)}.ti-status{font-size:11.5px;margin-top:3px;font-weight:500}
+.ti-status.ok{color:var(--l)}.ti-status.warn{color:var(--o)}.ti-status.up{color:var(--tm)}
+.lfs-title{font-size:12.5px;font-weight:700;color:var(--g);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.lfs-title::before{content:'';width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite}
+.lf-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.55;margin-bottom:8px}
+.lf-item.ok{background:rgba(140,167,10,.08);border:1.5px solid rgba(140,167,10,.2)}
+.lf-item.warn{background:rgba(223,111,59,.07);border:1.5px solid rgba(223,111,59,.2)}
+.lf-item.info{background:rgba(238,182,39,.07);border:1.5px solid rgba(238,182,39,.2)}
+.lf-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.lf-author{font-weight:700;color:var(--g)}.lf-sys{font-weight:700;color:var(--o)}
+.notif-item{background:var(--c);border-radius:11px;padding:12px 14px;margin-bottom:9px;border-left:3px solid var(--g)}
+.notif-item.warn{border-left-color:var(--o)}
+.ni-time{font-size:10px;font-weight:600;color:var(--tm);margin-bottom:4px}
+.ni-msg{font-size:12.5px;line-height:1.55;color:var(--tx)}
+.ni-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--l);background:rgba(140,167,10,.12);padding:2px 8px;border-radius:6px;margin-top:5px}
+/* Sidebar */
+.a-sb-card{background:#fff;border-radius:14px;padding:16px;border:1px solid rgba(11,89,47,.07)}
+.a-sb-title{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.sb-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.sb-stat{background:var(--c);border-radius:10px;padding:10px;text-align:center}
+.sb-stat-n{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;color:var(--g);display:block}
+.sb-stat-l{font-size:10px;color:var(--tm);margin-top:2px}
+.sched-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--c);font-size:12.5px}
+.sched-item:last-child{border-bottom:none}
+.sched-time{font-size:11px;font-weight:700;color:var(--tm);width:52px;flex-shrink:0}
+.sched-place{flex:1;color:var(--tx)}
+.sched-item.cur .sched-place{color:var(--g);font-weight:700}
+.sched-item.done .sched-place{color:var(--tm);text-decoration:line-through}
+.sched-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sched-dot.g{background:var(--g)}.sched-dot.o{background:var(--o);animation:pulse 2s infinite}.sched-dot.c{background:var(--cd)}
+.rt-alert{background:rgba(223,111,59,.07);border:1.5px solid rgba(223,111,59,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;line-height:1.55}
+.rt-alert-head{font-weight:700;color:var(--o);font-size:11px;margin-bottom:3px}
+
+/* ===== FEEDBACK MODAL ===== */
+.fb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:600;place-items:center}
+.fb-overlay.open{display:grid}
+.fb-box{background:#fff;border-radius:24px;width:100%;max-width:520px;margin:16px;overflow:hidden;max-height:90vh;overflow-y:auto;box-shadow:0 28px 70px rgba(0,0,0,.22)}
+.fb-header{background:var(--g);padding:24px 28px;color:#fff}
+.fb-header-title{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px}
+.fb-header-sub{font-size:12px;opacity:.7;line-height:1.5}
+.fb-body{padding:24px 28px}
+.fb-place-card{background:var(--c);border-radius:14px;padding:16px;margin-bottom:20px}
+.fb-place-name{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--g);margin-bottom:3px}
+.fb-place-type{font-size:11px;color:var(--tm)}
+.fb-section{margin-bottom:18px}
+.fb-section-label{font-size:12.5px;font-weight:700;color:var(--tx);margin-bottom:9px}
+.fb-stars{display:flex;gap:6px;margin-bottom:6px}
+.fb-star{font-size:24px;cursor:pointer;transition:.15s;filter:grayscale(1);opacity:.4}
+.fb-star.on{filter:none;opacity:1}
+.fb-tag-row{display:flex;gap:6px;flex-wrap:wrap}
+.fb-tag{padding:6px 13px;border-radius:18px;font-size:12px;font-weight:600;border:2px solid var(--cd);background:#fff;cursor:pointer;transition:.2s}
+.fb-tag.on{background:var(--g);color:#fff;border-color:var(--g)}
+.fb-textarea{width:100%;background:var(--c);border:2px solid transparent;border-radius:11px;padding:11px 14px;font-family:'Geist',sans-serif;font-size:13px;color:var(--tx);outline:none;resize:vertical;min-height:72px;transition:.2s}
+.fb-textarea:focus{border-color:var(--g);background:#fff}
+.fb-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.fb-prog-dots{display:flex;gap:6px}
+.fb-dot{width:8px;height:8px;border-radius:50%;background:var(--cd)}
+.fb-dot.on{background:var(--g)}
+.fb-nav{display:flex;gap:10px}
+.fb-prev{flex:1;border:2px solid var(--cd);border-radius:12px;padding:11px;font-size:13.5px;font-weight:600;background:#fff;color:var(--tm)}
+.fb-next{flex:2;background:var(--g);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;transition:.2s}
+.fb-next:hover{background:var(--gd)}
+/* Feedback submitted to community */
+.fb-community-tag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--l);background:rgba(140,167,10,.1);padding:3px 9px;border-radius:6px;margin-top:8px}
+
+/* ===== PROFILE PAGE ===== */
+#vp{background:var(--c)}
+.p-page{max-width:960px;margin:0 auto;padding:36px 28px}
+.p-header{background:var(--g);border-radius:22px;padding:28px 32px;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:24px}
+.p-av-wrap{position:relative}
+.p-av{width:80px;height:80px;background:rgba(255,255,255,.2);border-radius:50%;display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-size:28px;font-weight:900;border:4px solid var(--l);flex-shrink:0}
+.p-av-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--l);border-radius:50%;display:grid;place-items:center;font-size:12px;cursor:pointer;border:2px solid var(--g)}
+.p-info{flex:1}
+.p-name{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:900;margin-bottom:4px}
+.p-since{font-size:12px;opacity:.65;margin-bottom:10px}
+.p-rank-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.p-rank-badge{background:rgba(238,182,39,.25);border-radius:20px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px}
+.p-rank-n{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:900;color:var(--y)}
+.p-rank-l{font-size:11.5px;opacity:.85}
+.p-verify-badge{background:rgba(140,167,10,.2);border-radius:20px;padding:5px 14px;font-size:11.5px;color:var(--l);font-weight:600;display:flex;align-items:center;gap:5px}
+.p-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.p-stat{background:#fff;border-radius:16px;padding:18px;text-align:center;border:1px solid rgba(11,89,47,.07)}
+.p-stat-n{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:900;color:var(--g);display:block;margin-bottom:3px}
+.p-stat-l{font-size:11px;color:var(--tm);line-height:1.4}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.p-card{background:#fff;border-radius:18px;padding:20px;border:1px solid rgba(11,89,47,.07)}
+.p-card-title{font-family:'Unbounded',sans-serif;font-size:12.5px;font-weight:700;color:var(--g);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+/* Activity history */
+.p-act-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:10px;background:var(--c);margin-bottom:8px;font-size:12.5px}
+.p-act-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.p-act-txt{flex:1;line-height:1.45;color:var(--tx)}
+.p-act-time{font-size:10px;color:var(--tm);white-space:nowrap}
+/* Visited places */
+.p-place-item{display:flex;align-items:center;gap:10px;padding:9px;border-radius:10px;background:var(--c);margin-bottom:8px;cursor:pointer;transition:.2s}
+.p-place-item:hover{background:rgba(11,89,47,.07)}
+.p-place-thumb{width:38px;height:38px;border-radius:8px;flex-shrink:0}
+.p-place-n{font-size:12.5px;font-weight:600;color:var(--g)}
+.p-place-meta{font-size:11px;color:var(--tm)}
+.p-place-score{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--l);margin-left:auto}
+/* Badges */
+.p-badges{display:flex;gap:10px;flex-wrap:wrap}
+.p-badge{background:var(--c);border-radius:12px;padding:12px 14px;text-align:center;min-width:80px;border:1.5px solid transparent;transition:.2s}
+.p-badge.earned{border-color:rgba(140,167,10,.3);background:rgba(140,167,10,.06)}
+.p-badge-ico{font-size:24px;margin-bottom:5px}
+.p-badge-name{font-size:10px;font-weight:700;color:var(--g);line-height:1.3}
+.p-badge-lbl{font-size:9.5px;color:var(--tm);margin-top:2px}
+/* Goal card */
+.p-goal{background:rgba(238,182,39,.08);border:1.5px solid rgba(238,182,39,.3);border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:12.5px;line-height:1.65;color:var(--tx)}
+.p-goal strong{color:var(--g)}
+.p-prog-wrap{margin-top:10px}
+.p-prog-bar{height:7px;background:var(--cd);border-radius:4px;overflow:hidden;margin-bottom:5px}
+.p-prog-fill{height:100%;background:linear-gradient(90deg,var(--l),var(--g));border-radius:4px;width:68%}
+.p-prog-label{font-size:10.5px;color:var(--tm)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:500;place-items:center}
+.modal-overlay.open{display:grid}
+.modal-box{background:#fff;border-radius:24px;width:100%;max-width:420px;margin:16px;position:relative;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.2)}
+.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;background:var(--c);border:none;border-radius:50%;display:grid;place-items:center;font-size:14px;color:var(--tm);cursor:pointer;z-index:10}
+.login-header{background:var(--g);padding:32px 28px 24px;color:#fff;text-align:center}
+.login-logo{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:24px}
+.login-title{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px}
+.login-sub{font-size:12px;opacity:.7}
+.login-body{padding:24px 28px}
+.lf-label{font-size:11.5px;font-weight:600;color:var(--tx);margin-bottom:5px;display:block}
+.lf-input{width:100%;background:var(--c);border:2px solid transparent;border-radius:10px;padding:11px 14px;font-family:'Geist',sans-serif;font-size:13.5px;color:var(--tx);outline:none;transition:.2s;margin-bottom:14px}
+.lf-input:focus{border-color:var(--g);background:#fff}
+.lf-submit{width:100%;background:var(--g);color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:600;transition:.2s;margin-bottom:12px}
+.lf-submit:hover{background:var(--gd)}
+.lf-alt{text-align:center;font-size:12.5px;color:var(--tm)}
+.lf-alt a{color:var(--g);font-weight:600;text-decoration:none}
+.lf-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--tm);font-size:11.5px}
+.lf-divider::before,.lf-divider::after{content:'';flex:1;height:1px;background:var(--cd)}
+.lf-google{width:100%;background:#fff;border:2px solid var(--cd);border-radius:12px;padding:12px;font-size:13.5px;font-weight:500;color:var(--tx);display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;margin-bottom:8px}
+.lf-google:hover{border-color:var(--g)}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cd);border-radius:2px}
+@media(max-width:900px){
+  .h-wrap,.d-layout,.c-layout,.a-layout,.p-grid{grid-template-columns:1fr}
+  .fc-grid{grid-template-columns:1fr}.a-sidebar-col{display:none}.dsb-platforms{display:none}.nav-info{display:none}
+  .p-stats-row{grid-template-columns:1fr 1fr}.p-header{flex-direction:column;text-align:center}
+  .a-steps-inner::before,.a-steps-inner::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="n-logo" onclick="sv('h')">
+    <div class="n-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="brand">DaLat Authentrail<span>Xác thực địa điểm</span></div>
+  </div>
+  <div class="n-links">
+    <button class="nb" onclick="sv('e')">Khám Phá</button>
+    <button class="nb" onclick="sv('c')">Cộng Đồng</button>
+    <button class="nb" onclick="sv('a')">AI Agent</button>
+  </div>
+  <div id="nav-user-area">
+    <div class="nav-user" onclick="sv('p')" id="nav-logged-in" style="display:none">
+      <div class="nav-av" id="nav-av-txt">AN</div>
+      <div class="nav-info"><div class="nav-name">An Nhiên</div><div class="nav-rank">Hạng 4 · Top 12%</div></div>
+    </div>
+    <button class="n-cta" onclick="openModal('login-modal')" id="nav-login-btn">Đăng Nhập →</button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div id="vh" class="view act">
+  <div class="h-wrap">
+    <div>
+      <div class="h-badge">✦ Đà Lạt · Lâm Đồng</div>
+      <h1 class="h-title">Khám Phá<br><em>Thực Sự</em><br>Đáng Tin</h1>
+      <p class="h-sub">Nền tảng xác thực địa điểm du lịch đầu tiên tại Đà Lạt — dữ liệu tổng hợp từ Facebook, Google Maps và TikTok, lọc qua AI để cho ra Risk Score minh bạch.</p>
+      <div class="h-btns">
+        <button class="btn1" onclick="sv('e')">Khám Phá Địa Điểm</button>
+        <button class="btn2" onclick="sv('a')">Hỏi AI Agent</button>
+      </div>
+      <div class="h-stats">
+        <div><div class="stat-n">240+</div><div class="stat-l">Địa điểm xác thực</div></div>
+        <div><div class="stat-n">18K</div><div class="stat-l">Review đã phân tích</div></div>
+        <div><div class="stat-n">3</div><div class="stat-l">Nền tảng tổng hợp</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="hc-main">
+        <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:10px"><span style="width:6px;height:6px;background:var(--l);border-radius:50%;animation:pulse 2s infinite;display:inline-block"></span>Nổi bật hôm nay</div>
+        <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--y);opacity:.8;margin-bottom:5px">Trekking · Núi rừng</div>
+        <div style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;line-height:1.2;margin-bottom:6px">Langbiang<br>Summit Trail</div>
+        <div style="font-size:11.5px;opacity:.65;margin-bottom:10px">📍 Lạc Dương, Đà Lạt</div>
+        <div class="hcm-score"><div class="s-ring">87</div><div><div class="s-lbl">Risk Score tổng hợp</div><div class="s-val">Rủi ro Thấp ✓</div></div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Facebook</div><div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--l)">4.7</div></div>
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">Maps</div><div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--l)">4.8</div></div>
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:8px;text-align:center"><div style="font-size:9px;opacity:.55;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px">TikTok</div><div style="font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--l)">4.6</div></div>
+        </div>
+        <button onclick="showDetail(1)" style="width:100%;margin-top:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:10px;border-radius:10px;font-family:'Geist',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">Xem chi tiết địa điểm →</button>
+      </div>
+    </div>
+  </div>
+  <div class="feats">
+    <div class="sec-lbl">✦ Tính năng cốt lõi</div>
+    <h2 class="sec-title">Ba lớp xác thực cho mỗi địa điểm</h2>
+    <div class="fc-grid">
+      <div class="fc" onclick="sv('e')"><div class="fc-ico g">🔍</div><div class="fc-t">Dữ Liệu Xác Thực</div><p class="fc-d">Crawl từ 3 nền tảng, lọc NLP, so sánh chéo → Risk Score + LLM summary minh bạch.</p></div>
+      <div class="fc" onclick="sv('c')"><div class="fc-ico o">👥</div><div class="fc-t">Cộng Đồng Real-Time</div><p class="fc-d">Người dùng tại chỗ (GPS &lt;50m) xác nhận thông tin theo thời gian thực. Ranking đổi thưởng.</p></div>
+      <div class="fc" onclick="sv('a')"><div class="fc-ico y">🤖</div><div class="fc-t">AI Agent Lịch Trình</div><p class="fc-d">AI xác định nhu cầu, gợi ý địa điểm, lên timeline tối ưu + cảnh báo real-time từ cộng đồng.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXPLORE ===== -->
+<div id="ve" class="view">
+  <div class="e-wrap">
+    <div class="e-title">Khám Phá Địa Điểm</div>
+    <div class="e-sub">240 địa điểm tại Đà Lạt đã được xác thực từ 3 nền tảng</div>
+    <div class="s-bar">
+      <input class="s-inp" type="text" placeholder="🔍  Tìm tên địa điểm, khu vực..."/>
+      <select class="s-sel"><option>Tất cả loại</option><option>Trekking</option><option>Cà phê</option><option>Ăn uống</option><option>Homestay</option><option>Thác nước</option><option>Nông trại</option></select>
+      <select class="s-sel"><option>Tất cả khu vực</option><option>Trung tâm TP</option><option>Lạc Dương</option><option>Đức Trọng</option><option>Lâm Hà</option></select>
+    </div>
+    <div class="r-chips">
+      <div class="rc all">Tất cả</div><div class="rc low">✓ Rủi ro thấp</div><div class="rc med">⚡ Trung bình</div><div class="rc high">⚠ Cao</div>
+    </div>
+    <div class="pg" id="pg"></div>
+  </div>
+</div>
+
+<!-- ===== DETAIL ===== -->
+<div id="vd" class="view">
+  <div class="d-wrap">
+    <button class="bk" onclick="sv('e')">← Quay lại Khám Phá</button>
+    <div id="d-content"></div>
+  </div>
+</div>
+
+<!-- ===== COMMUNITY ===== -->
+<div id="vc" class="view">
+  <div class="c-page">
+    <!-- Search bar -->
+    <div class="c-search-bar">
+      <div class="csb-title">Hỏi cộng đồng tại chỗ</div>
+      <div class="csb-row">
+        <input class="csb-inp" type="text" id="c-search-inp" placeholder="Tìm địa điểm để đặt câu hỏi..." oninput="onCSearch(this.value)"/>
+        <button class="csb-btn">Đặt câu hỏi</button>
+      </div>
+      <div class="c-filter-chips">
+        <div class="cfc act">Tất cả</div>
+        <div class="cfc">Mới nhất</div>
+        <div class="cfc">Đang hot 🔥</div>
+        <div class="cfc">Cần xác thực gấp</div>
+        <div class="cfc">Kinh nghiệm</div>
+      </div>
+    </div>
+    <div id="c-place-results">
+      <div style="font-size:11px;font-weight:600;color:var(--tm);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px">Chọn địa điểm</div>
+      <div id="c-place-list"></div>
+    </div>
+    <div class="c-sugg-wrap" id="c-sugg-wrap">
+      <div class="c-sugg-box">
+        <div class="csug-title">💡 Câu hỏi gần đây — bạn có thể tham khảo:</div>
+        <div id="c-sugg-list"></div>
+      </div>
+      <div class="c-composer">
+        <div class="cc-hdr">
+          <div class="cc-av">AN</div>
+          <input class="cc-inp" id="cc-inp" type="text" placeholder="Hoặc đặt câu hỏi mới của bạn..."/>
+        </div>
+        <div class="cc-footer">
+          <div class="cc-quota">📋 Đã dùng 2/10 câu hỏi tháng này</div>
+          <div class="cc-types">
+            <button class="cct act" onclick="selType(this)">⚡ Vote nhanh</button>
+            <button class="cct" onclick="selType(this)">📝 Review dài</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Nearby alert -->
+    <div class="nearby-alert" onclick="sv('c')">
+      <div class="na-ico">📍</div>
+      <div><div class="na-title">Bạn đang gần The Loft Coffee (1.2km)</div><div class="na-sub">Cộng đồng vừa hỏi: "Hiện còn bàn ngoài ban công không?" · 5 phút trước</div></div>
+      <div class="na-badge">Xem ngay →</div>
+    </div>
+    <div class="c-layout">
+      <div>
+        <div class="c-feed-label">Newsfeed · Cập nhật mới nhất</div>
+        <div class="q-feed" id="qf"></div>
+      </div>
+      <div class="c-sidebar">
+        <!-- User card -->
+        <div class="trust-card">
+          <div class="tc-t">👤 Hoạt động của bạn</div>
+          <div class="tc-user"><div class="tc-av">AN</div><div><div style="font-size:13px;font-weight:600">An Nhiên</div><div style="font-size:10.5px;opacity:.6;cursor:pointer" onclick="sv('p')">Xem hồ sơ đầy đủ →</div></div></div>
+          <div class="tc-stats">
+            <div class="tc-stat"><div class="tc-stat-n">84</div><div class="tc-stat-l">Câu trả lời</div></div>
+            <div class="tc-stat"><div class="tc-stat-n">2/10</div><div class="tc-stat-l">Đã hỏi</div></div>
+            <div class="tc-stat"><div class="tc-stat-n" style="color:var(--y)">#4</div><div class="tc-stat-l">Thứ hạng</div></div>
+          </div>
+          <div class="tc-rank-badge"><div class="tc-rank-n">Hạng 4</div><div class="tc-rank-l">Top 12% · 12 câu nữa → Top 3 🎯</div></div>
+          <div class="tc-prog"><div class="tc-pf"></div></div>
+          <div class="tc-hint">Top 3 nhận +10 câu hỏi/tháng sau hoặc đổi voucher 🎁</div>
+        </div>
+        <!-- Ranking -->
+        <div class="rank-card">
+          <div class="rk-t">🏆 Bảng Xếp Hạng Tháng 5</div>
+          <div class="rk-sub">Dựa trên số câu trả lời & lượt "Hữu ích"</div>
+          <div class="rk-item"><div class="rk-num rk1">1</div><div class="rk-av" style="background:#4267B2">HL</div><div class="rk-info"><div class="rk-name">Hoài Nhật Lê</div><div class="rk-detail">184 trả lời · 312 hữu ích</div></div><div class="rk-pts">1,840</div></div>
+          <div class="rk-item"><div class="rk-num rk2">2</div><div class="rk-av" style="background:var(--o)">PĐ</div><div class="rk-info"><div class="rk-name">Phong Đặng</div><div class="rk-detail">152 trả lời · 267 hữu ích</div></div><div class="rk-pts">1,520</div></div>
+          <div class="rk-item"><div class="rk-num rk3">3</div><div class="rk-av" style="background:var(--l)">AN</div><div class="rk-info"><div class="rk-name">Anh Nhật Nguyễn</div><div class="rk-detail">120 trả lời · 204 hữu ích</div></div><div class="rk-pts">1,200</div></div>
+          <div class="rk-item" style="background:rgba(238,182,39,.06);border-radius:9px;border:1.5px solid rgba(238,182,39,.2)"><div class="rk-num" style="color:var(--o)">4</div><div class="rk-av" style="background:var(--g)">AN</div><div class="rk-info"><div class="rk-name" style="color:var(--g)">An Nhiên (Bạn)</div><div class="rk-detail">84 trả lời · 96 hữu ích</div></div><div class="rk-pts" style="color:var(--o)">840</div></div>
+          <div class="rk-reward">🎁 <strong>Top 3:</strong> +10 câu hỏi/tháng + voucher cà phê hoặc giảm giá tour.</div>
+        </div>
+        <!-- Rewards -->
+        <div class="rewards-card">
+          <div class="rw-t">🎁 Đổi Phần Thưởng</div>
+          <div class="ri-rew"><div class="ri-ico">☕</div><div><div class="ri-n">Voucher Cà Phê</div><div class="ri-s">The Loft, Đà Lạt</div></div><div class="ri-r">500 pts</div></div>
+          <div class="ri-rew"><div class="ri-ico">🏕</div><div><div class="ri-n">Giảm giá Camping</div><div class="ri-s">Pine Forest Camp</div></div><div class="ri-r">1200 pts</div></div>
+          <div class="ri-rew"><div class="ri-ico">🎟</div><div><div class="ri-n">Vé tham quan</div><div class="ri-s">Vườn Hoa Hồ XH</div></div><div class="ri-r">800 pts</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI AGENT ===== -->
+<div id="va" class="view">
+  <div class="a-page">
+    <div class="a-steps-bar">
+      <div class="a-steps-inner" id="a-steps-inner">
+        <div class="a-step cur" id="astep1"><div class="a-step-circle">1</div><div class="a-step-label">Nhu cầu</div></div>
+        <div class="a-step" id="astep2"><div class="a-step-circle">2</div><div class="a-step-label">Địa điểm</div></div>
+        <div class="a-step" id="astep3"><div class="a-step-circle">3</div><div class="a-step-label">Timeline</div></div>
+        <div class="a-step" id="astep4"><div class="a-step-circle">4</div><div class="a-step-label">Theo dõi</div></div>
+      </div>
+    </div>
+    <div class="a-layout">
+      <div class="a-main-col">
+        <!-- STEP 1 -->
+        <div class="ap act" id="ap1">
+          <div class="ap-title">Cho mình biết về chuyến đi</div>
+          <div class="ap-sub">Điền thông tin để AI gợi ý địa điểm phù hợp nhất dựa trên dữ liệu xác thực thực tế.</div>
+          <div class="nf-group"><div class="nf-label">Bạn đi bao nhiêu ngày?</div><div class="nf-opts"><button class="nfo" onclick="selOpt(this)">1 ngày</button><button class="nfo sel" onclick="selOpt(this)">2 ngày 1 đêm</button><button class="nfo" onclick="selOpt(this)">3 ngày 2 đêm</button><button class="nfo" onclick="selOpt(this)">Hơn 3 ngày</button></div></div>
+          <div class="nf-group"><div class="nf-label">Đi cùng ai?</div><div class="nf-opts"><button class="nfo" onclick="selOpt(this)">Một mình</button><button class="nfo sel" onclick="selOpt(this)">Cặp đôi</button><button class="nfo" onclick="selOpt(this)">Nhóm bạn</button><button class="nfo" onclick="selOpt(this)">Gia đình</button></div></div>
+          <div class="nf-group"><div class="nf-label">Vibe chuyến đi?</div><div class="nf-opts"><button class="nfo sel" onclick="selOpt(this)">🏔 Thiên nhiên / Trekking</button><button class="nfo sel" onclick="selOpt(this)">☕ Cà phê / Chill</button><button class="nfo" onclick="selOpt(this)">🍽 Ẩm thực đặc sản</button><button class="nfo" onclick="selOpt(this)">📸 Check-in / View đẹp</button></div></div>
+          <div class="nf-group"><div class="nf-label">Ngân sách mỗi ngày?</div><div class="nf-opts"><button class="nfo" onclick="selOpt(this)">&lt; 300K</button><button class="nfo sel" onclick="selOpt(this)">300K–700K</button><button class="nfo" onclick="selOpt(this)">700K–1.5M</button><button class="nfo" onclick="selOpt(this)">&gt; 1.5M</button></div></div>
+          <div class="nf-group"><div class="nf-label">Muốn tránh điều gì?</div><input class="nf-inp" type="text" placeholder="VD: tránh chỗ đông, không leo núi nặng..."/></div>
+          <button class="nf-submit" onclick="goStep(2)">→ Xem gợi ý địa điểm</button>
+        </div>
+        <!-- STEP 2 -->
+        <div class="ap" id="ap2">
+          <div class="ap-title">Địa điểm gợi ý cho bạn</div>
+          <div class="ap-sub">Dựa trên Risk Score + dữ liệu xác thực. Tick ✓ để thêm vào lịch trình:</div>
+          <div id="reco-list"></div>
+          <div class="ai-refine-box">
+            <div class="arb-title">🤖 Muốn điều chỉnh gợi ý? Mô tả thêm cho AI</div>
+            <div class="arb-row"><input class="arb-inp" type="text" placeholder="VD: thêm thác nước, ít leo núi hơn, có view đẹp..." id="refine-inp"/><button class="arb-btn" onclick="refineRecos()">→ Cập nhật</button></div>
+          </div>
+          <button class="reco-confirm" onclick="goStep(3)">→ Tạo Timeline từ địa điểm đã chọn</button>
+        </div>
+        <!-- STEP 3 -->
+        <div class="ap" id="ap3">
+          <div class="ap-title">Lịch trình của bạn</div>
+          <div class="ap-sub">Thêm, xóa hoặc chỉnh sửa từng điểm. Dùng AI để tối ưu lại.</div>
+          <div class="tl-ai-box"><div class="tab-title">🤖 Nhờ AI chỉnh sửa lịch trình</div><div class="tab-row"><input class="tab-inp" type="text" placeholder="VD: đổi buổi chiều sang cà phê, thêm điểm ăn tối..." id="tl-ai-inp"/><button class="tab-btn" onclick="aiRefineTL()">Cập nhật →</button></div></div>
+          <div class="tl-items" id="tl-items"></div>
+          <div class="tl-add-form" id="tl-add-form">
+            <div style="font-size:12.5px;font-weight:700;color:var(--g);">➕ Thêm điểm dừng mới</div>
+            <input class="tl-edit-inp" id="add-time" type="text" placeholder="Giờ (VD: 15:30)"/>
+            <input class="tl-edit-inp" id="add-place" type="text" placeholder="Tên địa điểm"/>
+            <input class="tl-edit-inp" id="add-det" type="text" placeholder="Mô tả hoạt động (tuỳ chọn)"/>
+            <div class="tl-add-form-btns"><button class="tl-edit-save" onclick="confirmAddStop()">Thêm vào</button><button class="tl-edit-cancel" onclick="closeAddForm()">Huỷ</button></div>
+          </div>
+          <button class="tl-add-btn" onclick="openAddForm()">+ Thêm điểm dừng</button>
+          <button class="tl-save" onclick="goStep(4)">✓ Chốt lịch trình & Theo dõi</button>
+        </div>
+        <!-- STEP 4 -->
+        <div class="ap" id="ap4">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div><div class="ap-title" style="margin-bottom:2px">Theo dõi Live</div><div class="ap-sub" style="margin:0">AI đang giám sát real-time các điểm trong lịch trình</div></div>
+            <div class="live-badge" style="background:rgba(11,89,47,.1);color:var(--g);padding:7px 12px;border-radius:9px">ĐANG HOẠT ĐỘNG</div>
+          </div>
+          <div class="track-header">
+            <div><div class="thl-label">ĐIỂM ĐẾN TIẾP THEO</div><div class="thl-place" id="next-place-name">The Loft Coffee</div><div class="thl-dist">Cách bạn 1.2km • 5 phút di chuyển</div></div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><div class="live-badge" style="background:rgba(255,255,255,.15);padding:6px 12px;border-radius:8px">Đang cập nhật</div><button style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer" onclick="sv('c')">Xem cộng đồng →</button></div>
+          </div>
+          <div class="track-items" id="track-items"></div>
+          <div style="font-size:12.5px;font-weight:700;color:var(--g);margin-bottom:10px">🔔 Thông báo lịch trình</div>
+          <div id="track-notifs"></div>
+          <div class="lfs-title">Cập nhật từ cộng đồng (Live Feed)</div>
+          <div id="live-feed-items"></div>
+          <!-- Post-trip feedback trigger -->
+          <div style="background:linear-gradient(135deg,rgba(238,182,39,.12),rgba(140,167,10,.08));border:1.5px solid rgba(238,182,39,.3);border-radius:14px;padding:18px;margin-top:8px">
+            <div style="font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--g);margin-bottom:6px">✅ Chuyến đi đã hoàn thành?</div>
+            <div style="font-size:12.5px;color:var(--tm);line-height:1.6;margin-bottom:12px">Chia sẻ nhận xét của bạn về những địa điểm đã đi — dữ liệu này giúp cải thiện AI và hiển thị cho cộng đồng.</div>
+            <button style="background:var(--g);color:#fff;border:none;padding:11px 22px;border-radius:11px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s" onmouseover="this.style.background='var(--gd)'" onmouseout="this.style.background='var(--g)'" onclick="openFeedback()">📝 Gửi nhận xét chuyến đi</button>
+          </div>
+        </div>
+      </div>
+      <!-- SIDEBAR -->
+      <div class="a-sidebar-col">
+        <div class="a-sb-card" id="sb1">
+          <div class="a-sb-title">📊 Thống kê địa điểm</div>
+          <div class="sb-stat-row">
+            <div class="sb-stat"><span class="sb-stat-n">240+</span><div class="sb-stat-l">Địa điểm</div></div>
+            <div class="sb-stat"><span class="sb-stat-n">18K</span><div class="sb-stat-l">Review</div></div>
+            <div class="sb-stat"><span class="sb-stat-n">3</span><div class="sb-stat-l">Nền tảng</div></div>
+            <div class="sb-stat"><span class="sb-stat-n" style="color:var(--l)">87%</span><div class="sb-stat-l">Độ chính xác</div></div>
+          </div>
+          <div style="margin-top:12px;padding:11px;background:rgba(11,89,47,.05);border-radius:10px;font-size:12px;color:var(--tm);line-height:1.6">💡 AI lọc địa điểm theo Risk Score thực tế, ưu tiên nơi có cộng đồng xác thực đang hoạt động.</div>
+        </div>
+        <div class="a-sb-card" id="sb-alerts" style="display:none">
+          <div class="a-sb-title">⚠ Cảnh Báo Real-Time</div>
+          <div class="rt-alert"><div class="rt-alert-head">⚡ Langbiang</div>Đường km 4–5 hơi trơn sau mưa · 3 người xác nhận</div>
+          <div class="rt-alert"><div class="rt-alert-head">👥 Hồ Xuân Hương</div>Đông hơn bình thường cuối tuần</div>
+          <div class="rt-alert"><div class="rt-alert-head">🌧 Thời tiết</div>Dự báo mưa chiều ngày 2</div>
+        </div>
+        <div class="a-sb-card" id="sb-sched" style="display:none">
+          <div class="a-sb-title">📅 Lịch trình hôm nay</div>
+          <div class="sched-item done"><div class="sched-time">08:00</div><div class="sched-dot c"></div><div class="sched-place">Ăn sáng</div></div>
+          <div class="sched-item cur"><div class="sched-time">10:00</div><div class="sched-dot o"></div><div class="sched-place">The Loft Coffee</div></div>
+          <div class="sched-item"><div class="sched-time">12:00</div><div class="sched-dot c"></div><div class="sched-place">Ăn trưa</div></div>
+          <div class="sched-item"><div class="sched-time">13:30</div><div class="sched-dot c"></div><div class="sched-place">Langbiang Trail</div></div>
+          <div class="sched-item"><div class="sched-time">Ngày 2</div><div class="sched-dot c"></div><div class="sched-place">Đồi Chè Cầu Đất</div></div>
+        </div>
+        <div class="a-sb-card" id="sb-comm" style="display:none">
+          <div class="a-sb-title">💬 Cộng đồng điểm tiếp</div>
+          <div style="font-size:12px;font-weight:600;color:var(--g);margin-bottom:8px">The Loft Coffee · 6 người tại chỗ</div>
+          <div style="background:rgba(140,167,10,.07);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:8px">
+            <div style="font-size:10px;font-weight:700;color:var(--l);margin-bottom:5px">XÁC THỰC TẠI CHỖ (GPS)</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12.5px"><span>Còn trống</span><strong>12</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px"><span>Hết chỗ</span><strong style="color:var(--tm)">4</strong></div>
+          </div>
+          <button style="width:100%;background:rgba(11,89,47,.07);border:none;border-radius:9px;padding:9px;font-size:12.5px;font-weight:600;color:var(--g);cursor:pointer" onclick="sv('c')">Xem đầy đủ →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE ===== -->
+<div id="vp" class="view">
+  <div class="p-page">
+    <button class="bk" onclick="sv('c')" style="margin-bottom:20px">← Quay lại</button>
+    <!-- Header -->
+    <div class="p-header">
+      <div class="p-av-wrap"><div class="p-av">AN</div><div class="p-av-edit">✏</div></div>
+      <div class="p-info">
+        <div class="p-name">Đặng Nguyễn An Nhiên</div>
+        <div class="p-since">Thành viên Ban Xác Thực Đà Lạt từ tháng 3/2024</div>
+        <div class="p-rank-row">
+          <div class="p-rank-badge"><div class="p-rank-n">Hạng 4</div><div class="p-rank-l">Top 12% tháng này</div></div>
+          <div class="p-verify-badge">📍 Đã xác thực tại chỗ</div>
+        </div>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="p-stats-row">
+      <div class="p-stat"><span class="p-stat-n">84</span><div class="p-stat-l">Câu trả lời<br>tháng này</div></div>
+      <div class="p-stat"><span class="p-stat-n">2/10</span><div class="p-stat-l">Câu hỏi đã dùng<br>tháng này</div></div>
+      <div class="p-stat"><span class="p-stat-n" style="color:var(--o)">840</span><div class="p-stat-l">Điểm tích lũy<br>đổi thưởng</div></div>
+      <div class="p-stat"><span class="p-stat-n" style="color:var(--l)">12</span><div class="p-stat-l">Địa điểm<br>đã xác thực</div></div>
+    </div>
+    <!-- Goal -->
+    <div class="p-goal">
+      🎯 <strong>Mục tiêu tháng này:</strong> Cần thêm <strong>12 câu trả lời được bấm "Hữu ích"</strong> để lọt vào <strong>Top 3</strong>, mở khóa <strong>+10 câu hỏi miễn phí</strong> và voucher đặc quyền!
+      <div class="p-prog-wrap"><div class="p-prog-bar"><div class="p-prog-fill"></div></div><div class="p-prog-label">68% tiến độ · Còn 12 câu nữa</div></div>
+    </div>
+    <!-- Grid -->
+    <div class="p-grid">
+      <!-- Activity -->
+      <div class="p-card">
+        <div class="p-card-title">📋 Lịch Sử Hoạt Động</div>
+        <div class="p-act-item"><div class="p-act-ico">⚡</div><div class="p-act-txt">Vote: Langbiang đường lên đỉnh có trơn không?</div><div class="p-act-time">2 ngày trước</div></div>
+        <div class="p-act-item"><div class="p-act-ico">📝</div><div class="p-act-txt">Review: The Loft cuối tuần đông không?</div><div class="p-act-time">5 ngày trước</div></div>
+        <div class="p-act-item"><div class="p-act-ico">⚡</div><div class="p-act-txt">Vote: Đường vào Thác Pongour có ổn không?</div><div class="p-act-time">2 tuần trước</div></div>
+        <div class="p-act-item"><div class="p-act-ico">✅</div><div class="p-act-txt">Feedback sau chuyến đi: Langbiang + Đồi Chè Cầu Đất</div><div class="p-act-time">3 tuần trước</div></div>
+        <div class="p-act-item"><div class="p-act-ico">🏆</div><div class="p-act-txt">Đạt Top 5 tháng 4 · Đổi voucher The Loft</div><div class="p-act-time">1 tháng trước</div></div>
+      </div>
+      <!-- Visited places -->
+      <div class="p-card">
+        <div class="p-card-title">📍 Địa Điểm Đã Đi</div>
+        <div class="p-place-item" onclick="showDetail(1)"><div class="p-place-thumb" style="background:#0B592F"></div><div><div class="p-place-n">Langbiang Summit Trail</div><div class="p-place-meta">Trekking · Lạc Dương</div></div><div class="p-place-score">87</div></div>
+        <div class="p-place-item" onclick="showDetail(4)"><div class="p-place-thumb" style="background:#EEB627"></div><div><div class="p-place-n">The Loft Coffee</div><div class="p-place-meta">Cà phê · Trung tâm TP</div></div><div class="p-place-score">91</div></div>
+        <div class="p-place-item" onclick="showDetail(6)"><div class="p-place-thumb" style="background:#2d6a4f"></div><div><div class="p-place-n">Đồi Chè Cầu Đất</div><div class="p-place-meta">Nông trại · Đức Trọng</div></div><div class="p-place-score">78</div></div>
+        <div class="p-place-item" onclick="showDetail(2)"><div class="p-place-thumb" style="background:#8CA70A"></div><div><div class="p-place-n">Vườn Hoa Hồ Xuân Hương</div><div class="p-place-meta">Cảnh quan · Trung tâm TP</div></div><div class="p-place-score">82</div></div>
+      </div>
+      <!-- Badges -->
+      <div class="p-card">
+        <div class="p-card-title">🏅 Huy Hiệu</div>
+        <div class="p-badges">
+          <div class="p-badge earned"><div class="p-badge-ico">🥾</div><div class="p-badge-name">Trekker<br>Địa Phương</div><div class="p-badge-lbl">Đã đạt</div></div>
+          <div class="p-badge earned"><div class="p-badge-ico">☕</div><div class="p-badge-name">Cà Phê<br>Sành Điệu</div><div class="p-badge-lbl">Đã đạt</div></div>
+          <div class="p-badge earned"><div class="p-badge-ico">📍</div><div class="p-badge-name">Xác Thực<br>Tại Chỗ</div><div class="p-badge-lbl">x12 lần</div></div>
+          <div class="p-badge"><div class="p-badge-ico">🌟</div><div class="p-badge-name">Top 3<br>Tháng</div><div class="p-badge-lbl">Chưa đạt</div></div>
+          <div class="p-badge"><div class="p-badge-ico">🏕</div><div class="p-badge-name">Camping<br>Expert</div><div class="p-badge-lbl">Chưa đạt</div></div>
+        </div>
+      </div>
+      <!-- Feedback history -->
+      <div class="p-card">
+        <div class="p-card-title">💬 Feedback Đã Gửi</div>
+        <div style="background:rgba(140,167,10,.06);border-radius:12px;padding:13px;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--l);margin-bottom:3px;display:flex;align-items:center;justify-content:space-between">Langbiang Summit Trail <span style="font-size:10px;color:var(--tm);font-weight:400">3 tuần trước</span></div>
+          <div style="font-size:12.5px;color:var(--tx);line-height:1.55;margin-bottom:5px">View đỉnh rất đẹp, guide nhiệt tình. Đường km 4–5 hơi trơn sau mưa.</div>
+          <div class="fb-community-tag">✓ Đã hiển thị trong Cộng Đồng</div>
+        </div>
+        <div style="background:rgba(140,167,10,.06);border-radius:12px;padding:13px">
+          <div style="font-size:11px;font-weight:700;color:var(--l);margin-bottom:3px;display:flex;align-items:center;justify-content:space-between">Đồi Chè Cầu Đất <span style="font-size:10px;color:var(--tm);font-weight:400">3 tuần trước</span></div>
+          <div style="font-size:12.5px;color:var(--tx);line-height:1.55;margin-bottom:5px">Sương mù 6h30 rất đẹp. Tour hái chè vui, nên đến sớm.</div>
+          <div class="fb-community-tag">✓ Đã dùng để cải thiện AI Score</div>
+        </div>
+        <button style="width:100%;margin-top:10px;border:2px dashed rgba(11,89,47,.2);border-radius:11px;padding:10px;background:transparent;color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="openFeedback()">+ Gửi feedback mới</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FEEDBACK MODAL ===== -->
+<div class="fb-overlay" id="fb-modal" onclick="fbBgClick(event)">
+  <div class="fb-box" onclick="event.stopPropagation()">
+    <div class="fb-header">
+      <div class="fb-header-title">📝 Nhận xét chuyến đi</div>
+      <div class="fb-header-sub">Feedback của bạn giúp cải thiện AI Score và hiển thị cập nhật mới cho cộng đồng</div>
+    </div>
+    <div class="fb-body">
+      <div class="fb-progress">
+        <div style="font-size:12px;color:var(--tm)">Địa điểm <span id="fb-prog-cur">1</span>/<span id="fb-prog-total">3</span></div>
+        <div class="fb-prog-dots" id="fb-dots"></div>
+      </div>
+      <div id="fb-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGIN MODAL ===== -->
+<div class="modal-overlay" id="login-modal" onclick="modalBgClick(event,'login-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+    <div class="login-header">
+      <div class="login-logo">🏔</div>
+      <div class="login-title">Chào mừng trở lại</div>
+      <div class="login-sub">Đăng nhập để đặt câu hỏi và nhận xác thực real-time</div>
+    </div>
+    <div class="login-body">
+      <label class="lf-label">Email của bạn</label>
+      <input class="lf-input" type="email" placeholder="email@example.com"/>
+      <label class="lf-label">Mật khẩu</label>
+      <input class="lf-input" type="password" placeholder="••••••••"/>
+      <button class="lf-submit" onclick="doLogin()">Đăng Nhập</button>
+      <div style="text-align:center;font-size:12.5px;color:var(--tm);cursor:pointer;margin-bottom:10px" onclick="closeModal('login-modal')">Bỏ qua</div>
+      <div class="lf-divider">hoặc</div>
+      <button class="lf-google" onclick="doLogin()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Tiếp tục với Google
+      </button>
+      <div class="lf-alt">Chưa có tài khoản? <a href="#">Đăng ký miễn phí</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const places=[
+  {id:1,name:"Langbiang Summit Trail",loc:"Lạc Dương",type:"Trekking",risk:"low",score:87,reviews:312,dist:"14km",dur:"6h",elev:"2167m",color:"#0B592F",
+   summary:"Được đánh giá cao đồng đều trên cả 3 nền tảng. Google Maps ghi nhận score cao từ 312 lượt. Facebook nhiều bài chia sẻ tích cực về camping đêm. TikTok viral với cảnh mây trắng buổi sáng.",
+   complaints:[
+     {txt:"Một số tour trễ 10–15 phút so với giờ hẹn",src:"fb",link:"https://facebook.com",label:"Xem trên Facebook ↗"},
+     {txt:"Đường trơn mùa mưa, cần giày chuyên dụng",src:"gm",link:"https://maps.google.com",label:"Xem trên Google Maps ↗"}
+   ],
+   fb:4.7,maps:4.8,tiktok:4.6,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[
+     {type:"vote",q:"Hôm nay đường lên đỉnh có trơn không?",opts:[{l:"Khô ráo 👍",p:72},{l:"Hơi ướt 😐",p:21},{l:"Trơn, cẩn thận ⚠",p:7}],gps:3,time:"5 phút",
+      verifiers:[{name:"HikerDaLat",voteIdx:0},{name:"MinhTrail",voteIdx:0},{name:"LạcDươngLocal",voteIdx:2}]},
+     {type:"review",author:"HikerDaLat",av:"H",rank:1,answers:184,questionsUsed:3,txt:"Vừa xuống đỉnh. Trời đẹp, view tuyệt. Nên xuất phát trước 7h để tránh nắng đoạn cuối.",likes:18,time:"32 phút"}
+   ]},
+  {id:2,name:"Vườn Hoa Hồ Xuân Hương",loc:"Trung tâm TP",type:"Cảnh quan",risk:"low",score:82,reviews:890,dist:"2km",dur:"2–3h",elev:"1480m",color:"#8CA70A",
+   summary:"Điểm đến gia đình phổ biến nhất. Tháng 1–2 đẹp nhất. TikTok cảnh báo đông khách dịp lễ và cuối tuần.",
+   complaints:[
+     {txt:"Đông khách cuối tuần, khó chụp ảnh đẹp",src:"tt",link:"https://tiktok.com",label:"Xem trên TikTok ↗"},
+     {txt:"Giá vé tăng theo mùa, cần check trước",src:"gm",link:"https://maps.google.com",label:"Xem trên Google Maps ↗"}
+   ],
+   fb:4.4,maps:4.5,tiktok:4.3,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[
+     {type:"vote",q:"Còn bao nhiêu người trong vườn hoa lúc này?",opts:[{l:"Thưa, thoải mái",p:55},{l:"Vừa phải",p:32},{l:"Đông, chen lấn",p:13}],gps:5,time:"18 phút",
+      verifiers:[{name:"MinhTraveler",voteIdx:0},{name:"HoaHồLocal",voteIdx:1},{name:"DaLatExplore",voteIdx:0},{name:"SươngMù.Đà",voteIdx:1},{name:"PhuongDL",voteIdx:2}]}
+   ]},
+  {id:3,name:"Bidoup Núi Bà Loop",loc:"Lạc Dương",type:"Trekking",risk:"medium",score:61,reviews:156,dist:"28km",dur:"2 ngày",elev:"2287m",color:"#936440",
+   summary:"Đánh giá cao về cảnh quan nhưng nhiều cảnh báo về độ khó. Đường mòn km 15–18 chưa rõ ràng.",
+   complaints:[
+     {txt:"Đường mòn km 15–18 không rõ, dễ lạc",src:"fb",link:"https://facebook.com",label:"Xem trên Facebook ↗"},
+     {txt:"Thiếu điểm nước — cần mang đủ",src:"gm",link:"https://maps.google.com",label:"Xem trên Google Maps ↗"},
+     {txt:"Không có sóng điện thoại toàn tuyến",src:"tt",link:"https://tiktok.com",label:"Xem trên TikTok ↗"}
+   ],
+   fb:4.1,maps:4.3,tiktok:3.9,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[{type:"review",author:"TrekVN",av:"T",rank:2,answers:152,questionsUsed:5,txt:"Tuyến này khó thật. Đoạn km 16 có ngã ba không có biển chỉ dẫn, nhóm mình đi sai mất 40 phút.",likes:41,time:"2 giờ"}]},
+  {id:4,name:"The Loft Coffee & Roastery",loc:"Trung tâm TP",type:"Cà phê",risk:"low",score:91,reviews:2100,dist:"—",dur:"1–2h",elev:"1490m",color:"#EEB627",
+   summary:"Top cà phê review nhiều nhất Đà Lạt. Viral TikTok với video rang cà phê. Score ổn định 6 tháng liên tiếp.",
+   complaints:[{txt:"Hết bàn từ 9–11h sáng cuối tuần",src:"gm",link:"https://maps.google.com",label:"Xem trên Google Maps ↗"}],
+   fb:4.8,maps:4.9,tiktok:4.9,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[
+     {type:"vote",q:"Hiện có bàn trống không?",opts:[{l:"Còn nhiều ✓",p:40},{l:"Còn ít",p:38},{l:"Hết chỗ ✗",p:22}],gps:6,time:"8 phút",
+      verifiers:[{name:"CoffeeLover",voteIdx:0},{name:"TheLoftFan",voteIdx:0},{name:"MinhCafe",voteIdx:1},{name:"HoangNam",voteIdx:0},{name:"LinhDL",voteIdx:2},{name:"TuanAnh",voteIdx:0}]}
+   ]},
+  {id:5,name:"Thác Pongour",loc:"Đức Trọng",type:"Thác nước",risk:"medium",score:65,reviews:445,dist:"55km",dur:"3–4h",elev:"900m",color:"#DF6F3B",
+   summary:"Thác đẹp nhưng nhiều cảnh báo về hạ tầng. Mùa mưa (6–10) đẹp nhất nhưng rủi ro cao.",
+   complaints:[
+     {txt:"Đường vào 3km gồ ghề, xe con khó đi",src:"fb",link:"https://facebook.com",label:"Xem trên Facebook ↗"},
+     {txt:"Dịch vụ chụp ảnh ép giá du khách",src:"tt",link:"https://tiktok.com",label:"Xem trên TikTok ↗"},
+     {txt:"Mùa mưa nước dâng cao, khu bơi nguy hiểm",src:"gm",link:"https://maps.google.com",label:"Xem trên Google Maps ↗"}
+   ],
+   fb:3.9,maps:4.1,tiktok:3.8,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[{type:"vote",q:"Đường vào thác hiện tại đi được không?",opts:[{l:"Đi được bình thường",p:48},{l:"Hơi xóc nhưng ổn",p:35},{l:"Khó đi, cẩn thận",p:17}],gps:2,time:"45 phút",verifiers:[{name:"PongourLocal",voteIdx:0},{name:"BikerDL",voteIdx:1}]}]},
+  {id:6,name:"Đồi Chè Cầu Đất",loc:"Đức Trọng",type:"Nông trại",risk:"low",score:78,reviews:730,dist:"30km",dur:"3–4h",elev:"1600m",color:"#2d6a4f",
+   summary:"Đánh giá đồng đều 3 nền tảng. Buổi sáng sớm 6–8h đẹp nhất (sương mù). Tour hái chè được yêu thích.",
+   complaints:[{txt:"Mùa cao điểm (hè) đông và nắng — nên đi sáng sớm",src:"fb",link:"https://facebook.com",label:"Xem trên Facebook ↗"}],
+   fb:4.5,maps:4.6,tiktok:4.4,platLinks:{fb:"https://facebook.com",maps:"https://maps.google.com",tiktok:"https://tiktok.com"},
+   community:[{type:"review",author:"TeaLover",av:"T",rank:3,answers:120,questionsUsed:4,txt:"Đến lúc 6h30 sáng, sương mù còn dày đặc, đẹp hơn trong ảnh nhiều. Nhớ mặc ấm.",likes:27,time:"1 giờ"}]},
+];
+
+const communityFeed=[
+  {id:1,place:"The Loft Coffee",time:"5 phút trước",type:"vote",q:"Hiện tại quán có còn bàn ngoài ban công không?",opts:[{l:"Còn trống",p:75},{l:"Hết chỗ",p:25}],gps:6,
+   verifiers:[{name:"CoffeeLover",voteIdx:0},{name:"TheLoftFan",voteIdx:0},{name:"MinhCafe",voteIdx:0},{name:"HoangNam",voteIdx:0},{name:"LinhDL",voteIdx:0},{name:"TuanAnh",voteIdx:1}]},
+  {id:2,place:"Langbiang Summit Trail",time:"18 phút trước",type:"vote",q:"Hôm nay đường lên đỉnh có trơn không?",opts:[{l:"Khô ráo, đi tốt 👍",p:72},{l:"Hơi ướt 😐",p:21},{l:"Trơn, cẩn thận ⚠",p:7}],gps:3,
+   verifiers:[{name:"HikerDaLat",voteIdx:0},{name:"MinhTrail",voteIdx:0},{name:"LạcDươngLocal",voteIdx:2}]},
+  {id:3,place:"Vườn Hoa Hồ Xuân Hương",time:"28 phút trước",type:"review",author:"Minh_Traveler",av:"M",rank:null,answers:56,questionsUsed:2,txt:"Mình vừa đi sáng nay. Hoa vẫn còn khá đẹp nhưng không nhiều như tháng 12. Khu bên trái hồ tươi hơn.",likes:24,dislikes:1,gps:5,fromFeedback:false},
+  {id:4,place:"Đồi Chè Cầu Đất",time:"1 giờ trước",type:"review",author:"An Nhiên",av:"AN",rank:4,answers:84,questionsUsed:2,txt:"Sương mù 6h30 rất đẹp. Tour hái chè vui, nên đến sớm. Cần mặc ấm hơn tưởng.",likes:27,dislikes:0,gps:2,fromFeedback:true},
+  {id:5,place:"Thác Pongour",time:"2 giờ trước",type:"vote",q:"Đường vào thác hiện tại thế nào?",opts:[{l:"Đi được bình thường",p:48},{l:"Hơi xóc nhưng ổn",p:35},{l:"Khó đi, cẩn thận",p:17}],gps:2,
+   verifiers:[{name:"PongourLocal",voteIdx:0},{name:"BikerDL",voteIdx:1}]},
+];
+
+let tlData=[
+  {time:"07:00",place:"The Loft Coffee & Roastery",det:"Khởi đầu ngày với specialty coffee rang tươi",alert:null,live:"Hiện còn bàn · cập nhật 8 phút trước"},
+  {time:"09:00",place:"Vườn Hoa Hồ Xuân Hương",det:"Tham quan vườn hoa ven hồ (1.5–2h)",alert:"Đông hơn bình thường cuối tuần — nên đến đúng giờ",live:null},
+  {time:"11:30",place:"Ăn trưa khu Phan Đình Phùng",det:"Lẩu bò đặc sản hoặc bánh mì xíu mại",alert:null,live:null},
+  {time:"13:30",place:"Langbiang Summit Trail",det:"Trekking lên đỉnh (~6h) với hướng dẫn viên bản địa",alert:"Tránh xuất phát sau 14h — khó về trước tối",live:"Trời đẹp · 3 người xác nhận tại chỗ"},
+  {time:"Ngày 2 · 06:30",place:"Đồi Chè Cầu Đất",det:"Hái chè lúc sương mù — đẹp nhất buổi sáng",alert:null,live:"Sương mù đẹp theo báo cáo cộng đồng sáng nay"},
+  {time:"10:30",place:"Di chuyển về TP",det:"Nghỉ ngơi, cà phê, mua quà đặc sản",alert:null,live:null},
+];
+
+// NAV
+function sv(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('act'));
+  document.getElementById('v'+v).classList.add('act');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('act'));
+  const map={e:'Khám Phá',c:'Cộng Đồng',a:'AI Agent'};
+  if(map[v]) document.querySelectorAll('.nb').forEach(b=>{if(b.textContent===map[v])b.classList.add('act')});
+  window.scrollTo(0,0);
+}
+
+// EXPLORE
+function riskLabel(r){return r==='low'?'Rủi ro Thấp':r==='medium'?'Trung Bình':'Rủi ro Cao'}
+function riskCls(r){return r==='low'?'rl':r==='medium'?'rm':'rh'}
+function renderPlaces(){
+  document.getElementById('pg').innerHTML=places.map(p=>`
+    <div class="pc" onclick="showDetail(${p.id})">
+      <div class="pc-thumb" style="background:${p.color}">
+        <div class="pc-risk ${riskCls(p.risk)}">${riskLabel(p.risk)}</div>
+        <div class="pc-type">${p.type}</div>
+      </div>
+      <div class="pc-b">
+        <div class="pc-n">${p.name}</div>
+        <div class="pc-l">📍 ${p.loc}</div>
+        <div class="pc-score-row">
+          <div class="pc-score-big">${p.score}</div>
+          <div style="flex:1"><div style="font-size:10px;color:var(--tm);margin-bottom:3px">Risk Score tổng hợp</div>
+          <div class="pc-score-bar"><div class="pc-score-fill" style="width:${p.score}%"></div></div></div>
+        </div>
+        <div class="pc-ft">
+          <div class="pc-community"><div class="pc-live-dot"></div>${p.community.reduce((a,c)=>a+(c.gps||0),0)} tại chỗ</div>
+          <div class="pc-rev">${p.reviews} review</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// DETAIL
+function rankLabel(r){
+  if(!r) return '<span class="rnk rnkn">Thành viên</span>';
+  if(r===1) return '<span class="rnk rnk1">🥇 Hạng 1</span>';
+  if(r===2) return '<span class="rnk rnk2">🥈 Hạng 2</span>';
+  if(r===3) return '<span class="rnk rnk3">🥉 Hạng 3</span>';
+  return `<span class="rnk rnkn">Hạng ${r}</span>`;
+}
+
+function showDetail(id){
+  const p=places.find(x=>x.id===id); if(!p)return;
+  const sim=places.filter(x=>x.id!==id&&x.type===p.type).slice(0,3);
+
+  // Community HTML with verifier-per-option display
+  const commHtml=p.community.map(item=>{
+    if(item.type==='vote'){
+      const verifiersByOpt={};
+      (item.verifiers||[]).forEach(v=>{
+        if(!verifiersByOpt[v.voteIdx]) verifiersByOpt[v.voteIdx]=[];
+        verifiersByOpt[v.voteIdx].push(v.name);
+      });
+      return `<div class="dcp-item">
+        <div class="dcp-meta"><span class="dcp-place">⚡ Vote nhanh</span><span class="dcp-time">${item.time} trước</span><span class="dcp-gps">${item.gps} đang tại chỗ</span></div>
+        <div style="font-size:12.5px;font-weight:600;margin-bottom:8px">${item.q}</div>
+        ${item.opts.map((o,i)=>`
+          <div class="vote-result-row">
+            <div class="vr-opt">${o.l}</div><div class="vr-pct">${o.p}%</div>
+          </div>
+          ${verifiersByOpt[i]?`<div class="vr-verifiers">${verifiersByOpt[i].map(n=>`<span class="vtag">📍 ${n}</span>`).join('')}</div>`:''}`).join('')}
+      </div>`;
+    } else {
+      return `<div class="dcp-item">
+        <div class="dcp-meta"><span class="dcp-place">📝 Review</span><span class="dcp-time">${item.time} trước</span></div>
+        <div style="font-size:12px;font-weight:600;color:var(--g);margin-bottom:2px">${item.author} ${rankLabel(item.rank)}</div>
+        <div style="font-size:10px;color:var(--tm);margin-bottom:5px">Trả lời: <strong>${item.answers}</strong> · Đã hỏi: ${item.questionsUsed}/10</div>
+        <div style="font-size:12.5px;line-height:1.6">${item.txt}</div>
+        <div style="font-size:11px;color:var(--tm);margin-top:4px">👍 ${item.likes}</div>
+      </div>`;
+    }
+  }).join('');
+
+  // Complaints with source link (no review content shown inline)
+  const srcIcon={fb:'🔵',gm:'🔴',tt:'⚫'};
+  const srcName={fb:'Facebook',gm:'Google Maps',tt:'TikTok'};
+  const complaintHtml=p.complaints.map(c=>`
+    <div class="ci">
+      <div class="ci-ico">⚠</div>
+      <div class="ci-body">
+        <div class="ci-txt">${c.txt}</div>
+        <div class="ci-src">
+          <span class="ci-src-label">Nguồn gốc:</span>
+          <a class="ci-link ${c.src}" href="${c.link}" target="_blank">${srcIcon[c.src]} Xem bình luận gốc trên ${srcName[c.src]} ↗</a>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('d-content').innerHTML=`
+    <div class="d-layout">
+      <div>
+        <div class="d-img-wrap">
+          <div class="d-img-bg" style="background:linear-gradient(135deg,${p.color},${p.color}bb)"></div>
+          <div class="d-img-overlay"></div>
+          <div class="d-img-type">${p.type}</div>
+          <div class="d-img-info"><div class="d-img-name">${p.name}</div><div class="d-img-loc">📍 ${p.loc}, Lâm Đồng</div></div>
+        </div>
+        <!-- Score banner — numbers only, no stars -->
+        <div class="d-score-banner">
+          <div class="dsb-ring">${p.score}</div>
+          <div class="dsb-info"><div class="dsb-status">${riskLabel(p.risk)} ✓</div><div class="dsb-desc">Risk Score tổng hợp từ 3 nền tảng · ${p.reviews} review đã phân tích</div></div>
+          <div class="dsb-platforms">
+            <div class="dsb-plat"><div class="dsb-plat-name">Facebook</div><div class="dsb-plat-score">${p.fb}</div><div class="dsb-plat-lbl">Score</div></div>
+            <div class="dsb-plat"><div class="dsb-plat-name">Maps</div><div class="dsb-plat-score">${p.maps}</div><div class="dsb-plat-lbl">Score</div></div>
+            <div class="dsb-plat"><div class="dsb-plat-name">TikTok</div><div class="dsb-plat-score">${p.tiktok}</div><div class="dsb-plat-lbl">Score</div></div>
+          </div>
+        </div>
+        <div class="d-card">
+          <div class="d-ct">🤖 Nhận Định Tổng Hợp (AI)</div>
+          <div class="ai-sum">${p.summary}</div>
+          <div class="d-ct" style="margin-top:14px">⚠ Complaints Nổi Bật <span style="font-size:10px;font-weight:400;color:var(--tm)">· Nhấn link để xem bình luận gốc trên nền tảng</span></div>
+          <div class="comp-list">${complaintHtml}</div>
+        </div>
+        <div class="d-card">
+          <div class="d-ct">🔗 Xem Review trực tiếp tại nền tảng gốc</div>
+          <a class="rv-platform-link" href="${p.platLinks.maps}" target="_blank"><div class="rpl-left"><div class="rpl-dot" style="background:#EA4335"></div><div><div class="rpl-name">Google Maps</div><div class="rpl-sub">Score: ${p.maps} · Nhấn để xem review thực tế</div></div></div><div class="rpl-arrow">↗</div></a>
+          <a class="rv-platform-link" href="${p.platLinks.fb}" target="_blank"><div class="rpl-left"><div class="rpl-dot" style="background:#4267B2"></div><div><div class="rpl-name">Facebook</div><div class="rpl-sub">Score: ${p.fb} · Nhấn để xem bài đăng và review</div></div></div><div class="rpl-arrow">↗</div></a>
+          <a class="rv-platform-link" href="${p.platLinks.tiktok}" target="_blank"><div class="rpl-left"><div class="rpl-dot" style="background:#111"></div><div><div class="rpl-name">TikTok</div><div class="rpl-sub">Score: ${p.tiktok} · Nhấn để xem video review</div></div></div><div class="rpl-arrow">↗</div></a>
+        </div>
+        <div class="d-comm-preview" onclick="goToCommunityPlace(${p.id})">
+          <div class="dcp-hdr"><div class="dcp-title">💬 Cộng Đồng · Cập nhật thực tế <span class="dcp-gps" style="margin-left:6px">${p.community.reduce((a,c)=>a+(c.gps||0),0)} tại chỗ</span></div><div class="dcp-more">Xem thêm →</div></div>
+          ${commHtml}
+          <div style="text-align:center;font-size:12px;color:var(--o);font-weight:600;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(11,89,47,.15)">Nhấn để đặt câu hỏi trong Cộng Đồng →</div>
+        </div>
+      </div>
+      <div>
+        <div class="d-meta-card"><div class="dmc-lbl">Thông tin địa điểm</div>
+          <div class="dmc-item"><span class="dmc-k">Loại hình</span><span class="dmc-v">${p.type}</span></div>
+          <div class="dmc-item"><span class="dmc-k">Khu vực</span><span class="dmc-v">${p.loc}</span></div>
+          <div class="dmc-item"><span class="dmc-k">Cự ly</span><span class="dmc-v">${p.dist}</span></div>
+          <div class="dmc-item"><span class="dmc-k">Thời gian</span><span class="dmc-v">${p.dur}</span></div>
+          <div class="dmc-item"><span class="dmc-k">Độ cao</span><span class="dmc-v">${p.elev}</span></div>
+          <div class="dmc-item"><span class="dmc-k">Tổng review</span><span class="dmc-v">${p.reviews}</span></div>
+        </div>
+        <div class="d-sim"><div class="d-ct">🔀 Địa Điểm Tương Tự</div>
+          ${sim.length?sim.map(s=>`<div class="sim-item" onclick="showDetail(${s.id})"><div class="si-thumb" style="background:${s.color}"></div><div><div class="si-name">${s.name}</div><div class="si-loc">${s.loc}</div></div><div class="si-score">${s.score}</div></div>`).join(''):'<p style="font-size:12.5px;color:var(--tm)">Không có địa điểm tương tự</p>'}
+        </div>
+      </div>
+    </div>`;
+  sv('d');
+}
+
+function goToCommunityPlace(id){
+  const p=places.find(x=>x.id===id); if(!p)return;
+  sv('c');
+  setTimeout(()=>{const inp=document.getElementById('c-search-inp');inp.value=p.name;onCSearch(p.name);},100);
+}
+
+// COMMUNITY
+function renderFeed(){
+  document.getElementById('qf').innerHTML=communityFeed.map((q,qi)=>{
+    let inner='';
+    if(q.type==='vote'){
+      const versByOpt={};
+      (q.verifiers||[]).forEach(v=>{if(!versByOpt[v.voteIdx])versByOpt[v.voteIdx]=[];versByOpt[v.voteIdx].push(v.name);});
+      inner=`<div class="qc-q">${q.q}</div>
+        <div class="v-opts">${q.opts.map((o,i)=>`<button class="vo" onclick="castVote(this,${qi},${i})">${o.l}</button>`).join('')}</div>
+        <div class="vote-result-block" id="vb${qi}" style="display:none">
+          ${q.opts.map((o,i)=>`<div class="vrb-row">
+            <div class="vrb-bar-row"><div class="vrb-label">${o.l}</div><div class="vrb-bar"><div class="vrb-fill" style="width:${o.p}%"></div></div><div class="vrb-pct">${o.p}%</div></div>
+            ${versByOpt[i]?`<div class="vrb-verifiers">${versByOpt[i].map(n=>`<span class="vtag-v gps">${n}</span>`).join('')}</div>`:''}</div>`).join('')}
+          <div style="font-size:10.5px;color:var(--tm);margin-top:6px">Người xác thực đang bấm vote tại địa điểm (GPS)</div>
+        </div>`;
+    } else {
+      inner=`<div style="display:flex;align-items:center;gap:9px;margin-bottom:6px">
+        <div class="rvc-av" style="background:var(--g)">${q.av}</div>
+        <div><div class="rvc-name">${q.author} ${q.rank?rankLabel(q.rank):''}</div>
+        <div class="rvc-stats"><span class="rvc-stat">Trả lời: <strong>${q.answers}</strong></span><span class="rvc-stat">Đã hỏi: ${q.questionsUsed}/10</span></div></div>
+      </div>
+      <div class="rvc-txt">${q.txt}</div>
+      ${q.fromFeedback?`<div class="fb-community-tag">📍 Từ feedback sau chuyến đi · Đã xác thực GPS</div>`:''}
+      <div class="rvc-acts"><button class="rva" onclick="likeIt(this,${q.likes||0})">👍 ${q.likes||0}</button><button class="rva">👎 ${q.dislikes||0}</button><button class="rva">💬 Trả lời</button></div>`;
+    }
+    return `<div class="qc">
+      <div class="qc-top"><div class="qc-pl">📍 ${q.place}</div><div class="qc-tm">${q.time}</div></div>
+      ${inner}
+      <div class="gps-tag"><div class="gps-d"></div>${q.gps||0} người đang xác thực tại địa điểm</div>
+    </div>`;
+  }).join('');
+}
+
+function castVote(btn,qi,idx){
+  btn.closest('.qc').querySelectorAll('.vo').forEach(b=>b.classList.remove('voted'));
+  btn.classList.add('voted');
+  document.getElementById('vb'+qi).style.display='block';
+}
+function likeIt(btn,cur){btn.textContent='👍 '+(cur+1)}
+function selType(btn){document.querySelectorAll('.cct').forEach(b=>b.classList.remove('act'));btn.classList.add('act')}
+function onCSearch(v){
+  const res=document.getElementById('c-place-results'),list=document.getElementById('c-place-list'),sugg=document.getElementById('c-sugg-wrap');
+  if(!v||v.length<2){res.style.display='none';sugg.style.display='none';return;}
+  const found=places.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())||p.loc.toLowerCase().includes(v.toLowerCase()));
+  if(!found.length){res.style.display='none';return;}
+  res.style.display='block';
+  list.innerHTML=found.map(p=>`<div onclick="selectCPlace(${p.id})" style="display:flex;align-items:center;gap:10px;padding:9px;border-radius:10px;cursor:pointer;background:var(--c);margin-bottom:7px;transition:.2s" onmouseover="this.style.background='rgba(11,89,47,.07)'" onmouseout="this.style.background='var(--c)'"><div style="width:36px;height:36px;border-radius:8px;background:${p.color};flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--g)">${p.name}</div><div style="font-size:11px;color:var(--tm)">${p.loc} · ${p.type}</div></div><div style="font-family:'Unbounded',sans-serif;font-size:12.5px;font-weight:700;color:var(--l)">${p.score}</div></div>`).join('');
+}
+function selectCPlace(id){
+  const p=places.find(x=>x.id===id); if(!p)return;
+  document.getElementById('c-place-results').style.display='none';
+  document.getElementById('c-search-inp').value=p.name;
+  const sw=document.getElementById('c-sugg-wrap'); sw.style.display='block';
+  const sugg=p.community.filter(c=>c.type==='vote');
+  document.getElementById('c-sugg-list').innerHTML=sugg.length?sugg.map(c=>`<div class="csug-item" onclick="selectSuggQ(this,'${c.q}')"><div class="csug-q">${c.q}</div><div class="csug-meta"><span>⚡ Vote nhanh</span><span>${c.gps||0} người trả lời</span></div></div>`).join(''):'<div style="font-size:12.5px;color:var(--tm)">Chưa có câu hỏi gần đây.</div>';
+}
+function selectSuggQ(el,q){document.querySelectorAll('.csug-item').forEach(e=>e.style.borderColor='transparent');el.style.borderColor='var(--g)';document.getElementById('cc-inp').value=q;}
+
+// AI AGENT
+let curStep=1;
+const progressMap={1:'0%',2:'33%',3:'66%',4:'100%'};
+function goStep(n){
+  [1,2,3,4].forEach(i=>{const el=document.getElementById('ap'+i);if(el)el.classList.remove('act');const st=document.getElementById('astep'+i);if(st){st.classList.remove('cur','done');}});
+  document.getElementById('ap'+n).classList.add('act');
+  document.getElementById('astep'+n).classList.add('cur');
+  for(let i=1;i<n;i++){const s=document.getElementById('astep'+i);if(s)s.classList.add('done');}
+  document.getElementById('a-steps-inner').style.setProperty('--progress',progressMap[n]||'0%');
+  curStep=n;
+  document.getElementById('sb1').style.display=n===1?'block':'none';
+  document.getElementById('sb-alerts').style.display=n>=2?'block':'none';
+  document.getElementById('sb-sched').style.display=n>=3?'block':'none';
+  document.getElementById('sb-comm').style.display=n>=4?'block':'none';
+  if(n===2) renderRecos();
+  if(n===3) renderTimeline();
+  if(n===4) renderTracking();
+  window.scrollTo(0,0);
+}
+function selOpt(btn){btn.classList.toggle('sel')}
+
+// STEP 2
+const recoData=[
+  {p:places[3],tag:'go',why:'Risk Score 91 · Top cà phê Đà Lạt · Không có complaint nghiêm trọng'},
+  {p:places[0],tag:'go',why:'Risk Score 87 · Score đồng đều 3 nền tảng · Phù hợp trekking nhẹ'},
+  {p:places[5],tag:'go',why:'Risk Score 78 · Cảnh sương mù đặc trưng · Ít khiếu nại'},
+  {p:places[1],tag:'warn',why:'Risk Score 82 · Đông cuối tuần · Nên đến trước 8h sáng'},
+  {p:places[4],tag:'warn',why:'Risk Score 65 · Đường vào gồ ghề · Kiểm tra thời tiết trước'},
+  {p:places[2],tag:'avoid',why:'Risk Score 61 · Nhiều complaint về định hướng · Chỉ phù hợp trekker kinh nghiệm'},
+];
+let selectedRecos=new Set([0,1,2]);
+function renderRecos(){
+  document.getElementById('reco-list').innerHTML=recoData.map((r,i)=>{
+    const sel=selectedRecos.has(i);
+    return `<div class="reco-item ${r.tag}">
+      <div class="ri-tag ${r.tag}">${r.tag==='go'?'✅ Tin cậy cao':r.tag==='warn'?'⚡ Cân nhắc':'❌ Rủi ro cao'}</div>
+      <div class="ri-name">${r.p.name}</div>
+      <div class="ri-why">${r.why}</div>
+      <div class="ri-bottom">
+        <div class="ri-tick" onclick="toggleReco(${i})">
+          <div class="ri-tick-box${sel?' on':''}" id="rtb${i}">${sel?'✓':''}</div>
+          <div class="ri-tick-lbl" id="rtl${i}">${sel?'Đã thêm vào lịch trình':'Thêm vào lịch trình'}</div>
+        </div>
+        <div class="ri-score-badge">${r.p.score}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleReco(i){
+  if(selectedRecos.has(i))selectedRecos.delete(i);else selectedRecos.add(i);
+  const box=document.getElementById('rtb'+i),lbl=document.getElementById('rtl'+i);
+  if(selectedRecos.has(i)){box.classList.add('on');box.textContent='✓';lbl.textContent='Đã thêm vào lịch trình';}
+  else{box.classList.remove('on');box.textContent='';lbl.textContent='Thêm vào lịch trình';}
+}
+function refineRecos(){
+  const v=document.getElementById('refine-inp').value.trim();
+  if(!v)return;
+  const item=document.getElementById? document.querySelector('#reco-list .reco-item.warn'):null;
+  document.getElementById('reco-list').querySelectorAll('.reco-item.warn')[0]&&(()=>{
+    const el=document.getElementById('reco-list').querySelectorAll('.reco-item.warn')[0];
+    el.style.opacity='0';el.style.transition='opacity .3s';
+    setTimeout(()=>{el.querySelector('.ri-why').textContent='Đã điều chỉnh theo: "'+v+'" · AI cập nhật gợi ý phù hợp hơn';el.style.opacity='1';},300);
+  })();
+  document.getElementById('refine-inp').value='';
+}
+
+// STEP 3
+let editingIdx=-1;
+function renderTimeline(){
+  document.getElementById('tl-items').innerHTML=tlData.map((item,i)=>`
+    <div class="tl-item">
+      ${i<tlData.length-1?'<div style="position:absolute;left:17px;top:38px;width:2px;height:calc(100% - 14px);background:var(--cd);z-index:0"></div>':''}
+      <div class="tl-dot-col">
+        <div class="tl-dot${item.alert?' warn':''}">${i+1}</div>
+        <div class="tl-time-lbl">${item.time}</div>
+      </div>
+      <div class="tl-cnt${editingIdx===i?' editing':''}" id="tlc${i}">
+        <div class="tl-pl">${item.place}</div>
+        <div class="tl-det">${item.det}</div>
+        ${item.alert?`<div class="tl-alert">⚡ ${item.alert}</div>`:''}
+        ${item.live?`<div class="tl-live">${item.live}</div>`:''}
+        <div class="tl-actions">
+          <button class="tl-act-btn tl-act-edit" onclick="editStop(${i})">✏ Chỉnh sửa</button>
+          <button class="tl-act-btn tl-act-del" onclick="deleteStop(${i})">✕ Xóa</button>
+        </div>
+        <div class="tl-edit-form" id="tl-ef-${i}" style="${editingIdx===i?'display:flex;flex-direction:column':'display:none'}">
+          <input class="tl-edit-inp" id="ef-t-${i}" value="${item.time}" placeholder="Giờ"/>
+          <input class="tl-edit-inp" id="ef-p-${i}" value="${item.place}" placeholder="Địa điểm"/>
+          <input class="tl-edit-inp" id="ef-d-${i}" value="${item.det}" placeholder="Mô tả"/>
+          <div class="tl-edit-btns"><button class="tl-edit-save" onclick="saveStop(${i})">Lưu</button><button class="tl-edit-cancel" onclick="cancelEdit()">Huỷ</button></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editStop(i){editingIdx=i;renderTimeline()}
+function cancelEdit(){editingIdx=-1;renderTimeline()}
+function saveStop(i){
+  tlData[i].time=document.getElementById('ef-t-'+i).value||tlData[i].time;
+  tlData[i].place=document.getElementById('ef-p-'+i).value||tlData[i].place;
+  tlData[i].det=document.getElementById('ef-d-'+i).value||tlData[i].det;
+  editingIdx=-1;renderTimeline();
+}
+function deleteStop(i){tlData.splice(i,1);editingIdx=-1;renderTimeline();}
+function openAddForm(){const f=document.getElementById('tl-add-form');f.classList.add('open');['add-time','add-place','add-det'].forEach(id=>document.getElementById(id).value='');}
+function closeAddForm(){document.getElementById('tl-add-form').classList.remove('open')}
+function confirmAddStop(){
+  const t=document.getElementById('add-time').value.trim(),pl=document.getElementById('add-place').value.trim(),det=document.getElementById('add-det').value.trim();
+  if(!pl){document.getElementById('add-place').focus();return;}
+  tlData.push({time:t||'—',place:pl,det:det||'Điểm dừng bổ sung',alert:null,live:null});
+  closeAddForm();renderTimeline();
+}
+function aiRefineTL(){
+  const v=document.getElementById('tl-ai-inp').value.trim();
+  if(!v)return;
+  tlData.splice(3,0,{time:'19:00',place:'Nhà hàng Góc Đà Lạt',det:'Ẩm thực địa phương theo gợi ý AI: "'+v+'"',alert:null,live:'Đang mở · Gợi ý từ AI'});
+  document.getElementById('tl-ai-inp').value='';
+  renderTimeline();
+}
+
+// STEP 4
+function renderTracking(){
+  document.getElementById('track-items').innerHTML=[
+    {time:'08:00',place:'Ăn sáng',status:'Đã hoàn thành',type:'ok'},
+    {time:'10:00',place:'The Loft Coffee',status:'Đang hoạt động · Còn 3 bàn trống',type:'ok'},
+    {time:'12:00',place:'Ăn trưa Phan Đình Phùng',status:'Sắp tới · 2 tiếng nữa',type:'upcoming'},
+    {time:'13:30',place:'Langbiang Summit Trail',status:'⚠ Đông hơn bình thường chiều nay',type:'warn'},
+  ].map(t=>`<div class="track-item ${t.type}"><div class="ti-time">${t.time}</div><div class="ti-dot ${t.type==='ok'?'g':t.type==='warn'?'o':'c'}"></div><div class="ti-info"><div class="ti-place">${t.place}</div><div class="ti-status ${t.type}">${t.status}</div></div></div>`).join('');
+  document.getElementById('track-notifs').innerHTML=`
+    <div class="notif-item"><div class="ni-time">⏰ 09:45 — Nhắc nhở sắp đến</div><div class="ni-msg">The Loft Coffee đang còn bàn. Di chuyển ngay để đến đúng 10:00!</div><div class="ni-badge">✓ Xác nhận bởi cộng đồng</div></div>
+    <div class="notif-item warn"><div class="ni-time">⚡ Cập nhật 5 phút trước</div><div class="ni-msg">Langbiang: 6 người báo đông hơn bình thường. Cân nhắc xuất phát sớm hơn 30 phút.</div></div>
+    <div class="notif-item"><div class="ni-time">🌤 Dự báo thời tiết</div><div class="ni-msg">Sáng mai đẹp ☀ — Đồi Chè Cầu Đất sương mù từ 6:00–8:30. Đúng lịch!</div><div class="ni-badge">Real-time data</div></div>`;
+  document.getElementById('live-feed-items').innerHTML=`
+    <div class="lf-item ok"><div class="lf-ico">✅</div><div><span class="lf-author">@Hieu_Trung:</span> Quán đang khá vắng, còn trống 3 bàn. (Vừa xong)</div></div>
+    <div class="lf-item warn"><div class="lf-ico">🌧</div><div><span class="lf-sys">Hệ thống:</span> Dự báo có mưa bóng mây trong 15 phút tới.</div></div>
+    <div class="lf-item info"><div class="lf-ico">👥</div><div><span class="lf-author">@MinhTrail:</span> Langbiang hướng dẫn viên vẫn hoạt động. Check-in trước 14:00 ổn.</div></div>`;
+}
+
+// ===== FEEDBACK MODAL =====
+const fbPlaces=[
+  {name:'The Loft Coffee & Roastery',color:'#EEB627',type:'Cà phê'},
+  {name:'Langbiang Summit Trail',color:'#0B592F',type:'Trekking'},
+  {name:'Đồi Chè Cầu Đất',color:'#2d6a4f',type:'Nông trại'},
+];
+let fbCurrent=0;
+const fbData=fbPlaces.map(()=>({stars:0,tags:[],text:''}));
+const fbTagOptions=['Đúng như mô tả','Đông hơn mong đợi','Vắng/thoải mái','Cần cải thiện dịch vụ','Phong cảnh đẹp','Hạ tầng kém','Giá hợp lý','Xứng đáng quay lại'];
+
+function openFeedback(){fbCurrent=0;renderFeedback();document.getElementById('fb-modal').classList.add('open');}
+function fbBgClick(e){if(e.target===document.getElementById('fb-modal'))document.getElementById('fb-modal').classList.remove('open');}
+
+function renderFeedback(){
+  const p=fbPlaces[fbCurrent],d=fbData[fbCurrent];
+  document.getElementById('fb-prog-cur').textContent=fbCurrent+1;
+  document.getElementById('fb-prog-total').textContent=fbPlaces.length;
+  document.getElementById('fb-dots').innerHTML=fbPlaces.map((_,i)=>`<div class="fb-dot${i<=fbCurrent?' on':''}"></div>`).join('');
+  document.getElementById('fb-content').innerHTML=`
+    <div class="fb-place-card" style="border-left:4px solid ${p.color}">
+      <div class="fb-place-name">${p.name}</div>
+      <div class="fb-place-type">${p.type}</div>
+    </div>
+    <div class="fb-section">
+      <div class="fb-section-label">Trải nghiệm của bạn thế nào?</div>
+      <div class="fb-stars" id="fb-stars">${[1,2,3,4,5].map(i=>`<div class="fb-star${d.stars>=i?' on':''}" onclick="setStars(${i})">★</div>`).join('')}</div>
+      <div style="font-size:11px;color:var(--tm)">${d.stars?['','Rất tệ','Tệ','Bình thường','Tốt','Rất tốt'][d.stars]:'Nhấn để đánh giá'}</div>
+    </div>
+    <div class="fb-section">
+      <div class="fb-section-label">Mô tả nhanh</div>
+      <div class="fb-tag-row">${fbTagOptions.map(tag=>`<div class="fb-tag${d.tags.includes(tag)?' on':''}" onclick="toggleTag('${tag}')">${tag}</div>`).join('')}</div>
+    </div>
+    <div class="fb-section">
+      <div class="fb-section-label">Mô tả thêm (tuỳ chọn)</div>
+      <textarea class="fb-textarea" id="fb-text" placeholder="Chia sẻ chi tiết hơn về chuyến đi của bạn...">${d.text}</textarea>
+      <div style="font-size:11px;color:var(--l);margin-top:6px;display:flex;align-items:center;gap:5px">📤 Nhận xét này sẽ được hiển thị trong Cộng Đồng và dùng để cải thiện AI Score</div>
+    </div>
+    <div class="fb-nav">
+      ${fbCurrent>0?`<button class="fb-prev" onclick="fbPrev()">← Quay lại</button>`:''}
+      <button class="fb-next" style="${fbCurrent===0?'flex:1':''}" onclick="fbNext()">${fbCurrent<fbPlaces.length-1?'Tiếp theo →':'✓ Gửi feedback'}</button>
+    </div>`;
+}
+
+function setStars(n){fbData[fbCurrent].stars=n;renderFeedback();}
+function toggleTag(t){const arr=fbData[fbCurrent].tags;const idx=arr.indexOf(t);if(idx>-1)arr.splice(idx,1);else arr.push(t);renderFeedback();}
+function fbPrev(){if(fbCurrent>0){fbData[fbCurrent].text=document.getElementById('fb-text')?.value||'';fbCurrent--;renderFeedback();}}
+function fbNext(){
+  fbData[fbCurrent].text=document.getElementById('fb-text')?.value||'';
+  if(fbCurrent<fbPlaces.length-1){fbCurrent++;renderFeedback();}
+  else{
+    document.getElementById('fb-modal').classList.remove('open');
+    // Add to community feed
+    const summary=fbPlaces.map((p,i)=>`${p.name} (${fbData[i].stars}⭐)`).join(', ');
+    communityFeed.unshift({id:Date.now(),place:fbPlaces[0].name,time:"Vừa xong",type:"review",author:"An Nhiên",av:"AN",rank:4,answers:85,questionsUsed:2,txt:`[Feedback sau chuyến đi] ${summary}. ${fbData[0].tags.join(', ')}. ${fbData[0].text||'Trải nghiệm tốt!'}`,likes:0,dislikes:0,gps:0,fromFeedback:true});
+    renderFeed();
+    // Flash notification
+    setTimeout(()=>{alert('✅ Cảm ơn bạn đã gửi feedback!\n\nNhận xét của bạn đã được:\n• Hiển thị trong Cộng Đồng\n• Gửi để cải thiện AI Score\n• Thêm vào hồ sơ của bạn');},100);
+  }
+}
+
+// LOGIN
+let isLoggedIn=false;
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function modalBgClick(e,id){if(e.target===document.getElementById(id))closeModal(id)}
+function doLogin(){
+  isLoggedIn=true;closeModal('login-modal');
+  document.getElementById('nav-login-btn').style.display='none';
+  document.getElementById('nav-logged-in').style.display='flex';
+}
+
+// INIT
+renderPlaces();renderFeed();goStep(1);
+</script>
+</body>
+</html>

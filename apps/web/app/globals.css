@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens (from frontend.html) ─────────────────────────────────── */
+:root {
+  /* Brand colors */
+  --g:   #0B592F;   /* green primary */
+  --o:   #DF6F3B;   /* orange */
+  --y:   #EEB627;   /* yellow */
+  --c:   #F0E7D7;   /* cream / page background */
+  --l:   #8CA70A;   /* lime green */
+  --br:  #936440;   /* brown */
+  --gd:  #083d20;   /* dark green */
+  --cd:  #e0d4c0;   /* dark cream */
+  --tx:  #1a1a1a;   /* text primary */
+  --tm:  #6b6b6b;   /* text muted */
+
+  /* Semantic aliases (for Tailwind custom utilities) */
+  --color-bg:        var(--c);
+  --color-primary:   var(--g);
+  --color-accent:    var(--o);
+  --color-lime:      var(--l);
+  --color-text:      var(--tx);
+  --color-muted:     var(--tm);
+}
+
+/* ─── Tailwind theme extension ───────────────────────────────────────────── */
+@theme inline {
+  --font-sans:    var(--font-geist);
+  --font-heading: var(--font-unbounded);
+
+  --color-green:     #0B592F;
+  --color-green-dk:  #083d20;
+  --color-orange:    #DF6F3B;
+  --color-yellow:    #EEB627;
+  --color-cream:     #F0E7D7;
+  --color-lime:      #8CA70A;
+  --color-brown:     #936440;
+  --color-cream-dk:  #e0d4c0;
+  --color-text:      #1a1a1a;
+  --color-muted:     #6b6b6b;
+}
+
+/* ─── Base reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-geist, 'Geist', sans-serif);
+  background: var(--c);
+  color: var(--tx);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .brand {
+  font-family: var(--font-unbounded, 'Unbounded', sans-serif);
+}
+
+button { cursor: pointer; font-family: inherit; }
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Risk level chips ───────────────────────────────────────────────────── */
+.risk-low  { background: var(--l); color: #fff; }
+.risk-med  { background: var(--y); color: #fff; }
+.risk-high { background: var(--o); color: #fff; }
+
+/* ─── Live pulse dot ─────────────────────────────────────────────────────── */
+.live-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--l);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  display: inline-block;
+}
