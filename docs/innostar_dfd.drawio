@@ -1,0 +1,518 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="unified" name="INNOSTAR — DFD Unified 3 Phases">
+    <mxGraphModel grid="1" page="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="3300" pageHeight="2340" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="main_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=22;fontStyle=1;fontColor=#1a1a2e;" value="INNOSTAR / DaLat Trust Map — Data Flow Diagram (3 Phases Unified)" vertex="1">
+          <mxGeometry height="50" width="1900" x="680" y="-200" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_p1" parent="1" style="text;html=1;strokeColor=#2d6a4f;fillColor=#d8f3dc;align=center;fontSize=14;fontStyle=1;rounded=1;arcSize=10;" value="PHASE 1 — Place Risk Intelligence" vertex="1">
+          <mxGeometry height="36" width="900" x="-70" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_p2" parent="1" style="text;html=1;strokeColor=#1d3557;fillColor=#a8dadc;align=center;fontSize=14;fontStyle=1;rounded=1;arcSize=10;" value="PHASE 2 — Real-time Community" vertex="1">
+          <mxGeometry height="36" width="820" x="1040" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_p3" parent="1" style="text;html=1;strokeColor=#6d2f70;fillColor=#e8c2f0;align=center;fontSize=14;fontStyle=1;rounded=1;arcSize=10;" value="PHASE 3 — AI Travel Agent" vertex="1">
+          <mxGeometry height="36" width="820" x="1980" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="gmaps" parent="1" style="shape=mxgraph.flowchart.terminator;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=11;fontStyle=1;" value="Google Maps&#xa;(rating · review · ảnh · link)" vertex="1">
+          <mxGeometry height="56" width="200" x="-50" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="fb_src" parent="1" style="shape=mxgraph.flowchart.terminator;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=11;fontStyle=1;" value="Facebook&#xa;(post · comment · reaction · link)" vertex="1">
+          <mxGeometry height="56" width="200" x="180" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="tiktok" parent="1" style="shape=mxgraph.flowchart.terminator;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=11;fontStyle=1;" value="TikTok&#xa;(video · caption · comment · trend)" vertex="1">
+          <mxGeometry height="56" width="200" x="410" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="seed_db" parent="1" style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#d8f3dc;strokeColor=#2d6a4f;fontSize=11;" value="Place Seed DB&#xa;(tên · loại · địa chỉ · Google Maps URL)" vertex="1">
+          <mxGeometry height="56" width="200" x="660" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="crawl" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b7e4c7;strokeColor=#2d6a4f;fontSize=11;fontStyle=1;" value="Crawl / Fetch Data" vertex="1">
+          <mxGeometry height="50" width="200" x="230" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="clean" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b7e4c7;strokeColor=#2d6a4f;fontSize=11;" value="Clean &amp; Match Place&#xa;(bỏ trùng · ghép địa điểm · lưu link)" vertex="1">
+          <mxGeometry height="50" width="200" x="230" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="meta" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b7e4c7;strokeColor=#2d6a4f;fontSize=11;" value="Layer 1: Metadata&#xa;(timestamp · trend · engagement)" vertex="1">
+          <mxGeometry height="50" width="200" x="70" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="nlp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b7e4c7;strokeColor=#2d6a4f;fontSize=11;" value="Layer 2: NLP&#xa;(sentiment · topic · complaint)" vertex="1">
+          <mxGeometry height="50" width="200" x="390" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="std" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#52b788;strokeColor=#2d6a4f;fontSize=11;fontColor=#fff;fontStyle=1;" value="Standardize Signals&#xa;(chuẩn hóa 7/30/90 ngày)" vertex="1">
+          <mxGeometry height="50" width="200" x="230" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="psc_g" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8f3dc;strokeColor=#2d6a4f;fontSize=10;" value="Signal Card&#xa;Google Maps" vertex="1">
+          <mxGeometry height="46" width="130" x="70" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="psc_f" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8f3dc;strokeColor=#2d6a4f;fontSize=10;" value="Signal Card&#xa;Facebook" vertex="1">
+          <mxGeometry height="46" width="130" x="225" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="psc_t" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d8f3dc;strokeColor=#2d6a4f;fontSize=10;" value="Signal Card&#xa;TikTok" vertex="1">
+          <mxGeometry height="46" width="130" x="380" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="cross" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#52b788;strokeColor=#2d6a4f;fontSize=11;fontColor=#fff;fontStyle=1;" value="Cross-Platform Check&#xa;(so sánh chéo · đồng thuận nền tảng?)" vertex="1">
+          <mxGeometry height="50" width="250" x="180" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="risk_score" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e63946;strokeColor=#9b2226;fontSize=12;fontStyle=1;fontColor=#fff;" value="Risk Score&#xa;(0–100)" vertex="1">
+          <mxGeometry height="60" width="130" x="50" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="plat_agree" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f4a261;strokeColor=#e76f51;fontSize=11;fontStyle=1;" value="Platform&#xa;Agreement" vertex="1">
+          <mxGeometry height="60" width="130" x="200" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="risk_reasons" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f4a261;strokeColor=#e76f51;fontSize=11;" value="Risk Reasons&#xa;+ Top Complaints" vertex="1">
+          <mxGeometry height="60" width="130" x="350" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_sum" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#52b788;strokeColor=#2d6a4f;fontSize=11;fontColor=#fff;" value="LLM Summary Service&#xa;(summary · complaint sum · source links)" vertex="1">
+          <mxGeometry height="50" width="250" x="180" y="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="place_card_db" parent="1" style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#2d6a4f;strokeColor=#1b4332;fontSize=12;fontStyle=1;fontColor=#fff;" value="Place Card Database" vertex="1">
+          <mxGeometry height="60" width="210" x="200" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_search_lbl" parent="1" style="text;html=1;fontSize=11;fontStyle=2;fontColor=#2d6a4f;strokeColor=none;fillColor=none;" value="FRONTEND — Search &amp; Browse" vertex="1">
+          <mxGeometry height="25" width="230" x="560" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="user_search" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;fontStyle=1;" value="User&#xa;Search địa điểm / Category" vertex="1">
+          <mxGeometry height="60" width="200" x="580" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="search_result" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffadb;strokeColor=#e9c46a;fontSize=11;" value="Search Result UI&#xa;(tên · rating · risk score · loại)" vertex="1">
+          <mxGeometry height="50" width="200" x="580" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="place_card_ui" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#264653;strokeColor=#1a1a2e;fontSize=13;fontStyle=1;fontColor=#fff;" value="🗺 PLACE CARD DETAIL" vertex="1">
+          <mxGeometry height="46" width="250" x="560" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="pc_img" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#457b9d;strokeColor=#1d3557;fontSize=10;fontColor=#fff;" value="📷 Hình ảnh địa điểm" vertex="1">
+          <mxGeometry height="40" width="170" x="560" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="pc_risk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e63946;strokeColor=#9b2226;fontSize=10;fontColor=#fff;" value="🔴 Risk Score&#xa;Platform Agreement" vertex="1">
+          <mxGeometry height="40" width="150" x="750" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="pc_overview" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f4a261;strokeColor=#e76f51;fontSize=10;" value="📋 Overview / Nhận định&#xa;(complaint summary)" vertex="1">
+          <mxGeometry height="40" width="200" x="560" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="pc_community" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=10;fontStyle=2;" value="💬 Bài đăng cộng đồng&#xa;(mới nhất + tương tác cao)&#xa;→ nhấn để xem Phase 2" vertex="1">
+          <mxGeometry height="54" width="250" x="560" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="compare_ui" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffadb;strokeColor=#e9c46a;fontSize=10;" value="Compare UI&#xa;(risk thấp hơn · rating cao hơn)" vertex="1">
+          <mxGeometry height="54" width="170" x="760" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_newsfeed" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=11;fontStyle=1;" value="📰 Newsfeed&#xa;(lướt ngẫu nhiên khi chưa hỏi)" vertex="1">
+          <mxGeometry height="56" width="220" x="1220" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_filter" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="🔍 Thanh lọc theo loại&#xa;+ Ô tìm kiếm" vertex="1">
+          <mxGeometry height="46" width="220" x="1220" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_select_place" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;" value="User chọn địa điểm muốn hỏi" vertex="1">
+          <mxGeometry height="56" width="200" x="1230" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_suggest_q" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;fontStyle=2;" value="Hệ thống đề xuất câu hỏi&#xa;(gần đây · trả lời nhiều)&#xa;→ User có thể tham khảo/chọn lại" vertex="1">
+          <mxGeometry height="60" width="220" x="1490" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_composer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1d3557;strokeColor=#1a1a2e;fontSize=11;fontStyle=1;fontColor=#fff;" value="Question Composer UI" vertex="1">
+          <mxGeometry height="46" width="220" x="1230" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_poll" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="📊 Poll nhanh&#xa;(đông? giá? view? nên đi?)" vertex="1">
+          <mxGeometry height="50" width="180" x="1220" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_long_q" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="📝 Câu hỏi dài&#xa;(nhóm 6 người chiều nay?...)" vertex="1">
+          <mxGeometry height="50" width="180" x="1420" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_q_service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#457b9d;strokeColor=#1d3557;fontSize=10;fontColor=#fff;" value="Question Service&#xa;(lưu · expires 24h · target responder)" vertex="1">
+          <mxGeometry height="50" width="220" x="1300" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_notify" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="Notify Potential Responders&#xa;(gần đó · vừa ghé · local)" vertex="1">
+          <mxGeometry height="46" width="220" x="1300" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_responder" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;" value="Responder&#xa;(người gần / vừa đến)" vertex="1">
+          <mxGeometry height="56" width="160" x="1530" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_verify" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=10;" value="Verification Check&#xa;GPS · thời gian · lịch sử khu vực&#xa;→ Label: đang ở / vừa ghé / local / user thường" vertex="1">
+          <mxGeometry height="60" width="280" x="1250" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_answer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="Answer UI&#xa;(vote / text + ảnh optional)" vertex="1">
+          <mxGeometry height="46" width="200" x="1300" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_ans_svc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#457b9d;strokeColor=#1d3557;fontSize=10;fontColor=#fff;" value="Answer Service&#xa;(lưu · verification label · timestamp)" vertex="1">
+          <mxGeometry height="50" width="200" x="1300" y="1180" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_reaction" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c9e8f0;strokeColor=#457b9d;fontSize=10;" value="Like / Dislike / Report" vertex="1">
+          <mxGeometry height="50" width="160" x="1540" y="1180" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_rep" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1d3557;strokeColor=#0d1b2a;fontSize=10;fontColor=#fff;" value="User Reputation&#xa;(badge · rank · like score)" vertex="1">
+          <mxGeometry height="50" width="180" x="1540" y="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_live_agg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1d3557;strokeColor=#0d1b2a;fontSize=12;fontStyle=1;fontColor=#fff;" value="Live Status Aggregator&#xa;(tổng hợp 24h · confidence)" vertex="1">
+          <mxGeometry height="56" width="230" x="1260" y="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_live_status" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#06d6a0;strokeColor=#028a6e;fontSize=10;fontStyle=1;" value="🟢 Live Status&#xa;đông/không · giá · view · nên đi?&#xa;Last verified: X phút · Confidence" vertex="1">
+          <mxGeometry height="66" width="250" x="1250" y="1420" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_feed" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8dadc;strokeColor=#457b9d;fontSize=11;fontStyle=1;" value="Public Q&amp;A Feed&#xa;(hiển thị trả lời + nhãn xác minh)" vertex="1">
+          <mxGeometry height="56" width="200" x="1530" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_user" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;fontStyle=1;" value="User mở AI Planner" vertex="1">
+          <mxGeometry height="56" width="200" x="2290" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_prompt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8c2f0;strokeColor=#6d2f70;fontSize=10;" value="📝 Prompt + Bộ câu hỏi xác định nhu cầu&#xa;(đi mấy ngày · đi với ai · ngân sách&#xa;thích vibe gì · muốn tránh gì)" vertex="1">
+          <mxGeometry height="70" width="260" x="2270" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_parser" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9b59b6;strokeColor=#6d2f70;fontSize=10;fontColor=#fff;" value="AI Preference Parser&#xa;(user_preferences · constraints&#xa;must_go · avoid_conditions)" vertex="1">
+          <mxGeometry height="60" width="260" x="2270" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_engine" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6d2f70;strokeColor=#4a1f4c;fontSize=10;fontColor=#fff;fontStyle=1;" value="Place Recommendation Engine&#xa;(lọc theo risk · rating · complaint · live status · khu vực)" vertex="1">
+          <mxGeometry height="60" width="300" x="2250" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_candidates" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8c2f0;strokeColor=#6d2f70;fontSize=10;" value="✅ Nên đi (risk thấp · nhận định rõ)&#xa;⚠️ Cân nhắc (có complaint đáng chú ý)&#xa;❌ Nên tránh (risk cao · lệch nền tảng)" vertex="1">
+          <mxGeometry height="72" width="300" x="2250" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_confirm" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;" value="User chọn địa điểm hứng thú&#xa;+ điền: ngày · giờ · phương tiện" vertex="1">
+          <mxGeometry height="66" width="260" x="2270" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_optimizer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6d2f70;strokeColor=#4a1f4c;fontSize=10;fontColor=#fff;fontStyle=1;" value="Route &amp; Timeline Optimizer&#xa;(gom gần nhau · giờ mở cửa · risk/live warning)" vertex="1">
+          <mxGeometry height="60" width="260" x="2270" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_draft_timeline" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8c2f0;strokeColor=#6d2f70;fontSize=10;" value="📅 Timeline Draft&#xa;08:00 ăn sáng · 09:30 check-in&#xa;11:00 cafe · 12:30 ăn trưa..." vertex="1">
+          <mxGeometry height="66" width="260" x="2270" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_finetune" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffadb;strokeColor=#e9c46a;fontSize=10;" value="User tinh chỉnh timeline&#xa;(kéo thả · thêm/bỏ địa điểm)" vertex="1">
+          <mxGeometry height="66" width="200" x="2600" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_save" parent="1" style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#4a1f4c;strokeColor=#1a1a2e;fontSize=12;fontStyle=1;fontColor=#fff;" value="💾 Save Trip Plan" vertex="1">
+          <mxGeometry height="56" width="200" x="2310" y="1220" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_monitor" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6d2f70;strokeColor=#4a1f4c;fontSize=10;fontColor=#fff;" value="Real-time Monitor&#xa;(theo dõi địa điểm trong plan)" vertex="1">
+          <mxGeometry height="50" width="200" x="2310" y="1350" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_alert" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e63946;strokeColor=#9b2226;fontSize=10;fontColor=#fff;" value="Alert Engine&#xa;→ &quot;Đang đông, đi sau 16:00&quot;&#xa;→ &quot;Giá tăng hôm nay&quot;&#xa;→ &quot;Đề xuất thay bằng địa điểm B&quot;" vertex="1">
+          <mxGeometry height="80" width="200" x="2310" y="1470" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_decision" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffd166;strokeColor=#e9c46a;fontSize=11;" value="User Decision&#xa;Giữ / Đổi / Bỏ địa điểm" vertex="1">
+          <mxGeometry height="60" width="180" x="2320" y="1620" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gm_crawl" edge="1" parent="1" source="gmaps" style="edgeStyle=orthogonalEdgeStyle;" target="crawl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fb_crawl" edge="1" parent="1" source="fb_src" style="edgeStyle=orthogonalEdgeStyle;" target="crawl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tt_crawl" edge="1" parent="1" source="tiktok" style="edgeStyle=orthogonalEdgeStyle;" target="crawl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_seed_crawl" edge="1" parent="1" source="seed_db" style="edgeStyle=orthogonalEdgeStyle;" target="crawl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_crawl_clean" edge="1" parent="1" source="crawl" style="edgeStyle=orthogonalEdgeStyle;" target="clean">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_clean_meta" edge="1" parent="1" source="clean" style="edgeStyle=orthogonalEdgeStyle;" target="meta">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_clean_nlp" edge="1" parent="1" source="clean" style="edgeStyle=orthogonalEdgeStyle;" target="nlp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_meta_std" edge="1" parent="1" source="meta" style="edgeStyle=orthogonalEdgeStyle;" target="std">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_nlp_std" edge="1" parent="1" source="nlp" style="edgeStyle=orthogonalEdgeStyle;" target="std">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_std_pg" edge="1" parent="1" source="std" style="edgeStyle=orthogonalEdgeStyle;" target="psc_g">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_std_pf" edge="1" parent="1" source="std" style="edgeStyle=orthogonalEdgeStyle;" target="psc_f">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_std_pt" edge="1" parent="1" source="std" style="edgeStyle=orthogonalEdgeStyle;" target="psc_t">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pg_cross" edge="1" parent="1" source="psc_g" style="edgeStyle=orthogonalEdgeStyle;" target="cross">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pf_cross" edge="1" parent="1" source="psc_f" style="edgeStyle=orthogonalEdgeStyle;" target="cross">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pt_cross" edge="1" parent="1" source="psc_t" style="edgeStyle=orthogonalEdgeStyle;" target="cross">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cross_rs" edge="1" parent="1" source="cross" style="edgeStyle=orthogonalEdgeStyle;" target="risk_score">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cross_pa" edge="1" parent="1" source="cross" style="edgeStyle=orthogonalEdgeStyle;" target="plat_agree">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cross_rr" edge="1" parent="1" source="cross" style="edgeStyle=orthogonalEdgeStyle;" target="risk_reasons">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rs_llm" edge="1" parent="1" source="risk_score" style="edgeStyle=orthogonalEdgeStyle;" target="llm_sum">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pa_llm" edge="1" parent="1" source="plat_agree" style="edgeStyle=orthogonalEdgeStyle;" target="llm_sum">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rr_llm" edge="1" parent="1" source="risk_reasons" style="edgeStyle=orthogonalEdgeStyle;" target="llm_sum">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_llm_pcdb" edge="1" parent="1" source="llm_sum" style="edgeStyle=orthogonalEdgeStyle;" target="place_card_db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pcdb_search" edge="1" parent="1" source="place_card_db" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#2d6a4f;" target="search_result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_search_sr" edge="1" parent="1" source="user_search" style="edgeStyle=orthogonalEdgeStyle;" target="search_result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sr_card" edge="1" parent="1" source="search_result" style="edgeStyle=orthogonalEdgeStyle;" target="place_card_ui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_card_img" edge="1" parent="1" source="place_card_ui" style="edgeStyle=orthogonalEdgeStyle;" target="pc_img">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_card_risk" edge="1" parent="1" source="place_card_ui" style="edgeStyle=orthogonalEdgeStyle;" target="pc_risk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_card_overview" edge="1" parent="1" source="place_card_ui" style="edgeStyle=orthogonalEdgeStyle;" target="pc_overview">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_card_community" edge="1" parent="1" source="place_card_ui" style="edgeStyle=orthogonalEdgeStyle;" target="pc_community">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_card_compare" edge="1" parent="1" source="place_card_ui" style="edgeStyle=orthogonalEdgeStyle;" target="compare_ui">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_nf_filter" edge="1" parent="1" source="p2_newsfeed" style="edgeStyle=orthogonalEdgeStyle;" target="p2_filter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_filter_sel" edge="1" parent="1" source="p2_filter" style="edgeStyle=orthogonalEdgeStyle;" target="p2_select_place">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_sel_sugq" edge="1" parent="1" source="p2_select_place" style="edgeStyle=orthogonalEdgeStyle;" target="p2_suggest_q">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_sugq_comp" edge="1" parent="1" source="p2_suggest_q" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#457b9d;" target="p2_composer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1600" y="445" />
+              <mxPoint x="1340" y="445" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2_sel_comp" edge="1" parent="1" source="p2_select_place" style="edgeStyle=orthogonalEdgeStyle;" target="p2_composer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_comp_poll" edge="1" parent="1" source="p2_composer" style="edgeStyle=orthogonalEdgeStyle;" target="p2_poll">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_comp_long" edge="1" parent="1" source="p2_composer" style="edgeStyle=orthogonalEdgeStyle;" target="p2_long_q">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_poll_qsvc" edge="1" parent="1" source="p2_poll" style="edgeStyle=orthogonalEdgeStyle;" target="p2_q_service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_long_qsvc" edge="1" parent="1" source="p2_long_q" style="edgeStyle=orthogonalEdgeStyle;" target="p2_q_service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_qsvc_notify" edge="1" parent="1" source="p2_q_service" style="edgeStyle=orthogonalEdgeStyle;" target="p2_notify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_notify_resp" edge="1" parent="1" source="p2_notify" style="edgeStyle=orthogonalEdgeStyle;" target="p2_responder">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_resp_verify" edge="1" parent="1" source="p2_responder" style="edgeStyle=orthogonalEdgeStyle;" target="p2_verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_verify_ans" edge="1" parent="1" source="p2_verify" style="edgeStyle=orthogonalEdgeStyle;" target="p2_answer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_ans_svc" edge="1" parent="1" source="p2_answer" style="edgeStyle=orthogonalEdgeStyle;" target="p2_ans_svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_svc_feed" edge="1" parent="1" source="p2_ans_svc" style="edgeStyle=orthogonalEdgeStyle;" target="p2_feed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_feed_react" edge="1" parent="1" source="p2_feed" style="edgeStyle=orthogonalEdgeStyle;" target="p2_reaction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_react_rep" edge="1" parent="1" source="p2_reaction" style="edgeStyle=orthogonalEdgeStyle;" target="p2_rep">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_svc_agg" edge="1" parent="1" source="p2_ans_svc" style="edgeStyle=orthogonalEdgeStyle;" target="p2_live_agg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_agg_status" edge="1" parent="1" source="p2_live_agg" style="edgeStyle=orthogonalEdgeStyle;" target="p2_live_status">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_user_prompt" edge="1" parent="1" source="p3_user" style="edgeStyle=orthogonalEdgeStyle;" target="p3_prompt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_prompt_parser" edge="1" parent="1" source="p3_prompt" style="edgeStyle=orthogonalEdgeStyle;" target="p3_parser">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_parser_engine" edge="1" parent="1" source="p3_parser" style="edgeStyle=orthogonalEdgeStyle;" target="p3_engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_engine_cand" edge="1" parent="1" source="p3_engine" style="edgeStyle=orthogonalEdgeStyle;" target="p3_candidates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_cand_conf" edge="1" parent="1" source="p3_candidates" style="edgeStyle=orthogonalEdgeStyle;" target="p3_confirm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_conf_optim" edge="1" parent="1" source="p3_confirm" style="edgeStyle=orthogonalEdgeStyle;" target="p3_optimizer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_optim_draft" edge="1" parent="1" source="p3_optimizer" style="edgeStyle=orthogonalEdgeStyle;" target="p3_draft_timeline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_draft_fine" edge="1" parent="1" source="p3_draft_timeline" style="edgeStyle=orthogonalEdgeStyle;" target="p3_finetune">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_draft_save" edge="1" parent="1" source="p3_draft_timeline" style="edgeStyle=orthogonalEdgeStyle;" target="p3_save">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_fine_save" edge="1" parent="1" source="p3_finetune" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" target="p3_save">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2700" y="1190" />
+              <mxPoint x="2410" y="1190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3_save_monitor" edge="1" parent="1" source="p3_save" style="edgeStyle=orthogonalEdgeStyle;" target="p3_monitor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_monitor_alert" edge="1" parent="1" source="p3_monitor" style="edgeStyle=orthogonalEdgeStyle;" target="p3_alert">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_alert_dec" edge="1" parent="1" source="p3_alert" style="edgeStyle=orthogonalEdgeStyle;" target="p3_decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cross_p1p2_suggest" edge="1" parent="1" source="place_card_db" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#457b9d;strokeWidth=2;dashed=1;fontColor=#457b9d;fontSize=10;" target="p2_suggest_q" value="Place data → gợi ý câu hỏi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="1550" />
+              <mxPoint x="1440" y="1550" />
+              <mxPoint x="1440" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_p1p2_community" edge="1" parent="1" source="pc_community" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#06d6a0;strokeWidth=3;fontColor=#028a6e;fontSize=11;fontStyle=1;" value="Nhấn → sang Phase 2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="957" />
+              <mxPoint x="980" y="188" />
+            </Array>
+            <mxPoint x="930" y="188" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_p2p1_live" edge="1" parent="1" source="p2_live_status" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e63946;strokeWidth=2;dashed=1;fontColor=#9b2226;fontSize=10;" target="pc_community" value="Live Status → cập nhật Place Card">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1090" y="1453" />
+              <mxPoint x="960" y="1453" />
+              <mxPoint x="960" y="957" />
+              <mxPoint x="940" y="957" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_p1p3_db" edge="1" parent="1" source="place_card_db" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9b59b6;strokeWidth=2;dashed=1;fontColor=#6d2f70;fontSize=10;" target="p3_engine" value="Place Card DB → AI Engine">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="1560" />
+              <mxPoint x="2090" y="1560" />
+              <mxPoint x="2090" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_p2p3_live" edge="1" parent="1" source="p2_live_status" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e63946;strokeWidth=3;fontColor=#9b2226;fontSize=11;fontStyle=1;" target="p3_monitor" value="Live Status → cập nhật real-time chuyến đi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1340" y="1453" />
+              <mxPoint x="1700" y="1453" />
+              <mxPoint x="1700" y="1385" />
+              <mxPoint x="2000" y="1385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_p2p3_engine" edge="1" parent="1" source="p2_live_status" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9b59b6;strokeWidth=2;dashed=1;fontColor=#6d2f70;fontSize=10;" target="p3_engine" value="Live Status → lọc đề xuất">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1340" y="1453" />
+              <mxPoint x="1750" y="1453" />
+              <mxPoint x="1750" y="570" />
+              <mxPoint x="1940" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cross_rs_p2" edge="1" parent="1" source="risk_score" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#f4a261;strokeWidth=2;dashed=1;fontColor=#e76f51;fontSize=10;" target="p2_suggest_q" value="Risk data → gợi ý câu hỏi liên quan">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="245" y="1050" />
+              <mxPoint x="245" y="1570" />
+              <mxPoint x="1440" y="1570" />
+              <mxPoint x="1440" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note_risk" parent="1" style="text;html=1;strokeColor=#e63946;fillColor=#fff5f5;align=left;fontSize=10;rounded=1;spacingLeft=6;" value="⚠️ Risk Score&#xa;= độ lệch đa nền tảng&#xa;≠ fake review detection" vertex="1">
+          <mxGeometry height="60" width="180" x="-50" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="note_p2_bound" parent="1" style="text;html=1;strokeColor=#457b9d;fillColor=#eaf7fb;align=left;fontSize=10;rounded=1;spacingLeft=6;" value="⚠️ Live Status ≠ Risk Score&#xa;Risk = ổn định · Live = real-time" vertex="1">
+          <mxGeometry height="50" width="230" x="1220" y="1510" as="geometry" />
+        </mxCell>
+        <mxCell id="note_p3_rule" parent="1" style="text;html=1;strokeColor=#6d2f70;fillColor=#f5ebff;align=left;fontSize=10;rounded=1;spacingLeft=6;" value="⚠️ AI không nhảy thẳng vào timeline&#xa;1. Đề xuất list → 2. User xác nhận&#xa;3. Mới tối ưu timeline" vertex="1">
+          <mxGeometry height="60" width="250" x="2570" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="note_ads" parent="1" style="text;html=1;strokeColor=#e9c46a;fillColor=#fffbe6;align=left;fontSize=10;rounded=1;spacingLeft=6;" value="💰 Quảng cáo có thể gắn vào:&#xa;Category listing · Search result&#xa;Place detail · AI planner suggest&#xa;→ Phải gắn nhãn rõ, không chỉnh Risk Score" vertex="1">
+          <mxGeometry height="70" width="280" x="570" y="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_title" parent="1" style="text;html=1;fontSize=11;fontStyle=1;strokeColor=#666;fillColor=#f5f5f5;rounded=1;align=center;" value="Chú thích mũi tên liên phase" vertex="1">
+          <mxGeometry height="30" width="240" x="2580" y="1290" as="geometry" />
+        </mxCell>
+        <mxCell id="leg1" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#06d6a0;strokeWidth=3;" value="">
+          <mxGeometry height="20" width="60" x="2270" y="1350" as="geometry">
+            <Array as="points">
+              <mxPoint x="2270" y="1345" />
+              <mxPoint x="2330" y="1345" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg1_lbl" parent="1" style="text;html=1;fontSize=10;strokeColor=none;fillColor=none;" value="User navigate P1→P2" vertex="1">
+          <mxGeometry height="25" width="160" x="2650" y="1325" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e63946;strokeWidth=3;" value="">
+          <mxGeometry height="20" width="60" x="2270" y="1375" as="geometry">
+            <Array as="points">
+              <mxPoint x="2270" y="1370" />
+              <mxPoint x="2330" y="1370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg2_lbl" parent="1" style="text;html=1;fontSize=10;strokeColor=none;fillColor=none;" value="Live Status → P1 / P3 (real-time)" vertex="1">
+          <mxGeometry height="25" width="180" x="2650" y="1350" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9b59b6;strokeWidth=2;dashed=1;" value="">
+          <mxGeometry height="20" width="60" x="2270" y="1400" as="geometry">
+            <Array as="points">
+              <mxPoint x="2270" y="1395" />
+              <mxPoint x="2330" y="1395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg3_lbl" parent="1" style="text;html=1;fontSize=10;strokeColor=none;fillColor=none;" value="Place Card DB → AI Engine" vertex="1">
+          <mxGeometry height="25" width="180" x="2650" y="1375" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2d6a4f;strokeWidth=2;dashed=1;" value="">
+          <mxGeometry height="20" width="60" x="2270" y="1425" as="geometry">
+            <Array as="points">
+              <mxPoint x="2270" y="1420" />
+              <mxPoint x="2330" y="1420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg4_lbl" parent="1" style="text;html=1;fontSize=10;strokeColor=none;fillColor=none;" value="DB feeds UI (read)" vertex="1">
+          <mxGeometry height="25" width="180" x="2650" y="1400" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

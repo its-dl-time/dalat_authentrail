@@ -1,0 +1,369 @@
+// DaLat Authentrail — Prisma Schema
+// Source of truth: innostar_dfd.drawio + cross_platform CSV structure
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum Platform {
+  google_maps
+  facebook
+  tiktok
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+}
+
+enum TrustLevel {
+  low
+  medium
+  high
+}
+
+enum QuestionType {
+  poll
+  open
+}
+
+enum VerificationLabel {
+  at_location
+  recently_visited
+  local
+  regular_user
+  unverified
+}
+
+enum UserBadge {
+  new
+  contributor
+  trusted
+  local_expert
+}
+
+enum CrowdLevel {
+  empty
+  moderate
+  busy
+  very_busy
+  unknown
+}
+
+// ─── PLACES ───────────────────────────────────────────────────────────────────
+
+model Place {
+  id               String    @id                          // e.g. "dalat_002"
+  name             String
+  category         String
+  address          String?
+  lat              Float
+  lng              Float
+  googleMapsUrl    String?
+  coverImageUrl    String?
+  imageUrls        String[]  @default([])
+
+  // Aggregated scores (computed by pipeline, stored for fast reads)
+  googleMapsRating Float?
+  weightedRating   Float?
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  riskScore        RiskScore?
+  platformSummaries PlatformSummary[]
+  reviews          Review[]
+  questions        Question[]
+  liveStatus       LiveStatus?
+
+  @@map("places")
+}
+
+// ─── RISK SCORE ───────────────────────────────────────────────────────────────
+// Derived from cross-platform comparison (Phase 1 pipeline output)
+
+model RiskScore {
+  id                        String    @id @default(cuid())
+  placeId                   String    @unique
+  place                     Place     @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  riskScore                 Float     // 0.0 – 1.0 (normalised from CSV)
+  riskLevel                 RiskLevel
+  dataQualityRisk           Float     @default(0)
+  sentimentGap              Float     @default(0)
+  negativeSocialVsMapsGap   Float     @default(0)
+  topicGap                  Float     @default(0)
+  engagementGap             Float     @default(0)
+  coverageRisk              Float     @default(0)
+  googleMapsAvgSentiment    Float     @default(0)
+  socialAvgSentiment        Float     @default(0)
+
+  // Derived display fields
+  topComplaints             String[]  @default([])
+  riskReasons               String[]  @default([])
+
+  computedAt                DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@map("risk_scores")
+}
+
+// ─── PLATFORM SUMMARY ─────────────────────────────────────────────────────────
+// One row per (place × platform) — from place_platform_summary.csv
+
+model PlatformSummary {
+  id                      String    @id @default(cuid())
+  placeId                 String
+  place                   Place     @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  platform                Platform
+
+  recordCount             Int       @default(0)
+  usefulRecordCount       Int       @default(0)
+  avgSentimentScore       Float     @default(0)
+  negativeSentimentRatio  Float     @default(0)
+  avgQualityScore         Float     @default(0)
+
+  // Dimension scores (avg across reviews for this platform)
+  avgServiceScore         Float     @default(0)
+  avgPriceScore           Float     @default(0)
+  avgSceneryScore         Float     @default(0)
+  avgCrowdedScore         Float     @default(0)
+  avgFoodDrinkScore       Float     @default(0)
+  avgCleanlinessScore     Float     @default(0)
+  avgLocationScore        Float     @default(0)
+
+  // Google Maps only
+  googleMapsRatingAvg     Float?
+  googleMapsRatingMaster  Float?
+
+  updatedAt               DateTime  @updatedAt
+
+  @@unique([placeId, platform])
+  @@map("platform_summaries")
+}
+
+// ─── REVIEWS ──────────────────────────────────────────────────────────────────
+// From normalized_common_records.csv — one row per review
+
+model Review {
+  id                  String    @id @default(cuid())
+  placeId             String
+  place               Place     @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  platform            Platform
+
+  contentText         String?   @db.Text
+  translatedTextVi    String?   @db.Text
+  language            String?
+  rating              Float?
+
+  // Trust & quality scores (from Layers 1-3 pipeline)
+  finalTrustScore     Float     @default(0)
+  trustLevel          TrustLevel @default(low)
+  qualityScore        Float     @default(0)
+  sentimentScore      Float     @default(0)
+
+  // Dimension scores
+  serviceScore        Float     @default(0)
+  priceScore          Float     @default(0)
+  sceneryScore        Float     @default(0)
+
+  // Risk flags
+  hasRiskFlag         Boolean   @default(false)
+  riskFlags           String[]  @default([])
+
+  authorKey           String
+  engagementCount     Int       @default(0)
+
+  contentCreatedAt    DateTime?
+  scrapedAt           DateTime  @default(now())
+
+  @@index([placeId, platform])
+  @@index([placeId, trustLevel])
+  @@map("reviews")
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  avatarUrl     String?
+
+  // NextAuth fields
+  emailVerified DateTime?
+  accounts      Account[]
+  sessions      Session[]
+
+  // App fields
+  reputation    UserReputation?
+  questions     Question[]
+  answers       Answer[]
+  votes         Vote[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// NextAuth required tables
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── USER REPUTATION (Phase 2) ────────────────────────────────────────────────
+
+model UserReputation {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalAnswers Int       @default(0)
+  likeScore    Int       @default(0)
+  badge        UserBadge @default(new)
+  rank         Int       @default(0)
+
+  updatedAt    DateTime  @updatedAt
+
+  @@map("user_reputations")
+}
+
+// ─── QUESTIONS (Phase 2) ──────────────────────────────────────────────────────
+
+model Question {
+  id          String       @id @default(cuid())
+  placeId     String
+  place       Place        @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id])
+
+  type        QuestionType
+  text        String       @db.Text
+  expiresAt   DateTime
+
+  answers     Answer[]
+  pollOptions PollOption[]
+
+  createdAt   DateTime     @default(now())
+
+  @@index([placeId])
+  @@index([expiresAt])
+  @@map("questions")
+}
+
+model PollOption {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  label      String
+  voteCount  Int      @default(0)
+
+  answers    Answer[]
+
+  @@map("poll_options")
+}
+
+// ─── ANSWERS (Phase 2) ────────────────────────────────────────────────────────
+
+model Answer {
+  id                 String            @id @default(cuid())
+  questionId         String
+  question           Question          @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  authorId           String
+  author             User              @relation(fields: [authorId], references: [id])
+
+  verificationLabel  VerificationLabel @default(unverified)
+  text               String?           @db.Text
+  pollOptionId       String?
+  pollOption         PollOption?       @relation(fields: [pollOptionId], references: [id])
+  imageUrl           String?
+
+  likeCount          Int               @default(0)
+  dislikeCount       Int               @default(0)
+
+  votes              Vote[]
+
+  createdAt          DateTime          @default(now())
+
+  @@index([questionId])
+  @@map("answers")
+}
+
+model Vote {
+  id       String  @id @default(cuid())
+  answerId String
+  answer   Answer  @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User    @relation(fields: [userId], references: [id])
+  value    Int     // +1 like, -1 dislike
+
+  @@unique([answerId, userId])
+  @@map("votes")
+}
+
+// ─── LIVE STATUS (Phase 2) ────────────────────────────────────────────────────
+// Aggregated from answers in the last 24h — refreshed by LiveStatusAggregator
+
+model LiveStatus {
+  id              String     @id @default(cuid())
+  placeId         String     @unique
+  place           Place      @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  crowded         CrowdLevel @default(unknown)
+  priceNote       String?
+  viewNote        String?
+  recommendedToGo Boolean?
+
+  confidence      Float      @default(0)   // 0.0 – 1.0
+  answerCount     Int        @default(0)
+  lastVerifiedAt  DateTime   @default(now())
+  expiresAt       DateTime
+
+  updatedAt       DateTime   @updatedAt
+
+  @@map("live_statuses")
+}

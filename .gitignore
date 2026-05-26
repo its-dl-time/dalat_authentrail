@@ -1,10 +1,13 @@
-# Secrets and local environment
+# ─── Secrets & local env ─────────────────────────────────────────────────────
 .env
 .env.*
 !.env.example
 .venv/
 
-# Python caches and tooling
+# ─── AI / tooling ─────────────────────────────────────────────────────────────
+.claude/
+
+# ─── Python caches ────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -12,22 +15,25 @@ __pycache__/
 .mypy_cache/
 .ipynb_checkpoints/
 
-# Data pipeline generated data
+# ─── Data pipeline — raw inputs (never commit) ────────────────────────────────
 data_pipeline/data/raw/*
 !data_pipeline/data/raw/.gitkeep
 !data_pipeline/data/raw/google_places/
 data_pipeline/data/raw/google_places/*
 !data_pipeline/data/raw/google_places/.gitkeep
 
+# ─── Data pipeline — interim (never commit) ───────────────────────────────────
 data_pipeline/data/interim/*
 !data_pipeline/data/interim/.gitkeep
 
+# ─── Data pipeline — processed (keep curated CSVs, ignore new) ───────────────
 data_pipeline/data/processed/*
 !data_pipeline/data/processed/.gitkeep
 !data_pipeline/data/processed/places_master_top50.csv
 !data_pipeline/data/processed/cross_platform/
 !data_pipeline/data/processed/cross_platform/*.csv
 
+# ─── Data pipeline — outputs (keep known output CSVs, ignore new) ─────────────
 data_pipeline/data/outputs/*
 !data_pipeline/data/outputs/.gitkeep
 !data_pipeline/data/outputs/facebook/
@@ -43,19 +49,32 @@ data_pipeline/data/outputs/tiktok/*
 !data_pipeline/data/outputs/tiktok/.gitkeep
 !data_pipeline/data/outputs/tiktok/tiktok_comments_output.csv
 
-# Future app artifacts
-backend/**/node_modules/
-backend/**/dist/
-frontend/**/node_modules/
-frontend/**/dist/
-frontend/**/.next/
+# ─── Data pipeline — backups & temp scripts ───────────────────────────────────
+data_pipeline/data_backup*/
+merge_data_to_pipeline.ps1
 
-# Models and temporary files
+# ─── Top-level data dump folder ───────────────────────────────────────────────
+/data/
+
+# ─── Spreadsheet exports (random .csv/.xlsx ở root) ──────────────────────────
+/*.csv
+/*.xlsx
+
+# ─── App build artifacts ─────────────────────────────────────────────────────
+node_modules/
+.turbo/
+apps/**/node_modules/
+apps/**/.next/
+apps/**/dist/
+packages/**/node_modules/
+packages/**/dist/
+
+# ─── Temp & logs ─────────────────────────────────────────────────────────────
 models/*
 !models/.gitkeep
 *.log
 *.tmp
 *.bak
 
-# Large docs
+# ─── Large docs ───────────────────────────────────────────────────────────────
 docs/*.pdf
