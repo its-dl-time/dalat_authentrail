@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luồng phân tích dữ liệu & riskScore</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #5f6f86;
+      --line: #a9b4c4;
+      --l1: #04766f;
+      --l1-soft: #ddf4f1;
+      --l2: #8a5a00;
+      --l2-soft: #fff0d8;
+      --l3: #5a49b8;
+      --l3-soft: #ece8ff;
+      --risk: #b42318;
+      --risk-soft: #ffe6e2;
+      --blue: #145ea8;
+      --blue-soft: #e2f0ff;
+      --shadow: 0 14px 36px rgba(23, 32, 51, 0.09);
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    button,
+    code {
+      font-family: inherit;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 44px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 22px 0;
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: rgba(246, 247, 251, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #d8dee9;
+    }
+
+    .tab {
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #172033;
+      border-color: #172033;
+      color: #ffffff;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid #d9e0ea;
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding: 10px 0;
+      border-top: 1px solid #e5eaf1;
+    }
+
+    .row:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .label {
+      font-weight: 800;
+      color: #24364f;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #eef2f7;
+      color: #172033;
+      font-weight: 650;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .tree-wrap {
+      overflow-x: auto;
+      padding: 6px 2px 18px;
+      scrollbar-gutter: stable;
+    }
+
+    .tree,
+    .tree ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tree {
+      width: max-content;
+      min-width: 100%;
+      padding: 0 260px;
+      text-align: center;
+    }
+
+    .tree ul {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding-top: 32px;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    .tree ul::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 0;
+      height: 32px;
+      border-left: 3px solid var(--line);
+      transform: translateX(-50%);
+    }
+
+    .tree li {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tree li::before,
+    .tree li::after {
+      content: "";
+      position: absolute;
+      top: -32px;
+      width: 50%;
+      height: 32px;
+      border-top: 3px solid var(--line);
+    }
+
+    .tree li::before {
+      right: 50%;
+    }
+
+    .tree li::after {
+      left: 50%;
+      border-left: 3px solid var(--line);
+    }
+
+    .tree li:first-child::before,
+    .tree li:last-child::after,
+    .tree li:only-child::before,
+    .tree li:only-child::after,
+    .tree > li::before,
+    .tree > li::after {
+      display: none;
+    }
+
+    .node {
+      width: 230px;
+      min-height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      padding: 13px 15px;
+      border-radius: 8px;
+      background: var(--panel);
+      border: 2px solid #d8dee9;
+      box-shadow: 0 10px 26px rgba(23, 32, 51, 0.08);
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .node strong {
+      display: block;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .node span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .root {
+      width: 340px;
+      min-height: 94px;
+      background: #172033;
+      border-color: #172033;
+    }
+
+    .root strong,
+    .root span {
+      color: #ffffff;
+    }
+
+    .l1 {
+      background: var(--l1-soft);
+      border-color: var(--l1);
+    }
+
+    .l1 strong {
+      color: var(--l1);
+    }
+
+    .l2 {
+      background: var(--l2-soft);
+      border-color: var(--l2);
+    }
+
+    .l2 strong {
+      color: var(--l2);
+    }
+
+    .l3 {
+      background: var(--l3-soft);
+      border-color: var(--l3);
+    }
+
+    .l3 strong {
+      color: var(--l3);
+    }
+
+    .risk {
+      background: var(--risk-soft);
+      border-color: var(--risk);
+    }
+
+    .risk strong {
+      color: var(--risk);
+    }
+
+    .output {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+    }
+
+    .output strong {
+      color: var(--blue);
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #cfe0f3;
+      border-left: 6px solid #145ea8;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .formula {
+      margin: 12px 0;
+      padding: 14px;
+      border-radius: 8px;
+      background: #172033;
+      color: #ffffff;
+      font-size: 17px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .list li {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: inline-block;
+      min-width: 160px;
+      max-width: 100%;
+      font-weight: 800;
+      color: #172033;
+      overflow-wrap: anywhere;
+    }
+
+    .outputs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .outputs div {
+      padding: 11px 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #d9e0ea;
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(23, 32, 51, 0.06);
+    }
+
+    .step-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #172033;
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #172033;
+    }
+
+    .step span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .step.l1 {
+      border-left: 5px solid var(--l1);
+      background: linear-gradient(90deg, var(--l1-soft), #ffffff 46%);
+    }
+
+    .step.l2 {
+      border-left: 5px solid var(--l2);
+      background: linear-gradient(90deg, var(--l2-soft), #ffffff 46%);
+    }
+
+    .step.l3 {
+      border-left: 5px solid var(--l3);
+      background: linear-gradient(90deg, var(--l3-soft), #ffffff 46%);
+    }
+
+    .step.output {
+      border-left: 5px solid var(--blue);
+      background: linear-gradient(90deg, var(--blue-soft), #ffffff 46%);
+    }
+
+    .step.risk {
+      border-left: 5px solid var(--risk);
+      background: linear-gradient(90deg, var(--risk-soft), #ffffff 46%);
+    }
+
+    .flow-wrap {
+      overflow-x: auto;
+      padding: 8px 0 18px;
+      scrollbar-gutter: stable;
+    }
+
+    .flow {
+      min-width: 1660px;
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+    }
+
+    .flow-step {
+      position: relative;
+      width: 200px;
+      min-height: 132px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 2px solid #d8dee9;
+      background: #ffffff;
+      box-shadow: 0 10px 26px rgba(23, 32, 51, 0.08);
+      overflow: hidden;
+    }
+
+    .flow-step::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -22px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #172033;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #172033;
+      font-size: 16px;
+      line-height: 1.28;
+    }
+
+    .flow-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .flow-step.root-step {
+      width: 210px;
+      background: #172033;
+      border-color: #172033;
+    }
+
+    .flow-step.root-step strong,
+    .flow-step.root-step span {
+      color: #ffffff;
+    }
+
+    .flow-step.l1 {
+      background: var(--l1-soft);
+      border-color: var(--l1);
+    }
+
+    .flow-step.l2 {
+      background: var(--l2-soft);
+      border-color: var(--l2);
+    }
+
+    .flow-step.l3 {
+      background: var(--l3-soft);
+      border-color: var(--l3);
+    }
+
+    .flow-step.risk {
+      background: var(--risk-soft);
+      border-color: var(--risk);
+    }
+
+    .flow-step.output {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+    }
+
+    @media (max-width: 820px) {
+      main {
+        width: min(100% - 18px, 1180px);
+        padding-top: 18px;
+      }
+
+      .topbar {
+        position: static;
+      }
+
+      .tab {
+        flex: 1 1 calc(50% - 8px);
+      }
+
+      .grid,
+      .outputs {
+        grid-template-columns: 1fr;
+      }
+
+      .node {
+        width: 210px;
+      }
+
+      .badge {
+        display: block;
+        min-width: 0;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Luồng phân tích dữ liệu & riskScore</h1>
+      <p class="subtitle">
+        Dữ liệu từ Google Maps, TikTok và Facebook được chuẩn hóa, chấm điểm tin cậy,
+        đối chiếu với baseline địa điểm, rồi tổng hợp thành điểm rủi ro và các file kết quả.
+      </p>
+    </header>
+
+    <nav class="topbar" aria-label="Chọn nội dung">
+      <button class="tab active" data-page="overview" type="button">Luồng chính</button>
+      <button class="tab" data-page="layer1" type="button">Phần 1</button>
+      <button class="tab" data-page="translation" type="button">Dịch tự động</button>
+      <button class="tab" data-page="layer2" type="button">Phần 2</button>
+      <button class="tab" data-page="layer3" type="button">Phần 3</button>
+      <button class="tab" data-page="riskScore" type="button">riskScore</button>
+      <button class="tab" data-page="outputs" type="button">13 CSV outputs</button>
+    </nav>
+
+    <section id="overview" class="page active">
+      <div class="grid">
+        <article class="card">
+          <h2>Luồng dễ hiểu</h2>
+          <div class="row">
+            <div class="label">Dữ liệu</div>
+            <p>Google Maps, TikTok, Facebook raw files + master places.</p>
+          </div>
+          <div class="row">
+            <div class="label">Chuẩn hóa</div>
+            <p>Tạo common schema với field thật như <code>normalized_id</code>, <code>source_record_id</code>, <code>place_id</code>, <code>platform</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Thứ tự</div>
+            <p>Phần 1 chạy trước → dịch tự động nếu text là ngoại ngữ → Phần 2 đọc <code>nlp_text_used</code> → Phần 3 cross-check với baseline.</p>
+          </div>
+          <div class="row">
+            <div class="label">Kết quả</div>
+            <p>13 CSV files trong <code>data_pipeline/data/processed/cross_platform</code>.</p>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Các field quan trọng</h2>
+          <ul class="list">
+            <li><span class="badge">ID thật</span><code>normalized_id</code>, <code>source_record_id</code></li>
+            <li><span class="badge">Trust</span><code>trust_score_layer1</code>, <code>trust_score_layer2</code>, <code>trust_score_layer3</code></li>
+            <li><span class="badge">Score stacking</span><code>intermediate_trust_score</code>, <code>final_trust_score</code>, <code>consistency_score</code></li>
+            <li><span class="badge">Mức tin cậy</span><code>trust_level</code>: high / medium / low</li>
+            <li><span class="badge">Trạng thái bản ghi</span><code>review_flag</code>: outlier / normal</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="flow-wrap" aria-label="Luồng chạy chính theo mũi tên">
+        <div class="flow">
+          <div class="flow-step root-step">
+            <strong>Data ban đầu</strong>
+            <span>Google Maps reviews, TikTok comments, Facebook comments, places master.</span>
+          </div>
+          <div class="flow-step output">
+            <strong>Chuẩn hóa dữ liệu</strong>
+            <span>Tạo common schema: <code>normalized_id</code>, <code>source_record_id</code>, <code>place_id</code>, <code>platform</code>.</span>
+          </div>
+          <div class="flow-step l1">
+            <strong>Phần 1: hành vi</strong>
+            <span>Tạo <code>trust_score_layer1</code> từ tín hiệu hành vi và metadata.</span>
+          </div>
+          <div class="flow-step output">
+            <strong>Dịch tự động</strong>
+            <span>Tạo <code>nlp_text_used</code> bằng bản dịch nếu nội dung là ngoại ngữ.</span>
+          </div>
+          <div class="flow-step l2">
+            <strong>Phần 2: NLP</strong>
+            <span>Tạo <code>trust_score_layer2</code> từ nội dung, seeding, sentiment và template.</span>
+          </div>
+          <div class="flow-step output">
+            <strong>Điểm tin cậy</strong>
+            <span><code>intermediate_trust_score = 0.50 + layer1 + layer2</code>; <code>final_trust_score</code> bằng điểm này.</span>
+          </div>
+          <div class="flow-step l3">
+            <strong>Phần 3: đối chiếu</strong>
+            <span>Tạo <code>consistency_score</code> và <code>review_flag</code> bằng baseline địa điểm.</span>
+          </div>
+          <div class="flow-step risk">
+            <strong>Điểm rủi ro</strong>
+            <span>Tính <code>risk_score</code> 0-1 và <code>risk_level</code> theo địa điểm.</span>
+          </div>
+          <div class="flow-step output">
+            <strong>13 file CSV</strong>
+            <span>Common records, platform features, summaries, risk và filtered datasets.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="layer1" class="page">
+      <div class="grid">
+        <article class="card">
+          <h2>Phần 1: review behavior</h2>
+          <div class="row">
+            <div class="label">File</div>
+            <p><code>review_layer1_behavior.py</code></p>
+          </div>
+          <div class="row">
+            <div class="label">In</div>
+            <p>Bản ghi chung sau chuẩn hóa + dữ liệu địa điểm gốc.</p>
+          </div>
+          <div class="row">
+            <div class="label">Kết quả</div>
+            <p><code>trust_score_layer1</code>, <code>trust_flags_layer1</code>, <code>trust_flag_count_layer1</code> và các cột rule <code>layer1_*</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Range</div>
+            <p>Score của Phần 1 được clip trong khoảng xấp xỉ <code>-0.35</code> đến <code>0.20</code>.</p>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Tín hiệu chính</h2>
+          <ul class="list">
+            <li><code>layer1_duplicate_location</code>: nghi trùng/cụm review bất thường.</li>
+            <li><code>layer1_rating_spike</code>: rating spike, phạt nặng hơn nếu review thiếu text.</li>
+            <li><code>layer1_category_specialist</code>: hành vi chuyên review một nhóm category.</li>
+            <li><code>layer1_media_gps_verified</code>, <code>layer1_geo_verified</code>: tín hiệu xác thực vị trí/media.</li>
+            <li><code>layer1_community_interaction</code>: tương tác cộng đồng gần thời điểm review.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="steps" aria-label="Các bước Phần 1">
+        <div class="step output">
+          <div class="step-mark">In</div>
+          <div><strong>Common records</strong><span>Dữ liệu đã chuẩn hóa từ 3 nền tảng.</span></div>
+        </div>
+        <div class="step l1">
+          <div class="step-mark">1</div>
+          <div><strong>Duplicate/location pattern</strong><span>Kiểm tra cụm review và vị trí lặp.</span></div>
+        </div>
+        <div class="step l1">
+          <div class="step-mark">2</div>
+          <div><strong>Rating spike</strong><span>Phạt rating lệch mạnh, xét thêm độ dài text.</span></div>
+        </div>
+        <div class="step l1">
+          <div class="step-mark">3</div>
+          <div><strong>GPS/media verification</strong><span>Cộng điểm nếu có tín hiệu xác thực vị trí.</span></div>
+        </div>
+        <div class="step l1">
+          <div class="step-mark">4</div>
+          <div><strong>Community/category behavior</strong><span>Đánh giá tương tác và hành vi chuyên category.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">Out</div>
+          <div><strong>trust_score_layer1</strong><span>Đưa sang bước cộng điểm trust.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="translation" class="page">
+      <div class="grid">
+        <article class="card">
+          <h2>Dịch tự động trước Phần 2</h2>
+          <div class="row">
+            <div class="label">File</div>
+            <p><code>review_translation.py</code>, được gọi trong <code>build_cross_platform_dataset.py</code> bằng <code>add_translation_normalization()</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Vị trí</div>
+            <p>Chạy sau Phần 1 và trước Phần 2. Trong code, bước này nằm giữa <code>compute_layer1_behavior_scores()</code> và <code>compute_layer2_nlp_scores()</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Điều kiện</div>
+            <p>Chỉ dịch khi <code>DALAT_ENABLE_TRANSLATION=1</code>, text không rỗng, ngôn ngữ không phải <code>vi</code>/<code>unknown</code>, và source lang nằm trong map NLLB.</p>
+          </div>
+          <div class="row">
+            <div class="label">Model</div>
+            <p>Mặc định dùng <code>facebook/nllb-200-distilled-600M</code>, có thể đổi bằng <code>DALAT_TRANSLATION_MODEL</code>.</p>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Field output của bước dịch</h2>
+          <ul class="list">
+            <li><span class="badge">translation_source_lang</span>Ngôn ngữ được infer từ <code>language</code> hoặc ký tự trong <code>content_text</code>.</li>
+            <li><span class="badge">translation_applied</span><code>true</code> nếu dịch thành công hoặc dùng bản dịch trong cache.</li>
+            <li><span class="badge">translated_text_vi</span>Nội dung đã dịch sang tiếng Việt.</li>
+            <li><span class="badge">translation_model</span>Tên model dịch đã dùng.</li>
+            <li><span class="badge">nlp_text_used</span>Text đưa vào Phần 2: dùng bản dịch nếu có, nếu không dùng text gốc.</li>
+            <li><span class="badge">translation_cache.csv</span>Cache theo hash để không dịch lại cùng một nội dung.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="steps" aria-label="Các bước dịch tự động">
+        <div class="step output">
+          <div class="step-mark">In</div>
+          <div><strong>Data sau Phần 1</strong><span>Đã có behavior score, chuẩn bị text cho phân tích NLP.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">1</div>
+          <div><strong>Infer language</strong><span>Dựa vào <code>language</code> sẵn có hoặc script của text: Latin, Hangul, Cyrillic, CJK, dấu tiếng Việt.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">2</div>
+          <div><strong>Check translation env</strong><span>Nếu <code>DALAT_ENABLE_TRANSLATION</code> chưa bật thì bỏ qua dịch.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">3</div>
+          <div><strong>Cache lookup</strong><span>Tìm bản dịch cũ bằng <code>translation_key</code>.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">4</div>
+          <div><strong>NLLB translate</strong><span>Dịch sang tiếng Việt nếu cần và translator load được.</span></div>
+        </div>
+        <div class="step l2">
+          <div class="step-mark">Out</div>
+          <div><strong>nlp_text_used</strong><span>Input chính cho Phần 2 NLP.</span></div>
+        </div>
+      </div>
+      <div class="note">
+        <p><strong>Note:</strong> Phần 1 không cần bản dịch vì đánh giá hành vi/metadata. Bước dịch nằm giữa Phần 1 và Phần 2 để NLP đọc nội dung ngoại ngữ bằng text tiếng Việt khi có thể.</p>
+      </div>
+    </section>
+
+    <section id="layer2" class="page">
+      <div class="grid">
+        <article class="card">
+          <h2>Phần 2: NLP content</h2>
+          <div class="row">
+            <div class="label">File</div>
+            <p><code>review_layer2_nlp.py</code> sau bước <code>review_translation.py</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">In</div>
+            <p>Data sau Phần 1 + <code>nlp_text_used</code> từ bước dịch tự động. Nếu dịch không áp dụng, <code>nlp_text_used</code> chính là text gốc.</p>
+          </div>
+          <div class="row">
+            <div class="label">Kết quả</div>
+            <p><code>trust_score_layer2</code>, <code>trust_flags_layer2</code>, <code>trust_flag_count_layer2</code> và các field NLP.</p>
+          </div>
+          <div class="row">
+            <div class="label">Cộng điểm</div>
+            <p><code>intermediate_trust_score = 0.50 + trust_score_layer1 + trust_score_layer2</code>, clip 0-1.</p>
+          </div>
+          <div class="row">
+            <div class="label">Range</div>
+            <p>Score của Phần 2 được clip trong khoảng xấp xỉ <code>-1.50</code> đến <code>0.41</code>.</p>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Field NLP cần ghi trong doc</h2>
+          <ul class="list">
+            <li><code>nlp_word_count</code>, <code>nlp_emoji_ratio</code>, <code>nlp_lexical_diversity</code></li>
+            <li><code>nlp_specificity_score</code>, <code>nlp_adjective_density</code>, <code>nlp_adjective_source</code></li>
+            <li><code>nlp_seeding_detected</code>, <code>nlp_repetitive_template</code></li>
+            <li><code>nlp_embedding_similarity</code>, <code>nlp_embedding_source</code></li>
+            <li><code>nlp_sentiment_rating_mismatch</code>, <code>nlp_temporal_mismatch</code>, <code>nlp_temporal_terms</code></li>
+            <li><code>nlp_ai_sentiment_score</code>, <code>nlp_ai_sentiment_label</code>, <code>nlp_ner_entity_count</code></li>
+          </ul>
+        </article>
+      </div>
+      <div class="steps" aria-label="Các bước Phần 2">
+        <div class="step output">
+          <div class="step-mark">In</div>
+          <div><strong>Text đã chuẩn hóa</strong><span>Text dùng cho Phần 2 NLP.</span></div>
+        </div>
+        <div class="step l2">
+          <div class="step-mark">1</div>
+          <div><strong>Đặc trưng từ vựng</strong><span>Số từ, tỷ lệ emoji, độ đa dạng từ, độ cụ thể.</span></div>
+        </div>
+        <div class="step l2">
+          <div class="step-mark">2</div>
+          <div><strong>Tín hiệu seeding</strong><span>Từ quảng cáo, template lặp, mật độ tính từ.</span></div>
+        </div>
+        <div class="step l2">
+          <div class="step-mark">3</div>
+          <div><strong>Kiểm tra ngữ nghĩa</strong><span>Embedding, lệch sentiment-rating, lệch thời điểm.</span></div>
+        </div>
+        <div class="step l2">
+          <div class="step-mark">4</div>
+          <div><strong>AI NLP tùy chọn</strong><span>Sentiment model, NER, embedding nếu bật env.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">Out</div>
+          <div><strong>intermediate_trust_score</strong><span>0.50 + Phần 1 + Phần 2, clip 0-1.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="layer3" class="page">
+      <div class="grid">
+        <article class="card">
+          <h2>Phần 3: cross-check baseline</h2>
+          <div class="row">
+            <div class="label">File</div>
+            <p><code>review_layer3_crosscheck.py</code></p>
+          </div>
+          <div class="row">
+            <div class="label">In</div>
+            <p>Common records đã có Phần 1, Phần 2 và baseline được build theo <code>place_id</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Kết quả</div>
+            <p><code>trust_score_layer3</code>, <code>consistency_score</code>, <code>review_flag</code>, các field <code>crosscheck_*</code>.</p>
+          </div>
+          <div class="row">
+            <div class="label">Lưu ý</div>
+            <p><code>final_trust_score = intermediate_trust_score</code>. Phần 3 không cộng vào final trust, mà dùng làm consistency/outlier signal.</p>
+          </div>
+          <div class="row">
+            <div class="label">Range</div>
+            <p>Score của Phần 3 được clip trong khoảng xấp xỉ <code>-0.73</code> đến <code>0.21</code>.</p>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Rule sau Phần 3</h2>
+          <ul class="list">
+            <li><span class="badge">consistency_score</span><code>trust_score_layer3</code> đã round.</li>
+            <li><span class="badge">review_flag</span><code>outlier</code> nếu <code>consistency_score &lt; -0.20</code>, ngược lại <code>normal</code>.</li>
+            <li><span class="badge">trust_level</span><code>high</code> nếu <code>final_trust_score &gt;= 0.65</code>; <code>low</code> nếu <code>&lt; 0.35</code>; còn lại <code>medium</code>.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="steps" aria-label="Các bước Phần 3">
+        <div class="step output">
+          <div class="step-mark">In</div>
+          <div><strong>Place baseline</strong><span>Baseline sentiment, rating và topic theo từng địa điểm.</span></div>
+        </div>
+        <div class="step l3">
+          <div class="step-mark">1</div>
+          <div><strong>Sentiment/rating gap</strong><span><code>crosscheck_sentiment_gap</code>, <code>crosscheck_rating_gap</code>.</span></div>
+        </div>
+        <div class="step l3">
+          <div class="step-mark">2</div>
+          <div><strong>Topic overlap</strong><span><code>crosscheck_topic_overlap_ratio</code> với topic nổi bật của place.</span></div>
+        </div>
+        <div class="step l3">
+          <div class="step-mark">3</div>
+          <div><strong>Platform gap</strong><span>So sentiment giữa platform hiện tại và platform khác.</span></div>
+        </div>
+        <div class="step l3">
+          <div class="step-mark">4</div>
+          <div><strong>Engagement/temporal spike</strong><span>Engagement percentile và spike cùng tháng.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">Out</div>
+          <div><strong>review_flag</strong><span>normal hoặc outlier, dùng cho lọc và báo cáo.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="riskScore" class="page">
+      <div class="grid">
+        <article class="card">
+          <h2>Công thức riskScore đúng theo code</h2>
+          <p><code>risk_score</code> được tính trong helper <code>score_risk_for_place()</code>, thang 0-1 cho từng địa điểm. Hàm <code>build_place_risk()</code> chỉ loop qua từng địa điểm và gọi helper này.</p>
+          <div class="formula">
+            risk_score = data_quality_risk*0.30
+            + sentiment_gap*0.20
+            + topic_gap*0.15
+            + negative_social_vs_maps_gap*0.20
+            + coverage_risk*0.10
+            + engagement_gap*0.05
+          </div>
+          <ul class="list">
+            <li><span class="badge">data_quality_risk</span>Trung bình tỷ lệ record có risk flag.</li>
+            <li><span class="badge">sentiment_gap</span>Độ lệch sentiment giữa các nền tảng.</li>
+            <li><span class="badge">topic_gap</span>Độ lệch topic giữa platform/place signals.</li>
+            <li><span class="badge">negative_social_vs_maps_gap</span>Social sentiment thấp hơn Google Maps rating-positive.</li>
+            <li><span class="badge">coverage_risk</span><code>1 - avg_useful_record_ratio</code>.</li>
+            <li><span class="badge">engagement_gap</span>Độ lệch normalized engagement giữa platform.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h2>Thang điểm đúng</h2>
+          <ul class="list">
+            <li><span class="badge">Low</span><code>risk_score &lt; 0.33</code></li>
+            <li><span class="badge">Medium</span><code>0.33 &lt;= risk_score &lt; 0.66</code></li>
+            <li><span class="badge">High</span><code>risk_score &gt;= 0.66</code></li>
+          </ul>
+        </article>
+      </div>
+      <div class="steps" aria-label="Các thành phần riskScore">
+        <div class="step output">
+          <div class="step-mark">In</div>
+          <div><strong>place_platform_summary</strong><span>Summary theo địa điểm/platform là input chính để tính risk.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.30</div>
+          <div><strong>Data quality risk</strong><span>Weight 0.30.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.20</div>
+          <div><strong>Sentiment gap</strong><span>Weight 0.20.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.15</div>
+          <div><strong>Topic gap</strong><span>Weight 0.15.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.20</div>
+          <div><strong>Negative social vs maps</strong><span>Weight 0.20.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.10</div>
+          <div><strong>Coverage risk</strong><span>Weight 0.10.</span></div>
+        </div>
+        <div class="step risk">
+          <div class="step-mark">.05</div>
+          <div><strong>Engagement gap</strong><span>Weight 0.05.</span></div>
+        </div>
+        <div class="step output">
+          <div class="step-mark">Out</div>
+          <div><strong>place_cross_platform_risk.csv</strong><span><code>risk_score</code> và <code>risk_level</code>.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="outputs" class="page">
+      <div class="card">
+        <h2>13 output CSV files</h2>
+        <p>Được ghi trong <code>build_cross_platform_dataset.py</code> vào thư mục output cross-platform.</p>
+        <div class="outputs">
+          <div><code>normalized_common_records.csv</code></div>
+          <div><code>platform_google_maps_features.csv</code></div>
+          <div><code>platform_tiktok_features.csv</code></div>
+          <div><code>platform_facebook_features.csv</code></div>
+          <div><code>place_platform_summary.csv</code></div>
+          <div><code>place_cross_platform_risk.csv</code></div>
+          <div><code>place_review_trust_summary.csv</code></div>
+          <div><code>place_weighted_rating.csv</code></div>
+          <div><code>clean_trusted_records.csv</code></div>
+          <div><code>clean_google_maps_reviews.csv</code></div>
+          <div><code>clean_social_review_signals.csv</code></div>
+          <div><code>clean_social_engagement_signals.csv</code></div>
+          <div><code>filtering_quality_summary.csv</code></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const pages = document.querySelectorAll(".page");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.page;
+
+        tabs.forEach((item) => item.classList.remove("active"));
+        pages.forEach((page) => page.classList.remove("active"));
+
+        tab.classList.add("active");
+        document.getElementById(target).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>
