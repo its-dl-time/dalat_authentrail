@@ -1,0 +1,68 @@
+<div class="explore">
+  <div class="e-wrap">
+    <div class="e-header">
+      <h2 class="e-title">Khám Phá Địa Điểm</h2>
+      <p class="e-sub">{{ filteredPlaces.length }} địa điểm được xác thực tại Đà Lạt</p>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="s-bar">
+      <input class="s-inp" type="text" placeholder="🔍  Tìm địa điểm, khu vực..."
+        [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"/>
+      <select class="s-sel" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+        @for (t of types; track t.value) {
+          <option [value]="t.value">{{ t.label }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- RISK CHIPS -->
+    <div class="r-chips">
+      @for (c of riskChips; track c.value) {
+        <button class="rc" [ngClass]="[c.cls, activeRisk() === c.value ? 'active' : '']"
+          (click)="activeRisk.set(c.value)">
+          {{ c.label }}
+        </button>
+      }
+    </div>
+
+    <!-- PLACE GRID -->
+    <div class="pg">
+      @for (p of filteredPlaces; track p.id) {
+        <div class="pc" (click)="goDetail(p.id)">
+          <div class="pc-thumb" [style.background]="p.color + '33'">
+            <div class="pc-thumb-bg" [style.background]="'linear-gradient(135deg,' + p.color + '66, ' + p.color + '22)'"></div>
+            <div class="pc-risk" [ngClass]="getRiskClass(p.riskLevel)">{{ getRiskLabel(p.riskLevel) }}</div>
+            <div class="pc-type">{{ p.type }}</div>
+          </div>
+          <div class="pc-b">
+            <div class="pc-n">{{ p.name }}</div>
+            <div class="pc-l">📍 {{ p.location }}</div>
+            <div class="pc-score-row">
+              <div class="pc-score-big">{{ p.score }}</div>
+              <div class="pc-score-bar">
+                <div class="pc-score-fill" [style.width]="getScoreBarWidth(p.score)"></div>
+              </div>
+            </div>
+            <div class="pc-ft">
+              <div class="pc-rev">{{ p.reviewCount | number }} reviews</div>
+              <div class="pc-community">
+                <span class="pc-live-dot"></span>
+                {{ p.activeUsers }} đang xem
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (filteredPlaces.length === 0) {
+        <div class="no-results">
+          <div class="nr-icon">🔍</div>
+          <div class="nr-title">Không tìm thấy địa điểm</div>
+          <div class="nr-sub">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</div>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

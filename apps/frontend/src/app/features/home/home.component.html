@@ -1,0 +1,70 @@
+<div class="home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="h-wrap">
+      <div class="h-left">
+        <div class="h-badge">✦ Đà Lạt · Lâm Đồng</div>
+        <h1 class="h-title">Khám Phá<br><em>Thực Sự</em><br>Đáng Tin</h1>
+        <p class="h-sub">Nền tảng xác thực địa điểm du lịch đầu tiên tại Đà Lạt — dữ liệu tổng hợp từ Facebook, Google Maps và TikTok, lọc qua AI để cho ra Risk Score minh bạch.</p>
+        <div class="h-btns">
+          <button class="btn1" (click)="navigate('explore')">Khám Phá Địa Điểm</button>
+          <button class="btn2" (click)="navigate('ai-planner')">Hỏi AI Agent</button>
+        </div>
+        <div class="h-stats">
+          @for (s of stats; track s.n) {
+            <div class="stat">
+              <div class="stat-n">{{ s.n }}</div>
+              <div class="stat-l">{{ s.l }}</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="h-right">
+        <div class="hc-main">
+          <div class="hc-live">
+            <span class="live-dot"></span>Nổi bật hôm nay
+          </div>
+          <div class="hc-type">Trekking · Núi rừng</div>
+          <div class="hc-name">Langbiang<br>Summit Trail</div>
+          <div class="hc-loc">📍 Lạc Dương, Đà Lạt</div>
+          <div class="hcm-score">
+            <div class="s-ring">87</div>
+            <div>
+              <div class="s-lbl">Risk Score tổng hợp</div>
+              <div class="s-val">Rủi ro Thấp ✓</div>
+            </div>
+          </div>
+          <div class="hc-platforms">
+            @for (p of [{l:'Facebook',v:'4.7'},{l:'Maps',v:'4.8'},{l:'TikTok',v:'4.6'}]; track p.l) {
+              <div class="hc-plat">
+                <div class="hcp-l">{{ p.l }}</div>
+                <div class="hcp-v">{{ p.v }}</div>
+              </div>
+            }
+          </div>
+          <button class="hc-btn" (click)="navigate('place/1')">Xem chi tiết địa điểm →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="feats">
+    <div class="feats-inner">
+      <div class="sec-lbl">Tính năng nổi bật</div>
+      <div class="sec-title">Tại sao chọn Authentrail?</div>
+      <div class="fc-grid">
+        @for (f of features; track f.title) {
+          <div class="fc">
+            <div class="fc-ico" [ngClass]="f.cls">{{ f.icon }}</div>
+            <div class="fc-t">{{ f.title }}</div>
+            <div class="fc-d">{{ f.desc }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+</div>

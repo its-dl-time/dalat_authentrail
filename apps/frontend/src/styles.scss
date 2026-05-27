@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Geist:wght@300;400;500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --g: #0B592F;
+  --o: #DF6F3B;
+  --y: #EEB627;
+  --c: #F0E7D7;
+  --l: #8CA70A;
+  --br: #936440;
+  --gd: #083d20;
+  --cd: #e0d4c0;
+  --tx: #1a1a1a;
+  --tm: #6b6b6b;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Geist', sans-serif;
+  background: var(--c);
+  color: var(--tx);
+  overflow-x: hidden;
+}
+h1, h2, h3, .brand { font-family: 'Unbounded', sans-serif; }
+button { cursor: pointer; font-family: 'Geist', sans-serif; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cd); border-radius: 2px; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}

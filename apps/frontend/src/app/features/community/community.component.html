@@ -1,0 +1,96 @@
+<div class="community">
+  <div class="c-page">
+
+    <!-- SEARCH BAR -->
+    <div class="c-search-bar">
+      <div class="csb-title">💬 Cộng Đồng Xác Thực</div>
+      <div class="csb-row">
+        <input class="csb-inp" type="text" placeholder="🔍  Tìm câu hỏi, địa điểm, review..."
+          [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"/>
+        <button class="csb-btn" (click)="showComposer.set(true)">+ Đăng bài</button>
+      </div>
+      <div class="c-filter-chips">
+        @for (f of filters; track f.value) {
+          <button class="cfc" [class.act]="activeFilter() === f.value" (click)="activeFilter.set(f.value)">
+            {{ f.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- SUGGESTED QUESTIONS -->
+    <div class="c-sugg-box">
+      <div class="csug-title">✨ Câu hỏi được quan tâm hôm nay</div>
+      @for (q of suggestedQuestions; track q.q) {
+        <div class="csug-item" (click)="useQuestion(q.q)">
+          <div class="csug-q">{{ q.q }}</div>
+          <div class="csug-meta">
+            <span>📍 {{ q.place }}</span>
+            <span>{{ q.time }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- COMPOSER -->
+    @if (showComposer()) {
+      <div class="composer">
+        <div class="comp-header">
+          <div class="comp-av">AN</div>
+          <div class="comp-info">
+            <div class="comp-name">An Nhiên</div>
+            <div class="comp-rank">Hạng 4 · Top 12%</div>
+          </div>
+          <button class="comp-close" (click)="showComposer.set(false)">✕</button>
+        </div>
+        <input class="comp-place-inp" type="text" placeholder="📍 Địa điểm..."
+          [ngModel]="composerPlace()" (ngModelChange)="composerPlace.set($event)"/>
+        <textarea class="comp-ta" placeholder="Chia sẻ trải nghiệm, đặt câu hỏi hoặc mẹo du lịch..."
+          [ngModel]="composerText()" (ngModelChange)="composerText.set($event)"></textarea>
+        <div class="comp-footer">
+          <div class="comp-gps">📍 Đính kèm GPS</div>
+          <button class="comp-submit" (click)="submitPost()">Đăng →</button>
+        </div>
+      </div>
+    }
+
+    <!-- FEED -->
+    <div class="c-feed">
+      @for (post of filteredPosts; track post.id) {
+        <div class="feed-item">
+          <div class="fi-header">
+            <div class="fi-av">{{ post.av }}</div>
+            <div class="fi-info">
+              <div class="fi-name">{{ post.author }}</div>
+              <div class="fi-meta">
+                <span class="fi-rank">Hạng {{ post.rank }}</span>
+                <span class="fi-place">📍 {{ post.place }}</span>
+                <span class="fi-time">{{ post.time }}</span>
+              </div>
+            </div>
+            <div class="fi-type" [ngClass]="getTypeClass(post.type)">{{ getTypeLabel(post.type) }}</div>
+          </div>
+          <div class="fi-txt">{{ post.txt }}</div>
+          @if (post.verified) {
+            <div class="fi-verified">✅ Đã xác minh GPS · Người dùng tại chỗ</div>
+          }
+          <div class="fi-footer">
+            <button class="fi-btn like" (click)="likePost(post)">👍 {{ post.likes }}</button>
+            <button class="fi-btn">💬 {{ post.answers }} trả lời</button>
+            @if (post.gps) {
+              <div class="fi-gps"><span class="gps-dot"></span>GPS xác nhận</div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (filteredPosts.length === 0) {
+        <div class="no-posts">
+          <div>💬</div>
+          <div>Chưa có bài đăng nào</div>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

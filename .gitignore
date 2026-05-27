@@ -78,3 +78,10 @@ models/*
 
 # ─── Large docs ───────────────────────────────────────────────────────────────
 docs/*.pdf
+.angular/
+node_modules/
+dist/
+.venv/
+.env
+*.log
+

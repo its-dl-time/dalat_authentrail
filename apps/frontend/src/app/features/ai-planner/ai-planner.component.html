@@ -1,0 +1,330 @@
+<div class="planner">
+  <div class="a-wrap">
+ 
+    <!-- HEADER -->
+    <div class="a-header">
+      <div class="a-badge">🤖 AI Travel Agent</div>
+      <h2 class="a-title">Lập Lịch Thông Minh</h2>
+      <p class="a-sub">AI phân tích Risk Score, thời tiết và mật độ khách để tạo hành trình tối ưu cho bạn</p>
+    </div>
+ 
+    <!-- STEPS -->
+    <div class="a-steps">
+      <div class="a-step" [class.act]="currentStep()===1" [class.done]="currentStep()>1" (click)="currentStep()>1 && goStep(1)">
+        <div class="step-circle">{{ currentStep() > 1 ? '✓' : '1' }}</div>
+        <div class="step-label">Sở thích</div>
+      </div>
+      <div class="a-step" [class.act]="currentStep()===2" [class.done]="currentStep()>2" (click)="currentStep()>2 && goStep(2)">
+        <div class="step-circle">{{ currentStep() > 2 ? '✓' : '2' }}</div>
+        <div class="step-label">Địa điểm</div>
+      </div>
+      <div class="a-step" [class.act]="currentStep()===3" [class.done]="currentStep()>3" (click)="currentStep()>3 && goStep(3)">
+        <div class="step-circle">{{ currentStep() > 3 ? '✓' : '3' }}</div>
+        <div class="step-label">Timeline</div>
+      </div>
+      <div class="a-step" [class.act]="currentStep()===4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Theo dõi</div>
+      </div>
+    </div>
+ 
+    <!-- ═══════════════════════════════════════ -->
+    <!-- STEP 1: SỞ THÍCH                        -->
+    <!-- ═══════════════════════════════════════ -->
+    @if (currentStep() === 1) {
+      <div class="step-card">
+        <div class="sc-title">Bạn muốn trải nghiệm gì?</div>
+ 
+        <!-- Số ngày -->
+        <div class="pref-section">
+          <div class="pref-label">Số ngày</div>
+          <div class="days-row">
+            @for (d of [1,2,3,4,5]; track d) {
+              <button class="day-btn" [class.act]="prefs().days === d" (click)="setDays(d)">{{ d }}</button>
+            }
+          </div>
+        </div>
+ 
+        <!-- Phong cách – MULTI-SELECT với tick -->
+        <div class="pref-section">
+          <div class="pref-label">Phong cách du lịch <span class="pref-hint">(chọn nhiều)</span></div>
+          <div class="check-grid">
+            @for (s of styleOptions; track s.value) {
+              <button
+                class="check-btn"
+                [class.act]="isStyleSelected(s.value)"
+                (click)="toggleStyle(s.value)">
+                <span class="check-icon">{{ isStyleSelected(s.value) ? '✓' : '' }}</span>
+                <span class="check-emoji">{{ s.emoji }}</span>
+                <span class="check-label">{{ s.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+ 
+        <!-- Ngân sách – single select -->
+        <div class="pref-section">
+          <div class="pref-label">Ngân sách / ngày</div>
+          <div class="check-grid">
+            @for (b of budgetOptions; track b.value) {
+              <button
+                class="check-btn"
+                [class.act]="prefs().budget === b.value"
+                (click)="selectBudget(b.value)">
+                <span class="check-icon">{{ prefs().budget === b.value ? '✓' : '' }}</span>
+                <span class="check-emoji">{{ b.emoji }}</span>
+                <span class="check-label">{{ b.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+ 
+        <!-- Loại nhóm – single select -->
+        <div class="pref-section">
+          <div class="pref-label">Đi cùng ai?</div>
+          <div class="check-grid">
+            @for (g of groupOptions; track g.value) {
+              <button
+                class="check-btn"
+                [class.act]="prefs().groupType === g.value"
+                (click)="selectGroup(g.value)">
+                <span class="check-icon">{{ prefs().groupType === g.value ? '✓' : '' }}</span>
+                <span class="check-emoji">{{ g.emoji }}</span>
+                <span class="check-label">{{ g.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+ 
+        <!-- Muốn tránh -->
+        <div class="pref-section">
+          <div class="pref-label">Muốn tránh điều gì? <span class="pref-hint">(tuỳ chọn)</span></div>
+          <input
+            class="pref-inp"
+            type="text"
+            placeholder="VD: tránh chỗ đông, không leo núi nặng..."
+            [ngModel]="prefs().avoid"
+            (ngModelChange)="setAvoid($event)"/>
+        </div>
+ 
+        <button
+          class="btn-generate"
+          (click)="goStep(2)"
+          [disabled]="prefs().styles.length === 0 || !prefs().budget">
+          Xem địa điểm gợi ý →
+        </button>
+      </div>
+    }
+ 
+    <!-- ═══════════════════════════════════════ -->
+    <!-- STEP 2: ĐỊA ĐIỂM GỢI Ý                 -->
+    <!-- ═══════════════════════════════════════ -->
+    @if (currentStep() === 2) {
+      <div class="step-card">
+        <div class="sc-title">Địa điểm gợi ý cho bạn</div>
+        <p class="sc-sub">Dựa trên Risk Score + dữ liệu xác thực. Tick để chọn địa điểm muốn đi:</p>
+ 
+        <div class="reco-list">
+          @for (place of suggestedPlaces(); track place.id) {
+            <div
+              class="reco-item"
+              [class.selected]="isPlaceSelected(place.id)"
+              (click)="togglePlace(place.id)">
+              <div class="reco-tick">
+                <span class="tick-box" [class.ticked]="isPlaceSelected(place.id)">
+                  {{ isPlaceSelected(place.id) ? '✓' : '' }}
+                </span>
+              </div>
+              <div class="reco-body">
+                <div class="reco-name">{{ place.name }}</div>
+                <div class="reco-desc">{{ place.desc }}</div>
+                <div class="reco-meta">
+                  <span class="score-badge" [class.high]="place.score >= 85" [class.mid]="place.score >= 70 && place.score < 85">
+                    Score {{ place.score }}
+                  </span>
+                  @if (place.alert) {
+                    <span class="alert-tag">⚠ {{ place.alert }}</span>
+                  }
+                  @if (place.live) {
+                    <span class="live-tag"><span class="live-dot"></span>{{ place.live }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+ 
+        <!-- Khung chat prompt -->
+        <div class="prompt-box">
+          <div class="prompt-box-title">💬 Muốn thêm hoặc điều chỉnh gợi ý?</div>
+          <div class="prompt-row">
+            <input
+              class="prompt-inp"
+              type="text"
+              placeholder='VD: "thêm thác nước gần đây", "ít leo núi hơn", "có chỗ ăn trưa view đẹp"...'
+              [ngModel]="placePrompt()"
+              (ngModelChange)="placePrompt.set($event)"
+              (keyup.enter)="submitPlacePrompt()"/>
+            <button class="prompt-btn" (click)="submitPlacePrompt()" [disabled]="!placePrompt().trim()">
+              Gợi ý →
+            </button>
+          </div>
+          @if (promptHistory().length > 0) {
+            <div class="prompt-history">
+              @for (h of promptHistory(); track $index) {
+                <div class="ph-item">
+                  <span class="ph-q">Bạn: {{ h.q }}</span>
+                  <span class="ph-a">AI đã thêm: <strong>{{ h.added }}</strong></span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+ 
+        <div class="selected-count">
+          {{ selectedPlaceIds().length }} địa điểm đã chọn
+        </div>
+ 
+        <div class="confirm-btns">
+          <button class="btn-back" (click)="goStep(1)">← Quay lại</button>
+          <button
+            class="btn-generate"
+            (click)="confirmPlaces()"
+            [disabled]="selectedPlaceIds().length === 0">
+            Tạo Timeline →
+          </button>
+        </div>
+      </div>
+    }
+ 
+    <!-- ═══════════════════════════════════════ -->
+    <!-- STEP 3: TIMELINE                        -->
+    <!-- ═══════════════════════════════════════ -->
+    @if (currentStep() === 3) {
+      <div class="step-card">
+        <div class="sc-title-row">
+          <div class="sc-title">Lịch trình của bạn</div>
+          <button class="btn-add-stop" (click)="showAddForm.set(!showAddForm())">+ Thêm điểm</button>
+        </div>
+        <p class="sc-sub">Kéo để sắp xếp lại, chỉnh sửa thủ công, hoặc dùng AI để tối ưu.</p>
+ 
+        @if (showAddForm()) {
+          <div class="add-form">
+            <input class="add-inp" type="time" [ngModel]="addTime()" (ngModelChange)="addTime.set($event)"/>
+            <input class="add-inp" type="text" [ngModel]="addPlace()" (ngModelChange)="addPlace.set($event)" placeholder="Tên địa điểm *"/>
+            <input class="add-inp" type="text" [ngModel]="addDet()" (ngModelChange)="addDet.set($event)" placeholder="Mô tả hoạt động (tuỳ chọn)"/>
+            <div class="add-btns">
+              <button class="btn-cancel" (click)="showAddForm.set(false)">Hủy</button>
+              <button class="btn-confirm" (click)="addStop()">Thêm →</button>
+            </div>
+          </div>
+        }
+ 
+        <div class="timeline">
+          @for (item of timeline(); track $index; let i = $index; let last = $last) {
+            <div class="tl-item" [class.has-alert]="!!item.alert">
+              <div class="tl-time">{{ item.time }}</div>
+              <div class="tl-dot-wrap">
+                <div class="tl-dot" [class.alert]="!!item.alert"></div>
+                @if (!last) { <div class="tl-line"></div> }
+              </div>
+              <div class="tl-body">
+                <div class="tl-place">{{ item.place }}</div>
+                <div class="tl-det">{{ item.det }}</div>
+                @if (item.live) {
+                  <div class="tl-live"><span class="live-dot"></span>{{ item.live }}</div>
+                }
+                @if (item.alert) {
+                  <div class="tl-alert">{{ item.alert }}</div>
+                }
+              </div>
+              <div class="tl-actions">
+                <button class="tl-move" (click)="moveStop(i, -1)" [disabled]="i === 0" title="Lên">↑</button>
+                <button class="tl-move" (click)="moveStop(i, 1)" [disabled]="i === timeline().length - 1" title="Xuống">↓</button>
+                <button class="tl-remove" (click)="removeStop(i)">✕</button>
+              </div>
+            </div>
+          }
+        </div>
+ 
+        <!-- AI Prompt cho timeline -->
+        <div class="prompt-box">
+          <div class="prompt-box-title">✨ Nhờ AI chỉnh sửa lịch trình</div>
+          <div class="prompt-row">
+            <input
+              class="prompt-inp"
+              type="text"
+              placeholder='VD: "đổi buổi chiều sang cà phê", "thêm điểm ăn tối lãng mạn"...'
+              [ngModel]="aiInput()"
+              (ngModelChange)="aiInput.set($event)"
+              (keyup.enter)="aiRefine()"/>
+            <button class="prompt-btn" (click)="aiRefine()" [disabled]="!aiInput().trim()">
+              Cập nhật →
+            </button>
+          </div>
+        </div>
+ 
+        <div class="confirm-btns">
+          <button class="btn-back" (click)="goStep(2)">← Quay lại</button>
+          <button class="btn-generate" (click)="goStep(4)">✓ Chốt & Theo dõi →</button>
+        </div>
+      </div>
+    }
+ 
+    <!-- ═══════════════════════════════════════ -->
+    <!-- STEP 4: THEO DÕI LIVE                   -->
+    <!-- ═══════════════════════════════════════ -->
+    @if (currentStep() === 4) {
+      <div class="step-card">
+        <div class="track-header-row">
+          <div>
+            <div class="sc-title" style="margin-bottom:2px">Theo dõi Live</div>
+            <div class="sc-sub" style="margin:0">AI đang giám sát real-time các điểm trong lịch trình</div>
+          </div>
+          <div class="live-badge">ĐANG HOẠT ĐỘNG</div>
+        </div>
+ 
+        <div class="next-dest">
+          <div class="nd-label">ĐIỂM ĐẾN TIẾP THEO</div>
+          <div class="nd-place">{{ timeline()[1]?.place || 'The Loft Coffee' }}</div>
+          <div class="nd-dist">Cách bạn 1.2km · 5 phút di chuyển</div>
+        </div>
+ 
+        <div class="track-list">
+          @for (item of trackItems; track item.place) {
+            <div class="track-item" [ngClass]="item.type">
+              <div class="ti-time">{{ item.time }}</div>
+              <div class="ti-dot" [ngClass]="getTrackDotClass(item.type)"></div>
+              <div class="ti-info">
+                <div class="ti-place">{{ item.place }}</div>
+                <div class="ti-status" [ngClass]="item.type">{{ item.status }}</div>
+              </div>
+            </div>
+          }
+        </div>
+ 
+        <div class="notif-section">
+          <div class="notif-title">🔔 Thông báo</div>
+          <div class="notif-item">
+            <div class="ni-time">⏰ 09:45 — Nhắc nhở sắp đến</div>
+            <div class="ni-msg">The Loft Coffee đang còn bàn. Di chuyển ngay để đến đúng 10:00!</div>
+            <div class="ni-badge">✓ Xác nhận bởi cộng đồng</div>
+          </div>
+          <div class="notif-item warn">
+            <div class="ni-time">⚡ Cập nhật 5 phút trước</div>
+            <div class="ni-msg">Langbiang: 6 người báo đông hơn bình thường. Cân nhắc xuất phát sớm hơn 30 phút.</div>
+          </div>
+          <div class="notif-item">
+            <div class="ni-time">🌤 Dự báo thời tiết</div>
+            <div class="ni-msg">Sáng mai đẹp ☀ — Đồi Chè Cầu Đất sương mù từ 6:00–8:30. Đúng lịch!</div>
+            <div class="ni-badge">Real-time data</div>
+          </div>
+        </div>
+ 
+        <button class="btn-back" (click)="goStep(3)">← Chỉnh sửa lịch trình</button>
+      </div>
+    }
+ 
+  </div>
+</div>
+ 

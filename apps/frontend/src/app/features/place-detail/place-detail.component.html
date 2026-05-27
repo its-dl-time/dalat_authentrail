@@ -1,0 +1,155 @@
+<div class="detail" *ngIf="place() as p">
+  <div class="d-wrap">
+
+    <!-- BACK -->
+    <button class="bk" (click)="goBack()">← Quay lại Khám Phá</button>
+
+    <div class="d-layout">
+
+      <!-- LEFT COLUMN -->
+      <div class="d-left">
+
+        <!-- IMAGE BANNER -->
+        <div class="d-img-wrap" [style.background]="p.color + '44'">
+          <div class="d-img-bg" [style.background]="'linear-gradient(135deg,' + p.color + '88,' + p.color + '22)'"></div>
+          <div class="d-img-overlay"></div>
+          <div class="d-img-type">{{ p.type }}</div>
+          <div class="d-img-info">
+            <div class="d-img-name">{{ p.name }}</div>
+            <div class="d-img-loc">📍 {{ p.location }}</div>
+          </div>
+        </div>
+
+        <!-- SCORE BANNER -->
+        <div class="d-score-banner">
+          <div class="dsb-ring">{{ p.score }}</div>
+          <div class="dsb-info">
+            <div class="dsb-status">{{ getScoreStatus(p.score) }}</div>
+            <div class="dsb-desc">Tổng hợp từ {{ p.reviewCount | number }} reviews · Cập nhật hôm nay</div>
+          </div>
+            <div class="dsb-cta">
+              <button class="btn-plan" (click)="goPlanner()">Lập kế hoạch AI →</button>
+          </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="d-tabs">
+          <button class="d-tab" [class.act]="activeTab()==='overview'" (click)="activeTab.set('overview')">Tổng quan</button>
+          <button class="d-tab" [class.act]="activeTab()==='community'" (click)="activeTab.set('community')">Cộng đồng</button>
+        </div>
+
+        <!-- TAB: OVERVIEW -->
+        @if (activeTab() === 'overview') {
+          <!-- AI SUMMARY -->
+          <div class="d-card">
+            <div class="d-ct">🤖 Tóm tắt AI</div>
+            <div class="ai-sum">{{ p.aiSummary }}</div>
+            <button class="btn-plan" (click)="goPlanner()">📅 Thêm vào lịch trình AI →</button>
+          </div>
+
+          <!-- COMPLAINTS -->
+          <div class="d-card">
+            <div class="d-ct">⚠️ Điểm cần lưu ý</div>
+            <div class="comp-list">
+              @for (c of p.complaints; track c.text) {
+                <div class="ci">
+                  <div class="ci-ico">{{ c.icon }}</div>
+                  <div class="ci-body">
+                    <div class="ci-txt">{{ c.text }}</div>
+                    <div class="ci-src">
+                      <span class="ci-src-label">Nguồn:</span>
+                      @for (s of c.sources; track s.label) {
+                        <span class="ci-link" [ngClass]="s.type">{{ s.label }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- COMMUNITY PREVIEW -->
+          <div class="d-comm-preview" (click)="goCommunity()">
+            <div class="dcp-hdr">
+              <div class="dcp-title">💬 Cộng Đồng đang nói gì?</div>
+              <div class="dcp-more">Xem tất cả →</div>
+            </div>
+            <div class="dcp-item">
+              <div class="dcp-meta">
+                <span class="dcp-place">{{ p.name }}</span>
+                <span class="dcp-time">5 phút trước</span>
+                <span class="dcp-gps">GPS xác nhận</span>
+              </div>
+              <div>"Hôm nay khá vắng, thời tiết đẹp. Nên đi sớm!"</div>
+            </div>
+            <div class="dcp-item">
+              <div class="dcp-meta">
+                <span class="dcp-place">{{ p.name }}</span>
+                <span class="dcp-time">1 giờ trước</span>
+              </div>
+              <div>"Cơ sở vật chất ổn, hướng dẫn viên nhiệt tình."</div>
+            </div>
+          </div>
+        }
+
+        <!-- TAB: COMMUNITY -->
+        @if (activeTab() === 'community') {
+          <div class="d-card">
+            <div class="d-ct">💬 Thảo luận về {{ p.name }}</div>
+            <div class="comm-empty">
+              <div class="ce-icon">💬</div>
+              <div class="ce-title">Tham gia thảo luận</div>
+              <div class="ce-sub">Chia sẻ trải nghiệm thực tế của bạn về địa điểm này</div>
+              <button class="btn-plan" (click)="goCommunity()">Vào Cộng Đồng →</button>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="d-right">
+
+        <!-- META INFO -->
+        <div class="d-meta-card">
+          <div class="dmc-lbl">THÔNG TIN ĐỊA ĐIỂM</div>
+          @for (item of [
+            {k:'Giờ mở cửa', v: p.openHours},
+            {k:'Giá vé/dịch vụ', v: p.priceRange},
+            {k:'Thời điểm tốt nhất', v: p.bestTime},
+            {k:'Khoảng cách', v: p.distance}
+          ]; track item.k) {
+            <div class="dmc-item">
+              <span class="dmc-k">{{ item.k }}</span>
+              <span class="dmc-v">{{ item.v }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- RISK BADGE -->
+        <div class="d-risk-card" [ngClass]="getRiskClass(p.riskLevel)">
+          <div class="drc-label">MỨC RỦI RO</div>
+          <div class="drc-value">{{ getRiskLabel(p.riskLevel) }}</div>
+          <div class="drc-sub">Dựa trên {{ p.reviewCount | number }} đánh giá</div>
+        </div>
+      
+
+        <!-- TAB: SIMILAR -->
+          <div class="d-card">
+            <div class="d-ct">📍 Địa điểm tương tự</div>
+            @for (s of similarPlaces; track s.id) {
+              <div class="sim-item" (click)="goPlace(s.id)">
+                <div class="si-thumb" [style.background]="s.color + '44'"></div>
+                <div>
+                  <div class="si-name">{{ s.name }}</div>
+                  <div class="si-loc">{{ s.location }}</div>
+                </div>
+                <div class="si-score">{{ s.score }}</div>
+              </div>
+            }
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>

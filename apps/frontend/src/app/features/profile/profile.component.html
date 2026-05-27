@@ -1,0 +1,96 @@
+<div class="profile">
+  <div class="p-wrap">
+
+    <!-- HEADER -->
+    <div class="p-header">
+      <div class="p-avatar">AN</div>
+      <div class="p-info">
+        <div class="p-name">An Nhiên</div>
+        <div class="p-handle">&#64;annhien · Đà Lạt Explorer</div>
+        <div class="p-rank-badge">🏆 Hạng 4 · Top 12% cộng đồng</div>
+      </div>
+      <button class="p-edit-btn" (click)="navigate('explore')">Khám phá thêm →</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="p-stats-row">
+      @for (s of stats; track s.l) {
+        <div class="p-stat">
+          <div class="ps-n">{{ s.n }}</div>
+          <div class="ps-l">{{ s.l }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- XP BAR -->
+    <div class="p-xp-card">
+      <div class="pxp-top">
+        <div class="pxp-label">Tiến trình lên Hạng 5</div>
+        <div class="pxp-val">680 / 1000 XP</div>
+      </div>
+      <div class="pxp-bar"><div class="pxp-fill"></div></div>
+      <div class="pxp-sub">Cần thêm 320 XP · Trả lời thêm 40 câu hỏi hoặc check-in 5 địa điểm mới</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="p-tabs">
+      <button class="p-tab" [class.act]="activeTab()==='activity'" (click)="activeTab.set('activity')">Hoạt động</button>
+      <button class="p-tab" [class.act]="activeTab()==='badges'" (click)="activeTab.set('badges')">Huy hiệu</button>
+      <button class="p-tab" [class.act]="activeTab()==='stats'" (click)="activeTab.set('stats')">Thống kê</button>
+    </div>
+
+    <!-- TAB: ACTIVITY -->
+    @if (activeTab() === 'activity') {
+      <div class="p-activity">
+        @for (a of activities; track a.txt) {
+          <div class="act-item">
+            <div class="act-icon">{{ a.icon }}</div>
+            <div class="act-body">
+              <div class="act-txt">{{ a.txt }}</div>
+              <div class="act-time">{{ a.time }}</div>
+            </div>
+            <div class="act-score">{{ a.score }}</div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- TAB: BADGES -->
+    @if (activeTab() === 'badges') {
+      <div class="p-badges-grid">
+        @for (b of badges; track b.name) {
+          <div class="p-badge" [class.earned]="b.earned">
+            <div class="p-badge-ico">{{ b.icon }}</div>
+            <div class="p-badge-name">{{ b.name }}</div>
+            <div class="p-badge-lbl">{{ b.label }}</div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- TAB: STATS -->
+    @if (activeTab() === 'stats') {
+      <div class="p-stats-detail">
+        <div class="p-goal">
+          <strong>Mục tiêu tháng này:</strong> Trả lời 50 câu hỏi cộng đồng và check-in 10 địa điểm mới tại Đà Lạt.
+          <div class="p-prog-wrap">
+            <div class="p-prog-bar"><div class="p-prog-fill"></div></div>
+            <div class="p-prog-label">34/50 câu hỏi · 68% hoàn thành</div>
+          </div>
+        </div>
+        @for (item of [
+          {k:'Tổng điểm XP', v:'2,340'},
+          {k:'Streak hiện tại', v:'12 ngày'},
+          {k:'Review được like', v:'234 lượt'},
+          {k:'Độ chính xác xác minh', v:'94%'}
+        ]; track item.k) {
+          <div class="stat-row">
+            <span class="sr-k">{{ item.k }}</span>
+            <span class="sr-v">{{ item.v }}</span>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
